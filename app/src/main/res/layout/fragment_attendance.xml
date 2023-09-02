@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserActivity.Fragment.AttendanceFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/dateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DateTime"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+
+        <TextView
+            android:id="@+id/Username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_below="@id/dateTime"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+
+        <ImageView
+            android:id="@+id/onlineOfflineBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/Username"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/dateTime"
+            android:layout_marginLeft="20dp"/>
+
+
+        <TextView
+            android:id="@+id/userTimeOfAttendence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="time"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/Username"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userTimeOfAttendence"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/presentBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:text="Present" />
+
+
+            <Button
+                android:id="@+id/absentBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Absent"
+                android:layout_toRightOf="@id/presentBtn"
+                android:layout_marginLeft="10dp"/>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</FrameLayout>
