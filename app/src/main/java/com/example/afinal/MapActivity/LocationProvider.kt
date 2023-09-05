@@ -21,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.SphericalUtil
 import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
@@ -46,7 +48,8 @@ class LocationProvider(private val activity: AppCompatActivity) {
     val liveLocation = MutableLiveData<LatLng>()
     val liveAddress = MutableLiveData<String>()
 
-
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
 
     fun isLocationEnabled(): Boolean {
         val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -56,6 +59,10 @@ class LocationProvider(private val activity: AppCompatActivity) {
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
+
+            mAuth = FirebaseAuth.getInstance()
+            database = FirebaseDatabase.getInstance()
+
             val currentLocation = result.lastLocation
             if (currentLocation != null) {
                 val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
@@ -89,9 +96,47 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 locations.add(latLng)
                 liveLocations.value = locations
 
+                saveLocationToFirebase(currentLocation, distance)
+
             }
         }
     }
+    private fun saveLocationToFirebase(currentLocation: Location, totaldistance : Int) {
+        // Assuming you have a FirebaseUser object representing the authenticated user
+
+        val userId = mAuth.currentUser?.uid
+
+        if (userId != null) {
+            // Create a reference to the user's location data
+            val userLocationsRef = database.getReference("users").child(userId).child("user_locations_update")
+
+            // Create a unique key for each location entry
+            val locationKey = userLocationsRef.push().key
+
+            // Get the current timestamp
+            val timeStamp = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss", Locale.getDefault()).format(Date())
+
+            // Create a data object to represent the location information
+            val locationData = HashMap<String, Any>()
+            locationData["time"] = timeStamp
+            locationData["latitude"] = currentLocation.latitude
+            locationData["longitude"] = currentLocation.longitude
+            locationData["totalDistance"] = totaldistance
+
+            // Save the location data to Firebase Realtime Database
+            locationKey?.let {
+                userLocationsRef.child(it).setValue(locationData)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("FirebaseLocation", "Location data saved to Firebase")
+                        } else {
+                            Log.e("FirebaseLocation", "Failed to save location data: ${task.exception}")
+                        }
+                    }
+            }
+        }
+}
+
     private fun saveLocationToFile(locationInfo: String) {
         try {
             val fileName = "location_data.txt"

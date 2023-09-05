@@ -67,15 +67,29 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             }
         }
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
-        navigationView.setNavigationItemSelectedListener { // Handle navigation item selection here
-            drawerLayout.closeDrawer(GravityCompat.START)
+        navigationView.setNavigationItemSelectedListener {item -> // Handle navigation item selection here
+            //drawerLayout.closeDrawer(GravityCompat.START)
+            var fragment: Fragment? = null
+            if (item.itemId == R.id.nav_attendance) {
+                fragment = AttendanceFragment()
+                drawerLayout.closeDrawer(GravityCompat.START)
+            } else if (item.itemId == R.id.nav_help) {
+                fragment = AccountFragment()
+                drawerLayout.closeDrawer(GravityCompat.START)
+            } else if (item.itemId == R.id.nav_logout) {
+                fragment = HomeFragment()
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            fragment?.let { loadFragment(it) }
             true
         }
+
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         loadFragment(HomeFragment())
+
     }
 
     private fun showPopupMenu(view: View) {
@@ -108,7 +122,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            true
+           true
         } else super.onOptionsItemSelected(item)
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

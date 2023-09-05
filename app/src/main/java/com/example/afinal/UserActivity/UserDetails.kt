@@ -97,13 +97,17 @@ class UserDetails : AppCompatActivity() {
             sharedPreferences.edit().remove("isLoggedIn").apply()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            overridePendingTransition(R.anim.slide_up,
-                R.anim.slide_down);
+            overridePendingTransition(R.anim.slide_up);
             finish()
         }
 
 
     }
+
+    private fun overridePendingTransition(slideUp: Int) {
+
+    }
+
     private fun showSuccessMessage() {
         val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
         val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)
