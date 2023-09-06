@@ -6,101 +6,160 @@
     tools:context=".UserActivity.Fragment.AccountFragment">
 
 
-    <LinearLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#77C5D9ED">
+
+
+        <TextView
+            android:id="@+id/tvManagerList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manager Contact list"
+            android:textSize="25sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:fontFamily="@font/inriaserifregular"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="8dp"
+        android:layout_below="@id/tvManagerList">
 
-        <ImageView
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:layout_gravity="center"
-            android:src="@drawable/user"
-            android:layout_margin="10dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        <RelativeLayout
+            android:id="@+id/firstList"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Name"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+            android:layout_height="120dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idEdtEmployeeName"
-                android:layout_width="match_parent"
+
+            <ImageView
+                android:id="@+id/manager_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="30dp"
+                android:src="@drawable/avtar" />
+
+            <TextView
+                android:id="@+id/managerName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:drawableLeft="@drawable/baseline_person_24"
-                android:drawablePadding="10dp"/>
+                android:text="Dhruva"
+                android:fontFamily="@font/inriaserifregular"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/managerNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0987654321"
+                android:drawableStart="@drawable/baseline_call_24"
+                android:drawablePadding="5dp"
+                android:textSize="15sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/managerName"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            <TextView
+                android:id="@+id/managerCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ahmedabad"
+                android:textSize="12sp"
+                android:drawableStart="@drawable/baseline_location_on_24"
+                android:drawablePadding="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/managerNum"/>
+
+
+
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="10dp"
+        android:layout_below="@id/card1">
+
+
+        <RelativeLayout
+            android:id="@+id/firstList1"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Mobile Number"
-            android:layout_marginBottom="10dp">
+            android:layout_height="120dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idEdtEmployeePhoneNumber"
-                android:layout_width="match_parent"
+
+            <ImageView
+                android:id="@+id/manager_img1"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="30dp"
+                android:src="@drawable/woman" />
+
+            <TextView
+                android:id="@+id/managerName1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:drawableLeft="@drawable/baseline_call_24"
-                android:drawablePadding="10dp"/>
+                android:text="Pooja"
+                android:fontFamily="@font/inriaserifregular"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Address"
-            android:layout_marginBottom="10dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idEdtEmployeeAddress"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/managerNum1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:drawableLeft="@drawable/baseline_location_on_24"
-                android:drawablePadding="10dp"/>
+                android:text="1234567890"
+                android:textSize="15sp"
+                android:drawableStart="@drawable/baseline_call_24"
+                android:drawablePadding="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/managerName1"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Department"
-            android:layout_marginBottom="10dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idEdtEmployeeDepartment"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/managerCity1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:textColor="@color/black"
-                android:drawableLeft="@drawable/baseline_groups_24"
-                android:drawablePadding="10dp"/>
+                android:text="Sindhubhavan"
+                android:drawableStart="@drawable/baseline_location_on_24"
+                android:drawablePadding="5dp"
+                android:textSize="12sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/managerNum1"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-    </LinearLayout>
+        </RelativeLayout>
 
 
-
+    </androidx.cardview.widget.CardView>
 
 
 
 
+    </RelativeLayout>
 
 
 </FrameLayout>

@@ -345,5 +345,6 @@
             Toast.makeText(this, "Device is stable", Toast.LENGTH_SHORT).show()
         }
 
+
     }
 

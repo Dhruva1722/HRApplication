@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -24,6 +25,8 @@ class RegistrationActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
 
+    private lateinit var db: FirebaseFirestore
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,7 @@ class RegistrationActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference("users")
 
+        db = FirebaseFirestore.getInstance()
 
         haveAnAccount = findViewById(R.id.haveAnAccountTxt)
 
@@ -43,24 +47,36 @@ class RegistrationActivity : AppCompatActivity() {
             val email = findViewById<TextInputEditText>(R.id.registerEmailID).text.toString()
             val password = findViewById<TextInputEditText>(R.id.registerPasswordID).text.toString()
 
-            // Register user with Firebase Authentication
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val user = auth.currentUser
                         user?.let {
-                            // Store additional user details in Firebase Realtime Database
+                            // Store additional user details in Firestore
                             val userId = user.uid
                             val userDetails = User(employeeId, name, email)
-                            database.child(userId).setValue(userDetails)
 
-                            // Navigate to the next screen or perform any other action
-                            // For example, navigate to MapsActivity
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
-                            overridePendingTransition(R.anim.slide_down,
-                                R.anim.slide_left_out);
-                            finish()
+                            // Reference to the "users" collection in Firestore
+                            val userCollection = db.collection("users")
+
+                            // Set the user data in Firestore with the UID as the document ID
+                            userCollection.document(userId).set(userDetails)
+                                .addOnSuccessListener {
+                                    // Data added successfully
+                                    val intent = Intent(this, MainActivity::class.java)
+                                    startActivity(intent)
+                                    overridePendingTransition(R.anim.slide_down, R.anim.slide_left_out)
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    // Error occurred
+                                    e.printStackTrace()
+                                    Toast.makeText(
+                                        this,
+                                        "Registration failed: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                         }
                     } else {
                         // Log the error
@@ -74,6 +90,38 @@ class RegistrationActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
+
+//            // Register user with Firebase Authentication
+//            auth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener(this) { task ->
+//                    if (task.isSuccessful) {
+//                        val user = auth.currentUser
+//                        user?.let {
+//                            // Store additional user details in Firebase Realtime Database
+//                            val userId = user.uid
+//                            val userDetails = User(employeeId, name, email)
+//                            database.child(userId).setValue(userDetails)
+//
+//                            // Navigate to the next screen or perform any other action
+//                            // For example, navigate to MapsActivity
+//                            val intent = Intent(this, MainActivity::class.java)
+//                            startActivity(intent)
+//                            overridePendingTransition(R.anim.slide_down,
+//                                R.anim.slide_left_out);
+//                            finish()
+//                        }
+//                    } else {
+//                        // Log the error
+//                        task.exception?.printStackTrace()
+//
+//                        // Display a toast message with the error details
+//                        Toast.makeText(
+//                            this,
+//                            "Registration failed: ${task.exception?.message}",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
 
             haveAnAccount.setOnClickListener {
                 val intent = Intent(this, LoginActivity::class.java)

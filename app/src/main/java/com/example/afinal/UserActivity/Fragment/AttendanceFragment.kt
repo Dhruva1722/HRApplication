@@ -19,6 +19,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,7 +43,7 @@ class AttendanceFragment : Fragment() {
     private var isPresent = false
     private var attendanceTime: String? = null
 
-    private var presentButtonPressTime: Long = 0
+    private lateinit var db: FirebaseFirestore
 
 
     override fun onCreateView(
@@ -53,6 +55,7 @@ class AttendanceFragment : Fragment() {
 
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
+        db = FirebaseFirestore.getInstance()
 
         // Initialize your views
         dateTimeTextView = view.findViewById(R.id.dateTime)
@@ -65,11 +68,9 @@ class AttendanceFragment : Fragment() {
 
         val chronometer = view.findViewById<Chronometer>(R.id.txtTime)
         chronometer.setOnChronometerTickListener {
-            // Check the time when the Chronometer ticks
             val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
             if (currentTime >= "7:15") {
-                // 7:00 PM or later, show overtime message
                 userStatusTime.text = "You have overtime."
             }
         }
@@ -94,105 +95,83 @@ class AttendanceFragment : Fragment() {
         absentBtn.setOnClickListener {
             setAttendance(false)
         }
-
-//        if (savedInstanceState != null) {
-//            isPresent = savedInstanceState.getBoolean("isPresent")
-//            attendanceTime = savedInstanceState.getString("attendanceTime")
-//            updateUI()
-//        }
-
-
         return view
     }
     private fun fetchAndDisplayUsername() {
         val userId = mAuth.currentUser?.uid
         if (userId != null) {
-            val userRef = database.getReference("users").child(userId)
+            val userDocumentRef = db.collection("users").document(userId)
 
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val username = snapshot.child("name").getValue(String::class.java)
-                    if (username != null) {
-                        val usernameTextView = view?.findViewById<TextView>(R.id.Username)
-                        usernameTextView?.text = "Hii $username !"
+            userDocumentRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val username = documentSnapshot.getString("name")
+                        if (username != null) {
+                            val usernameTextView = view?.findViewById<TextView>(R.id.Username)
+                            usernameTextView?.text = "Hii, $username!"
+                        }
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
+                .addOnFailureListener { e ->
                     // Handle the error if needed
-                    Toast.makeText(context, "Getting error fetching username please check your internet connection...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Error fetching username: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            })
         }
     }
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//
-//        // Save the state
-//        outState.putBoolean("isPresent", isPresent)
-//        outState.putString("attendanceTime", attendanceTime)
-//    }
-
-//    override fun onResume() {
-//        super.onResume()
-//
-//        // Check if there is saved state, and if so, restore it
-//        if (isPresent) {
-//            onlineOfflineBtn.setImageResource(R.drawable.onlinebtn)
-//        } else {
-//            onlineOfflineBtn.setImageResource(R.drawable.offlinebtn)
-//        }
-//        updateUI()
-//    }
-
-
 
     private fun setAttendance(present: Boolean) {
-        val currentTime = SimpleDateFormat("dd-mm-yy hh:mm ", Locale.getDefault()).format(Date())
-        val currentHour = SimpleDateFormat("HH").format(Date()).toInt()
+        val currentTime = SimpleDateFormat("dd-MM-yy HH:mm", Locale.getDefault()).format(Date())
+        val currentHour = SimpleDateFormat("HH", Locale.getDefault()).format(Date()).toInt()
         val userId = mAuth.currentUser?.uid
 
         if (userId != null) {
-            val database = FirebaseDatabase.getInstance()
-            val userAttendanceRef = database.getReference("users").child(userId).child("attendance")
-            val statusRef = database.getReference("users").child(userId).child("status")
+            val db = FirebaseFirestore.getInstance()
+            val userDocumentRef = db.collection("users").document(userId)
 
             if (currentHour >= 10 && currentHour < 19) {
                 if (present) {
-                    // Check if the user is already marked as Present
                     if (!isPresent) {
-                        // Update UI, set the status as Present, and record the attendance
                         onlineOfflineBtn.setImageResource(R.drawable.onlinebtn)
                         isPresent = true
                         attendanceTime = currentTime
-                        statusRef.setValue("Present")
-                        val newAttendanceRef = userAttendanceRef.push()
-                        newAttendanceRef.setValue("Present at $currentTime")
+                        userDocumentRef.update("status", "Present")
+
+                        // Save attendance data to Firestore
+                        val attendanceData = hashMapOf(
+                            "attendanceType" to "Present",
+                            "timestamp" to FieldValue.serverTimestamp()
+                        )
+                        userDocumentRef.collection("attendance").add(attendanceData)
+
                         updateUI()
                     }
                 } else {
-                    // If marking as Absent, update UI, set the status as Absent, and record the attendance
                     onlineOfflineBtn.setImageResource(R.drawable.offlinebtn)
                     isPresent = false
                     attendanceTime = currentTime
-                    statusRef.setValue("Absent")
-                    val newAttendanceRef = userAttendanceRef.push()
-                    newAttendanceRef.setValue("Absent at $currentTime")
+                    userDocumentRef.update("status", "Absent")
+
+                    val attendanceData = hashMapOf(
+                        "attendanceType" to "Absent",
+                        "timestamp" to FieldValue.serverTimestamp()
+                    )
+                    userDocumentRef.collection("attendance").add(attendanceData)
+
                     updateUI()
                 }
             } else {
-                // Outside working hours
                 userStatusTime.text = "You are outside working hours."
             }
-
-            // Check for overtime
             if (currentHour >= 19 && isPresent) {
                 val overTime = currentHour - 19
                 userStatusTime.text = "You have $overTime hours of overtime."
             }
         }
     }
-
 
     private fun updateUI() {
         val statusText = if (isPresent) "Present" else "Absent"

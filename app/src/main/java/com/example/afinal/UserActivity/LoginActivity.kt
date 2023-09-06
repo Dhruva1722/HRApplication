@@ -91,28 +91,95 @@ class LoginActivity : AppCompatActivity() {
         val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
 
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
+        // Check if the email is valid
+        if (!isValidEmail(email)) {
+            emailEditText.error = "Invalid email address"
+            return
+        }
+
+        // Check if the password is valid (e.g., meets length requirements)
+        if (!isValidPassword(password)) {
+            passwordEditText.error = "Invalid password"
+            return
+        }
+
+        val currentUser = mAuth.currentUser
+        if (currentUser != null || sharedPreferences.getBoolean("isLoggedIn", false)) {
+
+            mAuth.currentUser?.reload()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // User login successful
-                    val user: FirebaseUser? = mAuth.currentUser
-                    if (user != null) {
-                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+                    val isAccountDeleted = mAuth.currentUser == null
+                    if (isAccountDeleted) {
+                        // User's account has been deleted, clear preferences and show a message
+                        sharedPreferences.edit().clear().apply()
+                        Toast.makeText(
+                            this,
+                            "Your account has been deleted. Please sign up again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        // Account still exists, navigate to MapsActivity
+                        Toast.makeText(
+                            this,
+                            "Pls Register first.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         navigateToMapsActivity()
                     }
-                } else {
-                    // User login failed
-                    Toast.makeText(this, "Login failed.", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+//        mAuth.signInWithEmailAndPassword(email, password)
+//            .addOnCompleteListener(this) { task ->
+//                if (task.isSuccessful) {
+//                    // User login successful
+//                    val user: FirebaseUser? = mAuth.currentUser
+//                    if (user != null) {
+//                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+//                        navigateToMapsActivity()
+//                    }
+//                } else {
+//                    // User login failed
+//                    Toast.makeText(this, "Login failed.", Toast.LENGTH_SHORT).show()
+//                }
+//            }
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+        return email.matches(emailPattern.toRegex())
+    }
 
+    private fun isValidPassword(password: String): Boolean {
+        return password.length >= 6
+    }
 
     private fun navigateToMapsActivity() {
-        val intent = Intent(this,MainActivity::class.java)
-        startActivity(intent)
-        overridePendingTransition(R.anim.slide_left, R.anim.slide_left_out);
-        finish() // Optionally, finish the current activity if needed
+        mAuth.currentUser?.reload()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val isAccountDeleted = mAuth.currentUser == null
+                if (isAccountDeleted) {
+                    // User's account has been deleted, show a message
+                    Toast.makeText(
+                        this,
+                        "Your account has been deleted. Please sign up again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // Account still exists, navigate to MapsActivity
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_left, R.anim.slide_left_out)
+                    finish()
+                }
+            }
+        }
     }
+//    private fun navigateToMapsActivity() {
+//        val intent = Intent(this,MainActivity::class.java)
+//        startActivity(intent)
+//        overridePendingTransition(R.anim.slide_left, R.anim.slide_left_out);
+//        finish() // Optionally, finish the current activity if needed
+//    }
 }
