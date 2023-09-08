@@ -4,7 +4,6 @@
     import android.content.Context
     import android.content.Intent
     import android.graphics.Color
-    import android.graphics.PorterDuff
     import android.hardware.Sensor
     import android.hardware.SensorEvent
     import android.hardware.SensorEventListener
@@ -13,6 +12,7 @@
     import android.location.Geocoder
     import android.os.Bundle
     import android.os.SystemClock
+    import android.view.LayoutInflater
     import android.view.MenuItem
     import android.view.View
     import android.widget.Button
@@ -21,16 +21,11 @@
     import android.widget.PopupMenu
     import android.widget.TextView
     import android.widget.Toast
-    import androidx.appcompat.app.ActionBarDrawerToggle
+    import androidx.appcompat.app.AlertDialog
     import androidx.appcompat.app.AppCompatActivity
-    import androidx.appcompat.widget.Toolbar
-    import androidx.core.view.GravityCompat
-    import androidx.drawerlayout.widget.DrawerLayout
     import com.example.afinal.R
     import com.example.afinal.UserActivity.ComplaintActivity
-    import com.example.afinal.UserActivity.Fragment.AttendanceFragment
     import com.example.afinal.UserActivity.Fragment.HomeFragment
-    import com.example.afinal.UserActivity.Fragment.AccountFragment
     import com.example.afinal.UserActivity.HelpActivity
     import com.example.afinal.UserActivity.UserDetails
     import com.example.afinal.databinding.ActivityMapsBinding
@@ -41,11 +36,8 @@
     import com.google.android.gms.maps.model.LatLng
     import com.google.android.gms.maps.model.MarkerOptions
     import com.google.android.gms.maps.model.PolylineOptions
-    import com.google.android.material.navigation.NavigationView
     import java.io.IOException
-    import kotlin.math.abs
     import kotlin.math.log2
-    import kotlin.math.pow
     import kotlin.math.sqrt
 
 
@@ -84,12 +76,34 @@
             userCurrentAddress = findViewById(R.id.userCurrentAddress)
 
             exitbtn.setOnClickListener {
-                val intent = Intent(this, UserDetails::class.java)
-                startActivity(intent)
-                overridePendingTransition(
-                    R.anim.slide_down,
-                    R.anim.slide_up
-                );
+                val dialogView = LayoutInflater.from(this).inflate(R.layout.messagepopup, null)
+                val builder = AlertDialog.Builder(this)
+                builder.setView(dialogView)
+                val dialog = builder.create()
+
+                val yesButton = dialogView.findViewById<TextView>(R.id.yesButton)
+                val noButton = dialogView.findViewById<TextView>(R.id.noButton)
+
+                yesButton.setOnClickListener {
+                    // Navigate to the home fragment or any other fragment
+                    // based on the user's choice.
+                    // For example, navigating to HomeFragment:
+                    val intent = Intent(this, HomeFragment::class.java)
+                    startActivity(intent)
+
+                }
+
+                noButton.setOnClickListener {
+                    // Navigate to the UserDetails activity or any other activity
+                    // based on the user's choice.
+                    // For example, navigating to UserDetails activity:
+                    val intent = Intent(this, UserDetails::class.java)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_down, R.anim.slide_up)
+                    dialog.dismiss()
+                }
+
+                dialog.show()
             }
 
 

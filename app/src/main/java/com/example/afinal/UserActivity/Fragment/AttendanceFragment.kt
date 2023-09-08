@@ -122,7 +122,6 @@ class AttendanceFragment : Fragment() {
                 }
         }
     }
-
     private fun setAttendance(present: Boolean) {
         val currentTime = SimpleDateFormat("dd-MM-yy HH:mm", Locale.getDefault()).format(Date())
         val currentHour = SimpleDateFormat("HH", Locale.getDefault()).format(Date()).toInt()
@@ -147,6 +146,7 @@ class AttendanceFragment : Fragment() {
                         )
                         userDocumentRef.collection("attendance").add(attendanceData)
 
+
                         updateUI()
                     }
                 } else {
@@ -160,7 +160,6 @@ class AttendanceFragment : Fragment() {
                         "timestamp" to FieldValue.serverTimestamp()
                     )
                     userDocumentRef.collection("attendance").add(attendanceData)
-
                     updateUI()
                 }
             } else {
@@ -180,7 +179,6 @@ class AttendanceFragment : Fragment() {
         } else {
             "You are $statusText."
         }
-
         userStatusTime.text = message
     }
 

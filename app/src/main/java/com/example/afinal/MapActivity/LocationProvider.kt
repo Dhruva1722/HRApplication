@@ -135,6 +135,7 @@ class LocationProvider(private val activity: AppCompatActivity) {
                     }
             }
         }
+
 }
 
     private fun saveLocationToFile(locationInfo: String) {
@@ -197,24 +198,25 @@ class LocationProvider(private val activity: AppCompatActivity) {
   }
 
 
-fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-    val R = 6371 // Earth's radius in kilometers
-
-    val dLat = deg2rad(lat2 - lat1)
-    val dLon = deg2rad(lon2 - lon1)
-    val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2)
-    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    val d = R * c // Distance in km
-    return d
-}
-
-fun deg2rad(deg: Double): Double {
-    return deg * (Math.PI / 180)
-}
-
 // harvies formula
+//fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+//    val R = 6371 // Earth's radius in kilometers
+//
+//    val dLat = deg2rad(lat2 - lat1)
+//    val dLon = deg2rad(lon2 - lon1)
+//    val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+//            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+//    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+//    val d = R * c // Distance in km
+//    return d
+//}
+//
+//fun deg2rad(deg: Double): Double {
+//    return deg * (Math.PI / 180)
+//}
+
+
 //                if (currentLocation.speed >= 1.0) {
 //                    val lastLocation = locations.lastOrNull()
 //                    if (lastLocation != null) {
