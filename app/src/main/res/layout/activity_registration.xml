@@ -12,13 +12,13 @@
     <LinearLayout
         android:id="@+id/bgLayout1"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="260dp"
         android:background="#0039A9"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_height="160dp"
             android:src="@drawable/pana"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"/>
@@ -47,7 +47,6 @@
         android:textStyle="bold" />
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,22 +54,24 @@
         android:layout_margin="15dp"
         android:layout_below="@id/registrationTxt">
 
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Employee ID"
+            android:hint="Your ID"
             android:layout_marginBottom="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:drawableEnd="@drawable/baseline_credit_card_24"
+                android:drawableRight="@drawable/baseline_person_24"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textColor="@color/black"
-                android:id="@+id/registerEmployeID"/>
+                android:id="@+id/registerID"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -125,6 +126,22 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="confirm password"
+        android:layout_marginBottom="10dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:drawableEnd="@drawable/baseline_credit_card_24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:id="@+id/confirm_pass_ID"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/registerBtn"

@@ -70,7 +70,9 @@
                 android:textSize="15sp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_below="@id/managerName"/>
+                android:layout_below="@id/managerName"
+                android:autoLink="phone"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/managerCity"
@@ -137,7 +139,9 @@
                 android:drawablePadding="5dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_below="@id/managerName1"/>
+                android:layout_below="@id/managerName1"
+                android:autoLink="phone"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/managerCity1"

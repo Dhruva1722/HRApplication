@@ -13,7 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.example.afinal.R
-import com.example.afinal.UserActivity.User
+//import com.example.afinal.UserActivity.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -76,7 +76,7 @@ class AttendanceFragment : Fragment() {
         }
 
 
-        fetchAndDisplayUsername()
+//        fetchAndDisplayUsername()
 
 
         val currentDateTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
@@ -97,31 +97,31 @@ class AttendanceFragment : Fragment() {
         }
         return view
     }
-    private fun fetchAndDisplayUsername() {
-        val userId = mAuth.currentUser?.uid
-        if (userId != null) {
-            val userDocumentRef = db.collection("users").document(userId)
-
-            userDocumentRef.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val username = documentSnapshot.getString("name")
-                        if (username != null) {
-                            val usernameTextView = view?.findViewById<TextView>(R.id.Username)
-                            usernameTextView?.text = "Hii, $username!"
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    // Handle the error if needed
-                    Toast.makeText(
-                        context,
-                        "Error fetching username: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-        }
-    }
+//    private fun fetchAndDisplayUsername() {
+//        val userId = mAuth.currentUser?.uid
+//        if (userId != null) {
+//            val userDocumentRef = db.collection("users").document(userId)
+//
+//            userDocumentRef.get()
+//                .addOnSuccessListener { documentSnapshot ->
+//                    if (documentSnapshot.exists()) {
+//                        val username = documentSnapshot.getString("name")
+//                        if (username != null) {
+//                            val usernameTextView = view?.findViewById<TextView>(R.id.Username)
+//                            usernameTextView?.text = "Hii, $username!"
+//                        }
+//                    }
+//                }
+//                .addOnFailureListener { e ->
+//                    // Handle the error if needed
+//                    Toast.makeText(
+//                        context,
+//                        "Error fetching username: ${e.message}",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//        }
+//    }
     private fun setAttendance(present: Boolean) {
         val currentTime = SimpleDateFormat("dd-MM-yy HH:mm", Locale.getDefault()).format(Date())
         val currentHour = SimpleDateFormat("HH", Locale.getDefault()).format(Date()).toInt()

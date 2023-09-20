@@ -153,8 +153,7 @@ class LocationProvider(private val activity: AppCompatActivity) {
     // Method to fetch the current address using Geocoder
     private fun fetchCurrentAddress(latLng: LatLng) {
         val geocoder = Geocoder(activity)
-        val addressList: List<Address> =
-            geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1) as List<Address>
+        val addressList: List<Address> = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1) as List<Address>
 
         if (addressList.isNotEmpty()) {
             val address = addressList[0]

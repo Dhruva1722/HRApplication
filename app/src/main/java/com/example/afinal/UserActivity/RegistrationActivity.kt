@@ -1,182 +1,96 @@
 package com.example.afinal.UserActivity
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.MainActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class RegistrationActivity : AppCompatActivity() {
 
-//    private lateinit var viewPager: ViewPager
-//    private lateinit var progressBar: ProgressBar
-//    private lateinit var nextButton: ImageView
-//    private lateinit var previousButton: ImageView
-
     private lateinit var haveAnAccount: TextView
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
 
-    private lateinit var db: FirebaseFirestore
-
-
+    private val gson = Gson()
+    private lateinit var apiService: ApiService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
 
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().getReference("users")
-
-        db = FirebaseFirestore.getInstance()
+        apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         haveAnAccount = findViewById(R.id.haveAnAccountTxt)
-
+        haveAnAccount.setOnClickListener {
+            val intent = Intent(this,LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         val registerButton = findViewById<Button>(R.id.registerBtn)
+        val registerEmpID = findViewById<TextInputEditText>(R.id.registerID)
+        val registerName = findViewById<TextInputEditText>(R.id.registerNameID)
+        val registerEmail = findViewById<TextInputEditText>(R.id.registerEmailID)
+        val registerPassword = findViewById<TextInputEditText>(R.id.registerPasswordID)
+        val registerConfirmPass = findViewById<TextInputEditText>(R.id.confirm_pass_ID)
+
         registerButton.setOnClickListener {
-            val employeeId = findViewById<TextInputEditText>(R.id.registerEmployeID).text.toString()
-            val name = findViewById<TextInputEditText>(R.id.registerNameID).text.toString()
-            val email = findViewById<TextInputEditText>(R.id.registerEmailID).text.toString()
-            val password = findViewById<TextInputEditText>(R.id.registerPasswordID).text.toString()
+            val Emp_ID = registerEmpID.text.toString()
+            val name = registerName.text.toString()
+            val email = registerEmail.text.toString()
+            val password = registerPassword.text.toString()
+            val confirm_password = registerConfirmPass.text.toString()
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        val user = auth.currentUser
-                        user?.let {
-                            // Store additional user details in Firestore
-                            val userId = user.uid
-                            val userDetails = User(employeeId, name, email)
+            val registrationData = RegistrationData(Emp_ID,name, email, password, confirm_password)
+            val registrationDataJson = gson.toJsonTree(registrationData).asJsonObject
+            Log.d("-----------", "onCreate: user data"+registrationDataJson)
+            // Make the API request
+            val call = apiService.registerUser(registrationDataJson)
 
-                            // Reference to the "users" collection in Firestore
-                            val userCollection = db.collection("users")
-
-                            // Set the user data in Firestore with the UID as the document ID
-                            userCollection.document(userId).set(userDetails)
-                                .addOnSuccessListener {
-                                    // Data added successfully
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    startActivity(intent)
-                                    overridePendingTransition(R.anim.slide_down, R.anim.slide_left_out)
-                                    finish()
-                                }
-                                .addOnFailureListener { e ->
-                                    // Error occurred
-                                    e.printStackTrace()
-                                    Toast.makeText(
-                                        this,
-                                        "Registration failed: ${e.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                        }
-                    } else {
-                        // Log the error
-                        task.exception?.printStackTrace()
-
-                        // Display a toast message with the error details
+            call.enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    if (response.isSuccessful) {
                         Toast.makeText(
-                            this,
-                            "Registration failed: ${task.exception?.message}",
+                            this@RegistrationActivity,
+                            "Registration Succeccful",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this@RegistrationActivity,
+                            "Registration fail",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
 
-//            // Register user with Firebase Authentication
-//            auth.createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(this) { task ->
-//                    if (task.isSuccessful) {
-//                        val user = auth.currentUser
-//                        user?.let {
-//                            // Store additional user details in Firebase Realtime Database
-//                            val userId = user.uid
-//                            val userDetails = User(employeeId, name, email)
-//                            database.child(userId).setValue(userDetails)
-//
-//                            // Navigate to the next screen or perform any other action
-//                            // For example, navigate to MapsActivity
-//                            val intent = Intent(this, MainActivity::class.java)
-//                            startActivity(intent)
-//                            overridePendingTransition(R.anim.slide_down,
-//                                R.anim.slide_left_out);
-//                            finish()
-//                        }
-//                    } else {
-//                        // Log the error
-//                        task.exception?.printStackTrace()
-//
-//                        // Display a toast message with the error details
-//                        Toast.makeText(
-//                            this,
-//                            "Registration failed: ${task.exception?.message}",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-
-            haveAnAccount.setOnClickListener {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-            }
-
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Toast.makeText(
+                        this@RegistrationActivity,
+                        "Registration network error",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
         }
 
     }
-
 }
-data class User(
-    val employeeId: String,
+
+data class RegistrationData(
+    val Emp_ID:String,
     val name: String,
-    val email: String
+    val email: String,
+    val password: String,
+    val confirm_password: String
 )
-
-
-
-
-//        viewPager = findViewById(R.id.viewPager)
-//        progressBar = findViewById(R.id.progressBar)
-//        nextButton = findViewById(R.id.nextButton)
-//        previousButton = findViewById(R.id.previousButton)
-
-// Create an instance of the adapter
-//        val pagerAdapter = RegistrationPagerAdapter(supportFragmentManager)
-//
-//        // Set the adapter for the ViewPager
-//        viewPager.adapter = pagerAdapter
-//
-//        // Set up navigation buttons
-//        nextButton.setOnClickListener {
-//            viewPager.currentItem = viewPager.currentItem + 1
-//        }
-//
-//        previousButton.setOnClickListener {
-//            viewPager.currentItem = viewPager.currentItem - 1
-//        }
-//
-//        // Set up ViewPager listener to update navigation buttons and progress bar
-//        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-//            override fun onPageScrollStateChanged(state: Int) {}
-//
-//            override fun onPageScrolled(
-//                position: Int,
-//                positionOffset: Float,
-//                positionOffsetPixels: Int
-//            ) {}
-//
-//            override fun onPageSelected(position: Int) {
-//                // Update navigation buttons and progress bar based on current page
-//                val isLastPage = position == pagerAdapter.count - 1
-//                nextButton.visibility = if (isLastPage) View.GONE else View.VISIBLE
-//                previousButton.visibility = if (position == 0) View.GONE else View.VISIBLE
-//                progressBar.progress = (position + 1) * 100 / pagerAdapter.count
-//            }
-//        })

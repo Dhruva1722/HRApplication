@@ -4,6 +4,7 @@ package com.example.afinal.UserActivity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -11,13 +12,20 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import com.example.afinal.MainActivity
 import com.example.afinal.MapActivity.MapsActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class LoginActivity : AppCompatActivity() {
@@ -26,18 +34,27 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var newUserTextView: TextView
     private lateinit var emailEditText: TextInputEditText
     private lateinit var passwordEditText: TextInputEditText
-    private lateinit var loginButton:Button
-    private lateinit var passResetBtn:TextView
-    private lateinit var mAuth: FirebaseAuth
+    private lateinit var loginButton: Button
+    private lateinit var passResetBtn: TextView
+
+    private val gson = Gson()
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var apiService: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.example.afinal.R.layout.activity_login)
+        setContentView(R.layout.activity_login)
 
 
-        mAuth = FirebaseAuth.getInstance()
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
 
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        if (isLoggedIn) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         emailEditText = findViewById(R.id.loginEmailID)
         passwordEditText = findViewById(R.id.loginPasswordID)
@@ -45,141 +62,63 @@ class LoginActivity : AppCompatActivity() {
         newUserTextView = findViewById(R.id.newUserID)
         passResetBtn = findViewById(R.id.forgetPAsswordID)
 
-        mAuth = FirebaseAuth.getInstance()
+
+        apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
 
-        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE) // Initialize it here
-
-
-        val currentUser = mAuth.currentUser
-        if (currentUser != null || sharedPreferences.getBoolean("isLoggedIn", false)) {
-            navigateToMapsActivity()
-            return
-        }
-
-        loginButton.setOnClickListener {
-            loginUser()
-        }
 
         newUserTextView.setOnClickListener {
             val intent = Intent(this, RegistrationActivity::class.java)
             startActivity(intent)
         }
 
-        passResetBtn.setOnClickListener {
+
+        loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
-
-            if (email.isNotEmpty()) {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // Password reset email sent successfully
-                            Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Password reset email failed to send
-                            Toast.makeText(this, "Failed to send password reset email", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-            } else {
-                Toast.makeText(this, "Please enter your registered email", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+            val password = passwordEditText.text.toString()
 
 
-    private fun loginUser() {
-        val email = emailEditText.text.toString()
-        val password = passwordEditText.text.toString()
+            val loginAdmin = LoginData(email, password)
+            val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject
+            Log.d("-----------", "onCreate: user data"+adminDataJson)
 
-        // Check if the email is valid
-        if (!isValidEmail(email)) {
-            emailEditText.error = "Invalid email address"
-            return
-        }
+            val call = apiService.loginRequest(adminDataJson)
+            call.enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    if (response.isSuccessful) {
+                        val editor = sharedPreferences.edit()
+                        editor.putBoolean("isLoggedIn", true)
+                        editor.apply()
 
-        // Check if the password is valid (e.g., meets length requirements)
-        if (!isValidPassword(password)) {
-            passwordEditText.error = "Invalid password"
-            return
-        }
-
-        val currentUser = mAuth.currentUser
-        if (currentUser != null || sharedPreferences.getBoolean("isLoggedIn", false)) {
-
-            mAuth.currentUser?.reload()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val isAccountDeleted = mAuth.currentUser == null
-                    if (isAccountDeleted) {
-                        // User's account has been deleted, clear preferences and show a message
-                        sharedPreferences.edit().clear().apply()
                         Toast.makeText(
-                            this,
-                            "Your account has been deleted. Please sign up again.",
+                            this@LoginActivity,
+                            "login Succeccful",
                             Toast.LENGTH_SHORT
                         ).show()
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        startActivity(intent)
                     } else {
-                        // Account still exists, navigate to MapsActivity
                         Toast.makeText(
-                            this,
-                            "Pls Register first.",
+                            this@LoginActivity,
+                            "login fail",
                             Toast.LENGTH_SHORT
                         ).show()
-                        navigateToMapsActivity()
                     }
                 }
-            }
-        }
 
-//        mAuth.signInWithEmailAndPassword(email, password)
-//            .addOnCompleteListener(this) { task ->
-//                if (task.isSuccessful) {
-//                    // User login successful
-//                    val user: FirebaseUser? = mAuth.currentUser
-//                    if (user != null) {
-//                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
-//                        navigateToMapsActivity()
-//                    }
-//                } else {
-//                    // User login failed
-//                    Toast.makeText(this, "Login failed.", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-        return email.matches(emailPattern.toRegex())
-    }
-
-    private fun isValidPassword(password: String): Boolean {
-        return password.length >= 6
-    }
-
-    private fun navigateToMapsActivity() {
-        mAuth.currentUser?.reload()?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val isAccountDeleted = mAuth.currentUser == null
-                if (isAccountDeleted) {
-                    // User's account has been deleted, show a message
+                override fun onFailure(call: Call<Any>, t: Throwable) {
                     Toast.makeText(
-                        this,
-                        "Your account has been deleted. Please sign up again.",
+                        this@LoginActivity,
+                        "login network error",
                         Toast.LENGTH_SHORT
                     ).show()
-                } else {
-                    // Account still exists, navigate to MapsActivity
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_left, R.anim.slide_left_out)
-                    finish()
                 }
-            }
+            })
         }
     }
-//    private fun navigateToMapsActivity() {
-//        val intent = Intent(this,MainActivity::class.java)
-//        startActivity(intent)
-//        overridePendingTransition(R.anim.slide_left, R.anim.slide_left_out);
-//        finish() // Optionally, finish the current activity if needed
-//    }
 }
+
+data class LoginData(
+    val email : String,
+    val password :String
+)

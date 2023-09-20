@@ -1,6 +1,7 @@
 package com.example.afinal
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.MenuItem
@@ -18,8 +19,10 @@ import com.example.afinal.UserActivity.Fragment.AccountFragment
 import com.example.afinal.UserActivity.Fragment.AttendanceFragment
 import com.example.afinal.UserActivity.Fragment.HomeFragment
 import com.example.afinal.UserActivity.HelpActivity
+import com.example.afinal.UserActivity.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemSelectedListener{
 
@@ -29,9 +32,15 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var mAuth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mAuth = FirebaseAuth.getInstance()
+        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE)
 
         helpBtn = findViewById(R.id.helpBtn)
 
@@ -77,7 +86,12 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
                 fragment = AccountFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
             } else if (item.itemId == R.id.nav_logout) {
-                fragment = HomeFragment()
+                mAuth.signOut()
+                sharedPreferences.edit().remove("isLoggedIn").apply()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
             fragment?.let { loadFragment(it) }

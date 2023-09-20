@@ -23,19 +23,19 @@ class AccountFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_account, container, false)
 
-        val managerNumTextView = view.findViewById<TextView>(R.id.managerNum)
-        val phoneNumber = managerNumTextView.text.toString()
-
-        managerNumTextView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL)
-            intent.data = Uri.parse("tel:$phoneNumber")
-
-            try {
-                startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        val managerNumTextView = view.findViewById<TextView>(R.id.managerNum)
+//        val phoneNumber = managerNumTextView.text.toString()
+//
+//        managerNumTextView.setOnClickListener {
+//            val intent = Intent(Intent.ACTION_DIAL)
+//            intent.data = Uri.parse("tel:$phoneNumber")
+//
+//            try {
+//                startActivity(intent)
+//            } catch (e: Exception) {
+//                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
 
 

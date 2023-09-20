@@ -10,6 +10,7 @@
     import android.hardware.SensorManager
     import android.location.Address
     import android.location.Geocoder
+    import android.media.MediaPlayer
     import android.os.Bundle
     import android.os.SystemClock
     import android.view.LayoutInflater
@@ -66,16 +67,20 @@
             super.onCreate(savedInstanceState)
 
 
-
             binding = ActivityMapsBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
             exitbtn = findViewById(R.id.ExitBtn)
-
             // Find and initialize the TextView widgets
             userCurrentAddress = findViewById(R.id.userCurrentAddress)
 
             exitbtn.setOnClickListener {
+
+
+//                val mediaPlayer = MediaPlayer.create(this, R.raw.audio)
+//                mediaPlayer.start()
+
+
                 val dialogView = LayoutInflater.from(this).inflate(R.layout.messagepopup, null)
                 val builder = AlertDialog.Builder(this)
                 builder.setView(dialogView)
@@ -85,18 +90,11 @@
                 val noButton = dialogView.findViewById<TextView>(R.id.noButton)
 
                 yesButton.setOnClickListener {
-                    // Navigate to the home fragment or any other fragment
-                    // based on the user's choice.
-                    // For example, navigating to HomeFragment:
                     val intent = Intent(this, HomeFragment::class.java)
                     startActivity(intent)
-
                 }
 
                 noButton.setOnClickListener {
-                    // Navigate to the UserDetails activity or any other activity
-                    // based on the user's choice.
-                    // For example, navigating to UserDetails activity:
                     val intent = Intent(this, UserDetails::class.java)
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_down, R.anim.slide_up)

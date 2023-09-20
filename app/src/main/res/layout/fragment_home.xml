@@ -25,7 +25,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="Your Location"
+        android:hint="Your start Point"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:textColor="@color/black"
-            android:id="@+id/yourLocationID"/>
+            android:id="@+id/StartPointID"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,10 +48,10 @@
         android:layout_marginLeft="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/destinationID"
+            android:id="@+id/EndPointID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Destination Location"
+            android:hint="Your end point"
             android:textSize="15sp"
             android:textColor="@color/black" />
 

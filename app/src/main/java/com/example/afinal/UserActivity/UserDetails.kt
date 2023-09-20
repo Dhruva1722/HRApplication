@@ -97,7 +97,7 @@ class UserDetails : AppCompatActivity() {
             sharedPreferences.edit().remove("isLoggedIn").apply()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            overridePendingTransition(R.anim.slide_up);
+            overridePendingTransition(R.anim.slide_left);
             finish()
         }
 
@@ -192,7 +192,6 @@ class UserDetails : AppCompatActivity() {
         }
 
     }
-
 
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
