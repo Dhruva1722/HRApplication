@@ -83,37 +83,79 @@ class LoginActivity : AppCompatActivity() {
             Log.d("-----------", "onCreate: user data"+adminDataJson)
 
             val call = apiService.loginRequest(adminDataJson)
-            call.enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+            call.enqueue(object : Callback<LoginResponse> {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
-                        val editor = sharedPreferences.edit()
-                        editor.putBoolean("isLoggedIn", true)
-                        editor.apply()
+                        val loginResponse = response.body()
+                        Log.d("++++++++++++++", "login response : "+loginResponse)
+                        if (loginResponse != null) {
+                            val token = loginResponse.token
+                            val userId = loginResponse.User
 
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "login Succeccful",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        val intent = Intent(applicationContext, MainActivity::class.java)
-                        startActivity(intent)
+                            // Save the token and userId securely (e.g., using TokenManager)
+                            val editor = sharedPreferences.edit()
+                            editor.putString("accessToken", token)
+                            editor.putString("userId", userId)
+                            editor.apply()
+
+                            Log.d("---------", "login token : "+token)
+                            Log.d("==========", "login userid : "+ userId)
+
+                            Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            // Handle a missing or invalid response
+                            Toast.makeText(this@LoginActivity, "Invalid server response", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "login fail",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        // Handle specific error codes or messages from the server
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+//                            val errorResponse = gson.fromJson(errorBody, ErrorResponse::class.java)
+                            Toast.makeText(this@LoginActivity, "Login failed:", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@LoginActivity, "Login failed", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
 
-                override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "login network error",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    // Handle network errors
+                    Toast.makeText(this@LoginActivity, "Network error", Toast.LENGTH_SHORT).show()
                 }
             })
+//            call.enqueue(object : Callback<Any> {
+//                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+//                    if (response.isSuccessful) {
+//                        val editor = sharedPreferences.edit()
+//                        editor.putBoolean("isLoggedIn", true)
+//                        editor.apply()
+//
+//                        Toast.makeText(
+//                            this@LoginActivity,
+//                            "login Succeccful",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        val intent = Intent(applicationContext, MainActivity::class.java)
+//                        startActivity(intent)
+//                    } else {
+//                        Toast.makeText(
+//                            this@LoginActivity,
+//                            "login fail",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<Any>, t: Throwable) {
+//                    Toast.makeText(
+//                        this@LoginActivity,
+//                        "login network error",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            })
         }
     }
 }
@@ -121,4 +163,10 @@ class LoginActivity : AppCompatActivity() {
 data class LoginData(
     val email : String,
     val password :String
+)
+data class LoginResponse(
+    @SerializedName("access_token")
+    val token: String,
+    @SerializedName("user_id")
+    val User: String
 )
