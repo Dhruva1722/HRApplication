@@ -65,6 +65,16 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"/>
 
+
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
+
+
     </LinearLayout>
 
 
