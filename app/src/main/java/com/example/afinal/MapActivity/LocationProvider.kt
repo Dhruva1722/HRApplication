@@ -2,29 +2,29 @@ package com.example.afinal.MapActivity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.location.LocationManager
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.MutableLiveData
 //import androidx.lifecycle.viewmodel.CreationExtras.Empty.map
-import com.example.afinal.R
+import com.example.afinal.UserActivity.ApiService
+import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.SphericalUtil
-import java.io.OutputStreamWriter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,20 +48,21 @@ class LocationProvider(private val activity: AppCompatActivity) {
     val liveLocation = MutableLiveData<LatLng>()
     val liveAddress = MutableLiveData<String>()
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userId: String
     fun isLocationEnabled(): Boolean {
         val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return LocationManagerCompat.isLocationEnabled(locationManager)
     }
 
-
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
 
-            mAuth = FirebaseAuth.getInstance()
-            database = FirebaseDatabase.getInstance()
+
+            val sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            userId = sharedPreferences.getString("User", null) ?: ""
+
 
             val currentLocation = result.lastLocation
             if (currentLocation != null) {
@@ -81,7 +82,8 @@ class LocationProvider(private val activity: AppCompatActivity) {
                    "Time: ${timeStamp}, Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}"
                 Log.d("LocationInfo", locationInfo)
 
-                saveLocationToFile(locationInfo)
+//                saveLocationToFile(locationInfo)
+
 
                 val lastLocation = locations.lastOrNull()
                 if (lastLocation != null) {
@@ -96,60 +98,46 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 locations.add(latLng)
                 liveLocations.value = locations
 
-                saveLocationToFirebase(currentLocation, distance)
+                val latitude = currentLocation.latitude
+                val longitude = currentLocation.longitude
+
+                 val locationData = LocationData(userId,latitude,longitude,distance )
+                    saveLocationDataToApi(locationData)
+
+
 
             }
         }
     }
-    private fun saveLocationToFirebase(currentLocation: Location, totaldistance : Int) {
-        // Assuming you have a FirebaseUser object representing the authenticated user
 
-        val userId = mAuth.currentUser?.uid
 
-        if (userId != null) {
-            // Create a reference to the user's location data
-            val userLocationsRef = database.getReference("users").child(userId).child("user_locations_update")
 
-            // Create a unique key for each location entry
-            val locationKey = userLocationsRef.push().key
+    private fun saveLocationDataToApi(locationData: LocationData) {
 
-            // Get the current timestamp
-            val timeStamp = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss", Locale.getDefault()).format(Date())
+        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-            // Create a data object to represent the location information
-            val locationData = HashMap<String, Any>()
-            locationData["time"] = timeStamp
-            locationData["latitude"] = currentLocation.latitude
-            locationData["longitude"] = currentLocation.longitude
-            locationData["totalDistance"] = totaldistance
 
-            // Save the location data to Firebase Realtime Database
-            locationKey?.let {
-                userLocationsRef.child(it).setValue(locationData)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("FirebaseLocation", "Location data saved to Firebase")
-                        } else {
-                            Log.e("FirebaseLocation", "Failed to save location data: ${task.exception}")
-                        }
-                    }
+        val call = apiService.saveLocationData(locationData)
+
+        call.enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                if (response.isSuccessful) {
+                    // Handle a successful response if needed
+                    Log.d("LocationData", "Location data saved successfully.")
+                } else {
+                    // Handle an error response if needed
+                    Log.e("LocationData", "Failed to save location data.")
+                }
             }
-        }
 
-}
-
-    private fun saveLocationToFile(locationInfo: String) {
-        try {
-            val fileName = "location_data.txt"
-            val fileOutputStream = activity.openFileOutput(fileName, Context.MODE_APPEND)
-            val outputStreamWriter = OutputStreamWriter(fileOutputStream)
-            outputStreamWriter.write(locationInfo + "\n")
-            outputStreamWriter.close()
-            Log.d("LocationSaved", "Location data saved to file.")
-        } catch (e: Exception) {
-            Log.e("LocationSaveError", "Error saving location data: ${e.message}")
-        }
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                // Handle network or other errors if needed
+                Log.e("LocationData", "Network error: ${t.message}")
+            }
+        })
     }
+
+
     // Method to fetch the current address using Geocoder
     private fun fetchCurrentAddress(latLng: LatLng) {
         val geocoder = Geocoder(activity)
@@ -195,6 +183,27 @@ class LocationProvider(private val activity: AppCompatActivity) {
     }
 
   }
+
+data class LocationData(
+    val userId: String,
+    val latitude: Double,
+    val longitude: Double,
+    val distance: Int
+)
+
+
+//private fun saveLocationToFile(locationInfo: String) {
+//    try {
+//        val fileName = "location_data.txt"
+//        val fileOutputStream = activity.openFileOutput(fileName, Context.MODE_APPEND)
+//        val outputStreamWriter = OutputStreamWriter(fileOutputStream)
+//        outputStreamWriter.write(locationInfo + "\n")
+//        outputStreamWriter.close()
+//        Log.d("LocationSaved", "Location data saved to file.")
+//    } catch (e: Exception) {
+//        Log.e("LocationSaveError", "Error saving location data: ${e.message}")
+//    }
+//}
 
 
 // harvies formula

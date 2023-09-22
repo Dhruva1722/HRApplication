@@ -8,41 +8,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.afinal.MapActivity.MapsActivity
 import com.example.afinal.R
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.LoginActivity
-import com.example.afinal.UserActivity.RegistrationActivity
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.auth.User
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.math.log
 
-private val Unit.isSuccessful: Boolean
-    get() {return true}
 
 class HomeFragment : Fragment() {
 
-        private lateinit var continuebtn : Button
-        private lateinit var yourLocation : TextInputEditText
-        private lateinit var destinationLocation : TextInputEditText
+    private lateinit var continuebtn : Button
+    private lateinit var yourLocation : TextInputEditText
+    private lateinit var destinationLocation : TextInputEditText
 
-        private lateinit var sharedPreferences: SharedPreferences
-
-        private lateinit var tokenManager: LoginActivity.TokenManager
-        private val gson = Gson()
-        private lateinit var apiService: ApiService
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var apiService: ApiService
 
 
-        private var userId: String? = null
+    private var userId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,9 +44,8 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        userId = sharedPreferences.getString("User", null)
+        userId = sharedPreferences.getString("User",null)
 
-        tokenManager = LoginActivity.TokenManager(requireContext())
 
         continuebtn = view.findViewById(R.id.continueBtn)
         yourLocation = view.findViewById(R.id.StartPointID)
@@ -63,18 +54,17 @@ class HomeFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
+
         continuebtn.setOnClickListener {
             val startPoint = yourLocation.text.toString()
             val endPoint = destinationLocation.text.toString()
 
-            val token = tokenManager.getToken()
+
             if (userId != null) {
                 val locationData = LocationData(userId!!, startPoint, endPoint)
                 Log.d("+++++++++++++", "onCreateView: location data " + locationData)
-                val headers = mapOf("Authorization" to "Bearer --- $token")
 
-                Log.d("=====", "onCreateView: header token  " + headers)
-                val call = apiService.postLocationData(locationData, headers)
+                val call = apiService.postLocationData(locationData)
                 call.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (response.isSuccessful) {
@@ -95,7 +85,6 @@ class HomeFragment : Fragment() {
         }
         return view
     }
-
 }
 
 

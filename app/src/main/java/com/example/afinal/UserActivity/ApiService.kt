@@ -1,11 +1,10 @@
 package com.example.afinal.UserActivity
 
+import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.LocationData
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 
 
@@ -20,14 +19,14 @@ interface ApiService {
 
 
     @POST("/location")
-    fun postLocationData(
-        @Header("Authorization") token: LocationData,
-        @Body locationData: Map<String, String>
-    ): Call<Any>
+    fun postLocationData(@Body locationData: LocationData): Call<Any>
+//    fun postLocationData(@Body locationData: LocationData, @Header("authorization") token: Map<String, String>): Call<Any>
 
-    @GET("/getlocation")
-    fun getLocationPoints(@Header("Authorization") token: String): Call<List<LocationData>>
+    @POST("/attandance")
+    fun saveAttendance(@Body attendanceData: AttendanceData): Call<Void>
 
 
+    @POST("/latLong")
+    fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
 }

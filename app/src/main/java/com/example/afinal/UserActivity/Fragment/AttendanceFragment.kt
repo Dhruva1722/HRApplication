@@ -1,5 +1,7 @@
 package com.example.afinal.UserActivity.Fragment
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.fragment.app.Fragment
@@ -13,6 +15,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.example.afinal.R
+import com.example.afinal.UserActivity.ApiService
+import com.example.afinal.UserActivity.RetrofitClient
 //import com.example.afinal.UserActivity.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -21,6 +25,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,13 +44,14 @@ class AttendanceFragment : Fragment() {
     private lateinit var presentBtn: LinearLayout
     private lateinit var absentBtn: LinearLayout
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userId: String
+
 
     private var isPresent = false
     private var attendanceTime: String? = null
 
-    private lateinit var db: FirebaseFirestore
+
 
 
     override fun onCreateView(
@@ -53,9 +61,12 @@ class AttendanceFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_attendance, container, false)
 
-        mAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        db = FirebaseFirestore.getInstance()
+
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        userId = sharedPreferences.getString("User", null) ?: ""
+
+        val userName = sharedPreferences.getString("UserName", "loading....")
+
 
         // Initialize your views
         dateTimeTextView = view.findViewById(R.id.dateTime)
@@ -65,6 +76,7 @@ class AttendanceFragment : Fragment() {
         presentBtn = view.findViewById(R.id.presentBtn)
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
+        username.text = " Hello $userName!!"
 
         val chronometer = view.findViewById<Chronometer>(R.id.txtTime)
         chronometer.setOnChronometerTickListener {
@@ -76,9 +88,6 @@ class AttendanceFragment : Fragment() {
         }
 
 
-//        fetchAndDisplayUsername()
-
-
         val currentDateTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
         dateTimeTextView.text = currentDateTime
 
@@ -87,99 +96,48 @@ class AttendanceFragment : Fragment() {
         daymonthTextView.text = currentDayMonth
 
         presentBtn.setOnClickListener {
-            chronometer.base = SystemClock.elapsedRealtime() // Reset the Chronometer
+            chronometer.base = SystemClock.elapsedRealtime()
             chronometer.start()
-            setAttendance(true)
+            sendAttendanceStatus("Present")
         }
 
         absentBtn.setOnClickListener {
-            setAttendance(false)
+            sendAttendanceStatus("Absent")
         }
         return view
     }
-//    private fun fetchAndDisplayUsername() {
-//        val userId = mAuth.currentUser?.uid
-//        if (userId != null) {
-//            val userDocumentRef = db.collection("users").document(userId)
-//
-//            userDocumentRef.get()
-//                .addOnSuccessListener { documentSnapshot ->
-//                    if (documentSnapshot.exists()) {
-//                        val username = documentSnapshot.getString("name")
-//                        if (username != null) {
-//                            val usernameTextView = view?.findViewById<TextView>(R.id.Username)
-//                            usernameTextView?.text = "Hii, $username!"
-//                        }
-//                    }
-//                }
-//                .addOnFailureListener { e ->
-//                    // Handle the error if needed
-//                    Toast.makeText(
-//                        context,
-//                        "Error fetching username: ${e.message}",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//        }
-//    }
-    private fun setAttendance(present: Boolean) {
-        val currentTime = SimpleDateFormat("dd-MM-yy HH:mm", Locale.getDefault()).format(Date())
-        val currentHour = SimpleDateFormat("HH", Locale.getDefault()).format(Date()).toInt()
-        val userId = mAuth.currentUser?.uid
 
-        if (userId != null) {
-            val db = FirebaseFirestore.getInstance()
-            val userDocumentRef = db.collection("users").document(userId)
+    private fun sendAttendanceStatus(status: String) {
 
-            if (currentHour >= 10 && currentHour < 19) {
-                if (present) {
-                    if (!isPresent) {
-                        onlineOfflineBtn.setImageResource(R.drawable.onlinebtn)
-                        isPresent = true
-                        attendanceTime = currentTime
-                        userDocumentRef.update("status", "Present")
+        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-                        // Save attendance data to Firestore
-                        val attendanceData = hashMapOf(
-                            "attendanceType" to "Present",
-                            "timestamp" to FieldValue.serverTimestamp()
-                        )
-                        userDocumentRef.collection("attendance").add(attendanceData)
+        val attendanceData = AttendanceData(userId, status)
 
-
-                        updateUI()
-                    }
+        apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(activity, "Attendance data saved", Toast.LENGTH_SHORT).show()
+                    updateUI(status)
                 } else {
-                    onlineOfflineBtn.setImageResource(R.drawable.offlinebtn)
-                    isPresent = false
-                    attendanceTime = currentTime
-                    userDocumentRef.update("status", "Absent")
-
-                    val attendanceData = hashMapOf(
-                        "attendanceType" to "Absent",
-                        "timestamp" to FieldValue.serverTimestamp()
-                    )
-                    userDocumentRef.collection("attendance").add(attendanceData)
-                    updateUI()
+                    Toast.makeText(activity, "Failed to save attendance data", Toast.LENGTH_SHORT)
+                        .show()
                 }
-            } else {
-                userStatusTime.text = "You are outside working hours."
             }
-            if (currentHour >= 19 && isPresent) {
-                val overTime = currentHour - 19
-                userStatusTime.text = "You have $overTime hours of overtime."
-            }
-        }
-    }
 
-    private fun updateUI() {
-        val statusText = if (isPresent) "Present" else "Absent"
-        val message = if (attendanceTime != null) {
-            "You marked $statusText at $attendanceTime."
-        } else {
-            "You are $statusText."
-        }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(activity, "Network error", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+    }
+    private fun updateUI(status: String) {
+        val statusText = if (status == "Present") "Present" else "Absent"
+        val message = "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
         userStatusTime.text = message
     }
-
 }
+data class AttendanceData(
+    val userId: String,
+    val Emp_status: String
+)

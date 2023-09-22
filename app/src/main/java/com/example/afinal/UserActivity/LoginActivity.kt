@@ -22,11 +22,6 @@ import retrofit2.Response
 
 
 
-private val Any.User: String?
-    get() {return null}
-private val Any.token: String?
-    get() {return null}
-
 class LoginActivity : AppCompatActivity() {
 
 
@@ -71,7 +66,6 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val tokenManager = TokenManager(this)
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -91,177 +85,43 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse != null) {
-                            // Save the JWT token to SharedPreferences or a secure storage method
-                            val token = loginResponse.token
-                            tokenManager.saveToken(token)
+                            val userId = loginResponse.userId // Get the user ID
+                            saveUserId(userId)
+                            println("Token : "+userId)
 
-                            Log.d("-----------", "onCreate: user data========" + token)
+                            Log.d("-----------", "user id ========" + userId)
 
+                            Toast.makeText(applicationContext,"login Succeccful",Toast.LENGTH_SHORT).show()
                             // Navigate to the main activity
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             startActivity(intent)
-                            finish() // Close the login activity
+                            finish()
                         } else {
-                            // Handle null response body
+                          Toast.makeText(applicationContext,"login fail",Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // Handle non-successful response (e.g., login failed)
+                        Toast.makeText(applicationContext,"getting error of token and userid",Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    // Handle network or other errors
+                    Toast.makeText(applicationContext,"network error",Toast.LENGTH_SHORT).show()
                 }
             })
         }
     }
 
-    class TokenManager(private val context: Context) {
-        private val preferences: SharedPreferences =
-            context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-
-        fun saveToken(token: String) {
-            preferences.edit().putString("jwt_token", token).apply()
-        }
-
-        fun getToken(): String? {
-            return preferences.getString("jwt_token", null)
-        }
-
-        fun clearToken() {
-            preferences.edit().remove("jwt_token").apply()
-        }
+    private fun saveUserId(userId: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString("User", userId)
+        editor.apply()
     }
 
-
 }
-
         data class LoginData(val email: String, val password: String)
-        data class LoginResponse(val token: String)
+        data class LoginResponse(val userId: String)
 
 
-//            val call = apiService.loginRequest(adminDataJson)
-//            call.enqueue(object : Callback<LoginResponse> {
-//                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-//                    if (response.isSuccessful) {
-//                        // Parse the JSON response using Gson directly
-//                        val loginResponse = response.body()
-//
-//                        val responseBody = response.body().toString()
-//                        Log.d("Response Body", responseBody)
-//
-//                        if (loginResponse != null) {
-//                            val token = loginResponse.token
-//                            val userId = token?.let { it1 -> extractUserIdFromToken(it1) }
-//
-//                            Log.d("-----------", "onCreate: token  " + token)
-//                            Log.d("-----------", "onCreate: userid  " + userId)
-//
-//
-//                            // Extract the user ID from the token using jjwt
-//
-//
-//                            // Check if token and userId are not null before using them
-//                            if (token != null && userId != null) {
-//                                // Save the token and userId securely (e.g., using SharedPreferences)
-//                                val editor = sharedPreferences.edit()
-//                                editor.putString("accessToken", token)
-//                                editor.putString("User", userId)
-//                                editor.apply()
-//
-//                                Toast.makeText(
-//                                    this@LoginActivity,
-//                                    "Login Successful",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                                val intent =
-//                                    Intent(applicationContext, MainActivity::class.java)
-//                                startActivity(intent)
-//                            } else {
-//                                // Handle null values for token or userId
-//                                Toast.makeText(
-//                                    this@LoginActivity,
-//                                    "Token or User ID is null",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            }
-//                        } else {
-//                            // Handle a missing or invalid response
-//                            Toast.makeText(
-//                                this@LoginActivity,
-//                                "Invalid server response",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//                    } else {
-//                        // Handle specific error codes or messages from the server
-//                        val errorBody = response.errorBody()?.string()
-//                        if (errorBody != null) {
-//                            // Handle the error response
-//                            // ...
-//                        } else {
-//                            Toast.makeText(
-//                                this@LoginActivity,
-//                                "Login failed",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-//                    // Handle network errors
-//                    Toast.makeText(this@LoginActivity, "Network error", Toast.LENGTH_SHORT).show()
-//                }
-//            })
-//
-//        }
-//
-//    }
-//
-//    private fun extractUserIdFromToken(token: String): String? {
-//        try {
-//            val decodedToken = parse(token)
-//            return decodedToken.User // Replace "User" with the actual field name in your JWT payload
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//        return null
-//    }
-//
-//
-//}
-//
-//object JwtParser {
-//    private val gsonRef = Gson()
-//
-//    fun parse(token: String): DecodedLoginToken {
-//        try {
-//            val delimittedData = String(Base64.decode(token.split(".")[1], Base64.DEFAULT), Charsets.UTF_8)
-//            val result = gsonRef.fromJson(delimittedData, DecodedLoginToken::class.java)
-//            return result
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//        return DecodedLoginToken(null) // Return an empty DecodedLoginToken in case of errors
-//    }
-//}
-//data class DecodedLoginToken(val User: String?)
-//
-//data class LoginData(
-//    val email : String,
-//    val password :String
-//)
-//data class LoginResponse(
-//    @SerializedName("token")
-//    val token: String?,
-//    @SerializedName("User")
-//    val User: String?
-//) {
-//    fun string(): Any {
-//return true
-//    }
-//}
 
 
 

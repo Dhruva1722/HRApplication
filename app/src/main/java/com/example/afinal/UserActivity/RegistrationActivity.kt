@@ -63,6 +63,9 @@ class RegistrationActivity : AppCompatActivity() {
                             "Registration Succeccful",
                             Toast.LENGTH_SHORT
                         ).show()
+
+                        saveUserNameToSharedPreferences(name)
+
                         val intent = Intent(applicationContext, MainActivity::class.java)
                         startActivity(intent)
                     } else {
@@ -84,6 +87,12 @@ class RegistrationActivity : AppCompatActivity() {
             })
         }
 
+    }
+    private fun saveUserNameToSharedPreferences(name: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserName", name)
+        editor.apply()
     }
 }
 

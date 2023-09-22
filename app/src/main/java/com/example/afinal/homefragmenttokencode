@@ -1,0 +1,255 @@
+package com.example.afinal.UserActivity.Fragment
+
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.example.afinal.MapActivity.MapsActivity
+import com.example.afinal.R
+import com.example.afinal.UserActivity.ApiService
+import com.example.afinal.UserActivity.LoginActivity
+import com.example.afinal.UserActivity.RetrofitClient
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.auth.User
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+
+class HomeFragment : Fragment() {
+
+        private lateinit var continuebtn : Button
+        private lateinit var yourLocation : TextInputEditText
+        private lateinit var destinationLocation : TextInputEditText
+
+        private lateinit var sharedPreferences: SharedPreferences
+
+        private lateinit var tokenManager: LoginActivity.TokenManager
+        private val gson = Gson()
+        private lateinit var apiService: ApiService
+
+
+    private var userId: String? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        userId = sharedPreferences.getString("User",null)
+
+        tokenManager = LoginActivity.TokenManager(requireContext())
+
+        continuebtn = view.findViewById(R.id.continueBtn)
+        yourLocation = view.findViewById(R.id.StartPointID)
+        destinationLocation = view.findViewById(R.id.EndPointID)
+
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        apiService = RetrofitClient.getClient().create(ApiService::class.java)
+
+//        val userId = "65081809829b7802c1b1d9c7"
+        continuebtn.setOnClickListener {
+            val startPoint = yourLocation.text.toString()
+            val endPoint = destinationLocation.text.toString()
+
+           val token = tokenManager.getToken()
+            if (token != null) {
+          //      val locationData = LocationData("650ad6c5ffb184d20f816b51","37.66662","27.34545")
+                val locationData = LocationData(userId!!, startPoint, endPoint)
+                Log.d("+++++++++++++", "onCreateView: location data " + locationData)
+               val token = mapOf("authorization" to "Bearer $token")
+
+               Log.d("=====", "onCreateView: header token: " + token)
+                val call = apiService.postLocationData(locationData,token)
+                call.enqueue(object : Callback<Any> {
+                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(activity, "successs", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(activity, MapsActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(activity, "failll", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    override fun onFailure(call: Call<Any>, t: Throwable) {
+                        Toast.makeText(activity, "network error", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                Toast.makeText(activity, "User ID is null", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return view
+    }
+}
+
+
+
+data class LocationData(
+    val userId :String,
+    val startPoint: String,
+    val endPoint: String
+)
+
+
+///////////////////////////////////////////////////////    Login code of token              ///////////////////////////////////////////////////////////
+
+
+package com.example.afinal.UserActivity
+
+
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.util.Base64
+import android.util.Log
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.afinal.MainActivity
+import com.example.afinal.R
+import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+
+
+private val Any.User: String?
+    get() {return null}
+private val Any.token: String?
+    get() {return null}
+
+class LoginActivity : AppCompatActivity() {
+
+
+    private lateinit var newUserTextView: TextView
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var loginButton: Button
+    private lateinit var passResetBtn: TextView
+
+    private val gson = Gson()
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var apiService: ApiService
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        if (isLoggedIn) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        emailEditText = findViewById(R.id.loginEmailID)
+        passwordEditText = findViewById(R.id.loginPasswordID)
+        loginButton = findViewById(R.id.loginBtnID)
+        newUserTextView = findViewById(R.id.newUserID)
+        passResetBtn = findViewById(R.id.forgetPAsswordID)
+
+
+        apiService = RetrofitClient.getClient().create(ApiService::class.java)
+
+
+
+        newUserTextView.setOnClickListener {
+            val intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
+        }
+
+        val tokenManager = TokenManager(this)
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            val loginAdmin = LoginData(email, password)
+            val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject
+            Log.d("-----------", "onCreate: user data" + adminDataJson)
+
+
+            val call = apiService.loginRequest(adminDataJson)
+
+            call.enqueue(object : Callback<LoginResponse> {
+                override fun onResponse(
+                    call: Call<LoginResponse>,
+                    response: Response<LoginResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val loginResponse = response.body()
+                        if (loginResponse != null) {
+                            // Save the JWT token to SharedPreferences or a secure storage method
+                            val token = loginResponse.token
+                          tokenManager.saveToken(token)
+
+                            println("Token : "+ token)
+
+                            Log.d("-----------", "onCreate: user data========" + token)
+
+                            Toast.makeText(applicationContext,"login Succeccful",Toast.LENGTH_SHORT).show()
+                            // Navigate to the main activity
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                          Toast.makeText(applicationContext,"login fail",Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(applicationContext,"getting error of token and userid",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    Toast.makeText(applicationContext,"network error",Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    }
+
+    private fun saveUserId(userId: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString("User", userId)
+        editor.apply()
+    }
+
+   class TokenManager(private val context: Context) {
+        private val preferences: SharedPreferences =
+            context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+
+      fun saveToken(token: String) {
+           preferences.edit().putString("jwt_token", token).apply()
+        }
+       fun getToken(): String? {
+           return preferences.getString("jwt_token", null)
+       }
+
+       fun clearToken() {
+           preferences.edit().remove("jwt_token").apply()
+       }
+   }
+
+}
+        data class LoginData(val email: String, val password: String)
+        //data class LoginResponse(val userId: String)
+        data class LoginResponse(val token: String)
