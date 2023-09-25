@@ -52,8 +52,6 @@
         android:orientation="vertical"
         android:background="#77FFFFFF">
 
-
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +63,7 @@
                 android:src="@drawable/bus"
                 android:layout_marginEnd="30dp"
                 android:contentDescription="Bus Icon"/>
+
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -84,8 +83,6 @@
                 android:src="@drawable/flight"
                 android:contentDescription="Bus Icon"/>
         </LinearLayout>
-
-
 
         <RadioGroup
             android:id="@+id/idRadioGroup"
@@ -160,7 +157,6 @@
         android:layout_marginTop="15dp">
 
 
-
         <TextView
             android:id="@+id/expensesBillTxt"
             android:layout_width="wrap_content"
@@ -173,17 +169,33 @@
             android:layout_marginBottom="5dp"
             android:layout_centerHorizontal="true"/>
 
+
+
         <ImageView
             android:id="@+id/uploadButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/image"
             android:layout_marginTop="5dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/expensesBillTxt"/>
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:hint="Your Total Bill Expense"
+            android:layout_below="@id/uploadButton"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
 
-
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:id="@+id/billInput"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/saveBtn"
