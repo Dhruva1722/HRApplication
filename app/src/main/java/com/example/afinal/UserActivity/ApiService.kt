@@ -5,6 +5,7 @@ import com.example.afinal.UserActivity.Fragment.LocationData
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 
@@ -32,12 +33,8 @@ interface ApiService {
     @POST("/form")
     fun saveTransportationData(@Body data: TransportationData): Call<Any>
 
-//    @Multipart
-//    @POST("/form")
-//    fun uploadBillImage(
-//        @Part("userRef") userId: RequestBody,
-//        @Part("Transport_type") transportType: RequestBody,
-//        @Part("Total_expense") totalExpense: RequestBody,
-//        @Part image: MultipartBody.Part
-//    ): Call<Void>
+//    @GET("/form")
+//    fun getImageData(@Body data: ImageData): Call<Any>
+
+
 }

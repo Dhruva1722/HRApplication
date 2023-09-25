@@ -1,9 +1,11 @@
 package com.example.afinal.UserActivity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,6 +24,7 @@ import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
 import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -97,15 +100,16 @@ class UserDetails : AppCompatActivity() {
                 val byteArray = ByteArray(imageByteBuffer.remaining())
                 imageByteBuffer.get(byteArray)
 
-                val images = ImageData(data = byteArray, Base64.DEFAULT)
+                val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
+                val images = ImageData(data = base64Image, contentType = "image/*")
 
                 val transportationData = TransportationData(
-                        userId!!,
-                        Transport_type,
-                        Total_expense,
-                        images
-                    )
+                    userId!!,
+                    Transport_type,
+                    Total_expense,
+                    images
+                )
 
                 Log.d("LocationData", "------------" + transportationData)
                 // Call the API to save the data.
@@ -113,6 +117,7 @@ class UserDetails : AppCompatActivity() {
                     apiService.saveTransportationData(transportationData).enqueue(object : Callback<Any> {
                         override fun onResponse(call: Call<Any>, response: Response<Any>) {
                             if (response.isSuccessful) {
+                                showImagePopup(base64Image)
                                 Toast.makeText(applicationContext, " data saved", Toast.LENGTH_SHORT).show()
                                 showSuccessMessage()
                             } else {
@@ -216,7 +221,7 @@ class UserDetails : AppCompatActivity() {
     }
     private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
         if (imagePath == null) {
-            return ByteBuffer.allocate(0) // Return an empty ByteBuffer if imagePath is null
+            return ByteBuffer.allocate(0)
         }
 
         try {
@@ -236,7 +241,27 @@ class UserDetails : AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return ByteBuffer.allocate(0) // Return an empty ByteBuffer on error
+        return ByteBuffer.allocate(0)
+    }
+
+
+    private fun showImagePopup(imageBase64: String) {
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.popup_image, null)
+
+        val builder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setPositiveButton("Close") { dialog, _ -> dialog.dismiss() }
+
+        val dialog = builder.create()
+
+        val imageView = dialogView.findViewById<ImageView>(R.id.imageView)
+
+        val decodedBytes = Base64.decode(imageBase64, Base64.DEFAULT)
+        val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        imageView.setImageBitmap(bitmap)
+
+        dialog.show()
     }
 }
 
@@ -248,6 +273,6 @@ data class TransportationData(
 )
 
 data class ImageData(
-    val data: ByteArray,
-    val contentType: Int
+    val data: String,
+    val contentType: String
 )
