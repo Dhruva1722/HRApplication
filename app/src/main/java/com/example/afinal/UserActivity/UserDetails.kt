@@ -1,5 +1,6 @@
 package com.example.afinal.UserActivity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,10 +9,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -19,18 +18,17 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
 import com.example.afinal.R
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
+import com.google.android.material.textfield.TextInputEditText
+import android.util.Base64
+import android.util.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.nio.ByteBuffer
 
 class UserDetails : AppCompatActivity() {
 
@@ -39,6 +37,9 @@ class UserDetails : AppCompatActivity() {
     private lateinit var logoutbtn: Button
     private lateinit var savebtn: Button
 
+    private var selectedImagePath: String? = null
+    private lateinit var selectedImageUri: Uri
+
     private lateinit var radioGroup: RadioGroup
     private lateinit var busRadio: RadioButton
     private lateinit var bikeRadio: RadioButton
@@ -46,12 +47,14 @@ class UserDetails : AppCompatActivity() {
     private lateinit var flightRadio: RadioButton
     private lateinit var uploadButton: ImageView
     private lateinit var imgContainer: RelativeLayout
+    private lateinit var billInput : TextInputEditText
 
+    private lateinit var imageByteBuffer: ByteBuffer
 
     private val IMAGE_PICK_REQUEST = 126
 
     private lateinit var sharedPreferences: SharedPreferences
-
+    private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,49 +70,67 @@ class UserDetails : AppCompatActivity() {
         trainRadio = findViewById(R.id.idBtnTrainRadio)
         flightRadio = findViewById(R.id.idBtnFlightRadio)
         imgContainer = findViewById(R.id.imageContainer)
+        billInput = findViewById(R.id.billInput)
 
 
 
 
-        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getString("User", null)
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        userId = sharedPreferences.getString("User", null) ?: ""
 
+
+        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
         savebtn.setOnClickListener {
-            // Get selected transportation mode from RadioGroup
-            val transportationMode = when (radioGroup.checkedRadioButtonId) {
+
+            val Transport_type = when (radioGroup.checkedRadioButtonId) {
                 R.id.idBtnBusRadio -> "Bus"
                 R.id.idBtnBikeRadio -> "Bike"
                 R.id.idBtnTrainRadio -> "Train"
                 R.id.idBtnFlightRadio -> "Flight"
                 else -> ""
             }
+            val  Total_expense = billInput.text.toString()
 
-            // Create a TransportationData object
-            val transportationData = TransportationData(transportationMode)
+            // Check if the user has selected a transportation type and entered total expense.
+            if (Transport_type.isNotEmpty() && Total_expense.isNotEmpty() && selectedImagePath != null) {
 
-            // Create an ApiService instance
-            val apiService = RetrofitClient.getClient().create(ApiService::class.java)
+                val byteArray = ByteArray(imageByteBuffer.remaining())
+                imageByteBuffer.get(byteArray)
 
-            val call = apiService.saveClearanceData(transportationData)
+                val images = ImageData(data = byteArray, Base64.DEFAULT)
 
-            call.enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(applicationContext, "successs", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Toast.makeText(applicationContext, "fail", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+
+                val transportationData = TransportationData(
+                        userId!!,
+                        Transport_type,
+                        Total_expense,
+                        images
+                    )
+
+                Log.d("LocationData", "------------" + transportationData)
+                // Call the API to save the data.
+                if (transportationData != null) {
+                    apiService.saveTransportationData(transportationData).enqueue(object : Callback<Any> {
+                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                            if (response.isSuccessful) {
+                                Toast.makeText(applicationContext, " data saved", Toast.LENGTH_SHORT).show()
+                                showSuccessMessage()
+                            } else {
+                                Toast.makeText(applicationContext, " data fail to saved", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Any>, t: Throwable) {
+                            Toast.makeText(applicationContext, " network error", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 }
+            } else {
+                // Display an error message if any required fields are empty.
+                Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+            }
 
-                override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Toast.makeText(applicationContext, "network error", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            })
         }
-
 
 
         uploadButton.setOnClickListener {
@@ -145,7 +166,6 @@ class UserDetails : AppCompatActivity() {
         successIconImageView.visibility = View.VISIBLE
     }
 
-
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
         popupMenu.inflate(R.menu.help_menu) // Inflate the menu resource
@@ -173,15 +193,61 @@ class UserDetails : AppCompatActivity() {
 
         popupMenu.show()
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImageUri = data.data!!
+            selectedImagePath = getRealPathFromURI(selectedImageUri)
+
+            // Load the image as a ByteBuffer
+            imageByteBuffer = loadAndConvertImageToByteBuffer(selectedImagePath)
+        }
+    }
+
+    private fun getRealPathFromURI(uri: Uri): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = contentResolver.query(uri, projection, null, null, null)
+        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.moveToFirst()
+        val imagePath = cursor?.getString(columnIndex!!)
+        cursor?.close()
+        return imagePath
+    }
+    private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
+        if (imagePath == null) {
+            return ByteBuffer.allocate(0) // Return an empty ByteBuffer if imagePath is null
+        }
+
+        try {
+            val inputStream = FileInputStream(imagePath)
+            val channel = inputStream.channel
+            val size = channel.size()
+            val buffer = ByteBuffer.allocate(size.toInt())
+
+            channel.read(buffer)
+            channel.close()
+            inputStream.close()
+
+            buffer.flip()
+            return buffer
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return ByteBuffer.allocate(0) // Return an empty ByteBuffer on error
+    }
 }
 
 data class TransportationData(
+    val userId : String,
     val Transport_type: String,
-//    val Total_expense: String,
-//    val images: ImageData
+    val Total_expense: String,
+      val images: ImageData
 )
 
 data class ImageData(
-    val data: String, // Base64 encoded image data
-    val contentType: String
+    val data: ByteArray,
+    val contentType: Int
 )

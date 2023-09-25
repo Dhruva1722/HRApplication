@@ -101,8 +101,8 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 val latitude = currentLocation.latitude
                 val longitude = currentLocation.longitude
 
-                 val locationData = LocationData(userId,latitude,longitude,distance )
-                    saveLocationDataToApi(locationData)
+                val locationData = LocationData(userId,latitude,longitude,distance )
+                saveLocationDataToApi(locationData)
 
 
 

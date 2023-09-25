@@ -170,7 +170,6 @@
             android:layout_centerHorizontal="true"/>
 
 
-
         <ImageView
             android:id="@+id/uploadButton"
             android:layout_width="30dp"
@@ -183,7 +182,7 @@
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:hint="Your Total Bill Expense"
             android:layout_below="@id/uploadButton"
             android:layout_marginStart="20dp"

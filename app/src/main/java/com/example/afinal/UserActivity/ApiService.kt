@@ -29,6 +29,15 @@ interface ApiService {
     @POST("/latLong")
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
-    @POST("/form") // Adjust the endpoint URL as needed
-    fun saveClearanceData(@Body requestData: TransportationData): Call<Any>
+    @POST("/form")
+    fun saveTransportationData(@Body data: TransportationData): Call<Any>
+
+//    @Multipart
+//    @POST("/form")
+//    fun uploadBillImage(
+//        @Part("userRef") userId: RequestBody,
+//        @Part("Transport_type") transportType: RequestBody,
+//        @Part("Total_expense") totalExpense: RequestBody,
+//        @Part image: MultipartBody.Part
+//    ): Call<Void>
 }
