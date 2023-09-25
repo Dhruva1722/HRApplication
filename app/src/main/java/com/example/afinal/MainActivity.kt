@@ -156,6 +156,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
         //to attach fragment
         supportFragmentManager.beginTransaction().replace(R.id.relativelayout, fragment!!).commit()
     }
+
 }
 
 
