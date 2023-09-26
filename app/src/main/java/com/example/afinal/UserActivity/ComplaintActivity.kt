@@ -50,7 +50,6 @@ class ComplaintActivity : AppCompatActivity() {
             submitComplaint();
         }
 
-
     }
 
     private fun submitComplaint() {
@@ -62,7 +61,7 @@ class ComplaintActivity : AppCompatActivity() {
 
 
             val requestBody = ComplaintRequest(userId!!, complaintMessage)
-            Log.d("==================", "submitComplaint:  ${requestBody}")
+            Log.d("==================", "submitComplaint: employee complain  ${requestBody}")
             apiService.submitComplaint(requestBody).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     if (response.isSuccessful) {

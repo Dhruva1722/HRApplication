@@ -41,6 +41,9 @@ class LocationProvider(private val activity: AppCompatActivity) {
     private val locations = mutableListOf<LatLng>()
     private var distance = 0
 
+    private val SMOOTHING_WINDOW_SIZE = 126
+
+    private val smoothedLocations = mutableListOf<LatLng>()
 
     val liveLocations = MutableLiveData<List<LatLng>>()
     val liveDistance = MutableLiveData<Int>()
@@ -59,7 +62,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
 
             val sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
             userId = sharedPreferences.getString("User", null) ?: ""
-
 
             val currentLocation = result.lastLocation
             if (currentLocation != null) {
@@ -89,22 +91,28 @@ class LocationProvider(private val activity: AppCompatActivity) {
                         Log.d("Distance", "Total distance: $distance meters")
                     }
                 }
-                locations.add(latLng)
+                // Add the latLng to the smoothedLocations
+                smoothedLocations.add(latLng)
+
+                // Keep the size of smoothedLocations within a certain limit (e.g., 5 data points)
+                if (smoothedLocations.size > SMOOTHING_WINDOW_SIZE) {
+                    smoothedLocations.removeAt(0)
+                }
+
+                // Calculate the smoothed latitude and longitude
+                val smoothedLatLng = calculateSmoothedLatLng(smoothedLocations)
+
+                locations.add(smoothedLatLng) // Use smoothed location for distance calculations
                 liveLocations.value = locations
 
-                val latitude = currentLocation.latitude
-                val longitude = currentLocation.longitude
+                val latitude = smoothedLatLng.latitude // Use smoothed latitude
+                val longitude = smoothedLatLng.longitude // Use smoothed longitude
 
-                val locationData = LocationData(userId,latitude,longitude,distance )
+                val locationData = LocationData(userId, latitude, longitude, distance)
                 saveLocationDataToApi(locationData)
-
-
-
             }
         }
     }
-
-
 
     private fun saveLocationDataToApi(locationData: LocationData) {
 
@@ -129,6 +137,21 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 Log.e("LocationData", "Network error: ${t.message}")
             }
         })
+    }
+
+    private fun calculateSmoothedLatLng(locations: List<LatLng>): LatLng {
+        var sumLat = 0.0
+        var sumLng = 0.0
+
+        for (location in locations) {
+            sumLat += location.latitude
+            sumLng += location.longitude
+        }
+
+        val smoothedLat = sumLat / locations.size
+        val smoothedLng = sumLng / locations.size
+
+        return LatLng(smoothedLat, smoothedLng)
     }
     // Method to fetch the current address using Geocoder
     private fun fetchCurrentAddress(latLng: LatLng) {
@@ -163,7 +186,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
             interval = 10000 // Update interval in milliseconds (10 seconds)
             fastestInterval = 50000 // Minimum time interval between updates in milliseconds (5 seconds)
-//           smallestDisplacement = 10.0f
         }
         client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
     }
