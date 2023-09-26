@@ -66,7 +66,6 @@
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-
             binding = ActivityMapsBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
@@ -112,6 +111,7 @@
 
 
             binding.btnStartStop.setOnClickListener {
+
                 if (binding.btnStartStop.text == getString(R.string.start_label)) {
                     startTracking()
                     binding.btnStartStop.setText(com.example.afinal.R.string.stop_label)

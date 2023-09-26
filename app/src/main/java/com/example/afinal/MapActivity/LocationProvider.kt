@@ -41,15 +41,12 @@ class LocationProvider(private val activity: AppCompatActivity) {
     private val locations = mutableListOf<LatLng>()
     private var distance = 0
 
-    private lateinit var map: GoogleMap
 
     val liveLocations = MutableLiveData<List<LatLng>>()
     val liveDistance = MutableLiveData<Int>()
     val liveLocation = MutableLiveData<LatLng>()
     val liveAddress = MutableLiveData<String>()
 
-
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
     fun isLocationEnabled(): Boolean {
         val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -81,9 +78,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 val locationInfo =
                    "Time: ${timeStamp}, Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}"
                 Log.d("LocationInfo", locationInfo)
-
-//                saveLocationToFile(locationInfo)
-
 
                 val lastLocation = locations.lastOrNull()
                 if (lastLocation != null) {
@@ -136,8 +130,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
             }
         })
     }
-
-
     // Method to fetch the current address using Geocoder
     private fun fetchCurrentAddress(latLng: LatLng) {
         val geocoder = Geocoder(activity)
@@ -205,6 +197,7 @@ data class LocationData(
 //    }
 //}
 
+//saveLocationToFile(locationInfo)
 
 // harvies formula
 //fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {

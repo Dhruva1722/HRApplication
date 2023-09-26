@@ -2,6 +2,7 @@ package com.example.afinal.UserActivity
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.LocationData
+import com.example.afinal.UserActivity.Fragment.Manager
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -32,6 +33,14 @@ interface ApiService {
 
     @POST("/form")
     fun saveTransportationData(@Body data: TransportationData): Call<Any>
+
+
+    @POST("/complaint")
+    fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
+
+
+    @GET("/manager")
+    fun getManagers(): Call<List<Manager>>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

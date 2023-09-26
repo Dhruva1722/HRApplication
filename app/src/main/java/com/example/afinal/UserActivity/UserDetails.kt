@@ -152,7 +152,11 @@ class UserDetails : AppCompatActivity() {
         logoutbtn = findViewById(R.id.logoutBtn)
 
         logoutbtn.setOnClickListener {
-
+            sharedPreferences.edit().remove("isLoggedIn").apply()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            true
         }
 
 

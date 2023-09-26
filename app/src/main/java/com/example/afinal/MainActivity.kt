@@ -33,13 +33,12 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var mAuth: FirebaseAuth
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mAuth = FirebaseAuth.getInstance()
         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE)
 
         helpBtn = findViewById(R.id.helpBtn)
@@ -86,7 +85,6 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
                 fragment = AccountFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
             } else if (item.itemId == R.id.nav_logout) {
-                mAuth.signOut()
                 sharedPreferences.edit().remove("isLoggedIn").apply()
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)

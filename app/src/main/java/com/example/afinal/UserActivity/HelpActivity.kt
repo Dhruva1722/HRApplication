@@ -20,7 +20,6 @@ class HelpActivity : AppCompatActivity() {
 
 
 
-//        Log.d(databaseReference.toString(), "onCreate: database referance----------- "+ databaseReference)
 
 
     }

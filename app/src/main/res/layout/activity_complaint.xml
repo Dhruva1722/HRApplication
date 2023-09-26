@@ -15,8 +15,6 @@
         app:titleTextColor="@android:color/white"/>
 
 
-
-
     <TextView
         android:id="@+id/txt_complaint"
         android:layout_width="wrap_content"
