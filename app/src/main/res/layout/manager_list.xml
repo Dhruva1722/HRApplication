@@ -1,65 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_margin="10dp"
         android:elevation="8dp">
 
-
-    <RelativeLayout
-        android:id="@+id/firstList"
-        android:layout_width="match_parent"
-        android:layout_height="120dp">
-
-
-        <ImageView
-            android:id="@+id/manager_img"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/baseline_person_24" />
-
-        <TextView
-            android:id="@+id/managerName"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Name"
-            android:textSize="20sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="20dp"/>
+            android:orientation="vertical"
+            android:layout_margin="10dp">
 
-        <TextView
-            android:id="@+id/managerNum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1234567890"
-            android:textSize="15sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/managerName"/>
+            <ImageView
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:src="@drawable/avtar"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="20dp" />
 
-        <TextView
-            android:id="@+id/managerCity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="City/State/Country"
-            android:textSize="15sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/managerNum"/>
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="16sp"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/textViewContactno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contact no"
+                android:autoLink="phone"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:textSize="16sp"
+                android:layout_below="@id/textViewName"/>
+
+    <TextView
+        android:id="@+id/textViewEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="@color/black"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp"
+        android:layout_below="@id/textViewContactno"/>
 
 
+    <TextView
+        android:id="@+id/textViewDepartment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Department"
+        android:textColor="@color/black"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp"
+        android:layout_below="@id/textViewEmail" />
 
+        </RelativeLayout>
 
-    </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
-</RelativeLayout>
+</LinearLayout>

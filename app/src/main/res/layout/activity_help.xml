@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserActivity.HelpActivity"
-    android:background="#77C5D9ED">
+    android:background="#77C5D9ED"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,143 +15,25 @@
         android:background="#0039A9"
         app:title="@string/app_name"
         app:titleTextColor="@android:color/white" />
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card1"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:text="Contact Manager"
+        android:textSize="22sp"
+        android:fontFamily="@font/inriaserifregular"
+        android:textColor="#0039A9"
+        android:textStyle="bold"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:elevation="8dp"
-        android:padding="10dp"
-        android:layout_below="@id/toolbar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_gravity="center">
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/avtar"
-            android:layout_marginTop="15dp"/>
-
-     <TextView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="Dhruva Solanki"
-         android:textSize="20sp"
-         android:layout_marginTop="10dp"
-         android:textStyle="bold"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="Employee ID"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idEdtEmplopeeID"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:drawableLeft="@drawable/baseline_credit_card_24"
-                    android:drawablePadding="10dp"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
+        android:layout_marginTop="10dp"/>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Your Email"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/loginEmailID"
-                    android:drawableLeft="@drawable/baseline_email_24"
-                    android:drawablePadding="10dp"
-                    android:layout_width="match_parent"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content" />
+<!--    android:divider="@android:color/darker_gray"-->
+<!--    android:dividerHeight="1dp"-->
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="Mobile Number"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idEdtEmployeePhoneNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:drawableLeft="@drawable/baseline_call_24"
-                    android:drawablePadding="10dp"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="Address"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idEdtEmployeeAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:drawableLeft="@drawable/baseline_location_on_24"
-                    android:drawablePadding="10dp"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="Department"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idEdtEmployeeDepartment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:textColor="@color/black"
-                    android:drawableLeft="@drawable/baseline_groups_24"
-                    android:drawablePadding="10dp"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-
-
-</RelativeLayout>
+</LinearLayout>

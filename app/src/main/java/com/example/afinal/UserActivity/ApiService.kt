@@ -1,8 +1,8 @@
 package com.example.afinal.UserActivity
 
+
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.LocationData
-import com.example.afinal.UserActivity.Fragment.Manager
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body

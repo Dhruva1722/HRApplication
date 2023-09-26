@@ -1,12 +1,11 @@
 package com.example.afinal.UserActivity
 
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
+import android.util.Patterns
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -15,11 +14,9 @@ import com.example.afinal.MainActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
 
 
 class LoginActivity : AppCompatActivity() {
@@ -41,8 +38,8 @@ class LoginActivity : AppCompatActivity() {
 
 
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+
         if (isLoggedIn) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -70,10 +67,20 @@ class LoginActivity : AppCompatActivity() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
+
+            if (!isValidEmail(email)) {
+                emailEditText.error = "Enter a valid email address"
+                return@setOnClickListener
+            }
+
+            if (password.length < 6) {
+                passwordEditText.error = "Password must be at least 6 characters"
+                return@setOnClickListener
+            }
+
             val loginAdmin = LoginData(email, password)
             val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject
             Log.d("-----------", "onCreate: user data" + adminDataJson)
-
 
             val call = apiService.loginRequest(adminDataJson)
 
@@ -92,6 +99,7 @@ class LoginActivity : AppCompatActivity() {
                             Log.d("-----------", "user id ========" + userId)
 
                             Toast.makeText(applicationContext,"login Succeccful",Toast.LENGTH_SHORT).show()
+                            setLoggedIn(true)
                             // Navigate to the main activity
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             startActivity(intent)
@@ -111,12 +119,21 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        val pattern = Patterns.EMAIL_ADDRESS
+        return pattern.matcher(email).matches()
+    }
     private fun saveUserId(userId: String) {
         val editor = sharedPreferences.edit()
         editor.putString("User", userId)
         editor.apply()
     }
 
+    private fun setLoggedIn(isLoggedIn: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", isLoggedIn)
+        editor.apply()
+    }
 }
         data class LoginData(val email: String, val password: String)
         data class LoginResponse(val userId: String)
