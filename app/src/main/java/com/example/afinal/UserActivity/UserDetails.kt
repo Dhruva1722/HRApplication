@@ -153,6 +153,12 @@ class UserDetails : AppCompatActivity() {
 
         logoutbtn.setOnClickListener {
 
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("isLoggedIn", false)
+            editor.apply()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
 
@@ -210,15 +216,6 @@ class UserDetails : AppCompatActivity() {
         }
     }
 
-    private fun getRealPathFromURI(uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = contentResolver.query(uri, projection, null, null, null)
-        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor?.moveToFirst()
-        val imagePath = cursor?.getString(columnIndex!!)
-        cursor?.close()
-        return imagePath
-    }
     private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
         if (imagePath == null) {
             return ByteBuffer.allocate(0)
@@ -242,6 +239,16 @@ class UserDetails : AppCompatActivity() {
             e.printStackTrace()
         }
         return ByteBuffer.allocate(0)
+    }
+
+    private fun getRealPathFromURI(uri: Uri): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = contentResolver.query(uri, projection, null, null, null)
+        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.moveToFirst()
+        val imagePath = cursor?.getString(columnIndex!!)
+        cursor?.close()
+        return imagePath
     }
 
 

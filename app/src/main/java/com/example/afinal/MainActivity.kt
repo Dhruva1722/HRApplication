@@ -15,8 +15,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.afinal.UserActivity.ComplaintActivity
-import com.example.afinal.UserActivity.Fragment.AccountFragment
 import com.example.afinal.UserActivity.Fragment.AttendanceFragment
+import com.example.afinal.UserActivity.Fragment.CanteenFragment
 import com.example.afinal.UserActivity.Fragment.HomeFragment
 import com.example.afinal.UserActivity.HelpActivity
 import com.example.afinal.UserActivity.LoginActivity
@@ -81,17 +81,22 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             if (item.itemId == R.id.nav_attendance) {
                 fragment = AttendanceFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
-            } else if (item.itemId == R.id.nav_help) {
-                fragment = AccountFragment()
+            } else if (item.itemId == R.id.nav_canteen) {
+                fragment = CanteenFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
-            } else if (item.itemId == R.id.nav_logout) {
-                sharedPreferences.edit().remove("isLoggedIn").apply()
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-                true
+            }else if (item.itemId == R.id.nav_help) {
+                fragment = HomeFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
+            //else if (item.itemId == R.id.nav_logout) {
+//                val editor = sharedPreferences.edit()
+//                editor.putBoolean("isLoggedIn", false)
+//                editor.apply()
+//                val intent = Intent(this, LoginActivity::class.java)
+//                startActivity(intent)
+//                finish()
+//                drawerLayout.closeDrawer(GravityCompat.START)
+//            }
             fragment?.let { loadFragment(it) }
             true
         }
@@ -144,7 +149,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
         } else if (item.itemId == R.id.bottomnav_attendence) {
             fragment = AttendanceFragment()
         } else if (item.itemId == R.id.bottomnav_account) {
-            fragment = AccountFragment()
+            fragment = CanteenFragment()
         }
         fragment?.let { loadFragment(it) }
         return true

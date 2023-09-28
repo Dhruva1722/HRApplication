@@ -40,7 +40,8 @@ class AttendanceFragment : Fragment() {
     private lateinit var daymonthTextView: TextView
     private lateinit var username: TextView
     private lateinit var userStatusTime: TextView
-    private lateinit var onlineOfflineBtn: ImageView
+    private lateinit var onsiteIcon: ImageView
+    private lateinit var inofficeIcon: ImageView
     private lateinit var presentBtn: LinearLayout
     private lateinit var absentBtn: LinearLayout
 
@@ -48,11 +49,7 @@ class AttendanceFragment : Fragment() {
     private lateinit var userId: String
 
 
-    private var isPresent = false
-    private var attendanceTime: String? = null
-
-
-
+    private val ATTENDANCE_STATUS_KEY = "attendance_status"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,26 +62,27 @@ class AttendanceFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
 
-        val userName = sharedPreferences.getString("UserName", "loading....")
+        val userName = sharedPreferences.getString("UserName", "loading..")
 
 
         // Initialize your views
         dateTimeTextView = view.findViewById(R.id.dateTime)
         daymonthTextView = view.findViewById(R.id.dayMonth)
         userStatusTime = view.findViewById(R.id.userTimeOfAttendence)
-        onlineOfflineBtn = view.findViewById(R.id.onlineOfflineBtn)
         presentBtn = view.findViewById(R.id.presentBtn)
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
-        username.text = " Hello $userName!!"
+        username.text = " $userName!!"
 
-        val chronometer = view.findViewById<Chronometer>(R.id.txtTime)
-        chronometer.setOnChronometerTickListener {
-            val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+         onsiteIcon = view.findViewById(R.id.onsiteIcon)
+         inofficeIcon = view.findViewById(R.id.inofficeIcon)
 
-            if (currentTime >= "7:15") {
-                userStatusTime.text = "You have overtime."
-            }
+        val savedStatus = sharedPreferences.getString(ATTENDANCE_STATUS_KEY, "")
+
+        if (savedStatus == "On-Site") {
+            updateUI(savedStatus)
+        } else {
+            updateUI("In-Office")
         }
 
 
@@ -96,15 +94,19 @@ class AttendanceFragment : Fragment() {
         daymonthTextView.text = currentDayMonth
 
         presentBtn.setOnClickListener {
-            chronometer.base = SystemClock.elapsedRealtime()
-            chronometer.start()
-            sendAttendanceStatus("Present")
+            sendAttendanceStatus("On-Site")
+            saveAttendanceStatus("On-Site")
         }
 
         absentBtn.setOnClickListener {
-            sendAttendanceStatus("Absent")
+            sendAttendanceStatus("In-Office")
         }
         return view
+    }
+    private fun saveAttendanceStatus(status: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(ATTENDANCE_STATUS_KEY, status)
+        editor.apply()
     }
 
     private fun sendAttendanceStatus(status: String) {
@@ -132,9 +134,19 @@ class AttendanceFragment : Fragment() {
 
     }
     private fun updateUI(status: String) {
-        val statusText = if (status == "Present") "Present" else "Absent"
-        val message = "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
-        userStatusTime.text = message
+
+            val statusText = if (status == "On-Site") {
+                onsiteIcon.visibility = View.VISIBLE
+                inofficeIcon.visibility = View.GONE
+                "On-Site"
+            } else {
+                onsiteIcon.visibility = View.GONE
+                inofficeIcon.visibility = View.VISIBLE
+                "In-Office"
+            }
+            val message =
+                "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
+            userStatusTime.text = message
     }
 }
 data class AttendanceData(

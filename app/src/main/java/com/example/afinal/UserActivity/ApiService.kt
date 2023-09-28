@@ -2,6 +2,7 @@ package com.example.afinal.UserActivity
 
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
+import com.example.afinal.UserActivity.Fragment.FoodResponse
 import com.example.afinal.UserActivity.Fragment.LocationData
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -41,6 +42,9 @@ interface ApiService {
 
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>
+
+    @GET("/menu")
+    fun getFoodMenu(): Call<FoodResponse>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

@@ -14,12 +14,34 @@
             android:id="@+id/Username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="loading...."
+            android:text=""
             android:fontFamily="@font/inriaserifregular"
             android:textColor="@color/black"
             android:textSize="25sp"
-            android:layout_centerHorizontal="true"
+            android:layout_marginStart="50dp"
             android:layout_marginTop="10dp"/>
+        <ImageView
+            android:id="@+id/onsiteIcon"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:src="@drawable/onsite"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toRightOf="@id/Username"
+            android:layout_centerHorizontal="true"/>
+
+        <ImageView
+            android:id="@+id/inofficeIcon"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:src="@drawable/inoffice"
+            android:visibility="gone"
+            android:layout_toRightOf="@id/Username"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_centerHorizontal="true"/>
+
 
         <TextView
             android:id="@+id/dateTime"
@@ -42,17 +64,6 @@
             android:layout_below="@id/dateTime"
             android:layout_centerHorizontal="true" />
 
-
-
-        <ImageView
-            android:id="@+id/onlineOfflineBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/Username"
-            android:layout_marginLeft="20dp"/>
-
-
         <TextView
             android:id="@+id/userTimeOfAttendence"
             android:layout_width="300dp"
@@ -67,23 +78,13 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"/>
 
-        <Chronometer
-            android:id="@+id/txtTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/userTimeOfAttendence"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="monospace"
-            android:textColor="@color/black" />
+
+
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtTime"
+            android:layout_below="@id/userTimeOfAttendence"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp">
 
