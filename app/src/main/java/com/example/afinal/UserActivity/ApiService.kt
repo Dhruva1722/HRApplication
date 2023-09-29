@@ -2,8 +2,8 @@ package com.example.afinal.UserActivity
 
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
-import com.example.afinal.UserActivity.Fragment.FoodResponse
 import com.example.afinal.UserActivity.Fragment.LocationData
+import com.example.afinal.UserActivity.Fragment.MenuData
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -35,16 +35,14 @@ interface ApiService {
     @POST("/form")
     fun saveTransportationData(@Body data: TransportationData): Call<Any>
 
-
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
-
 
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>
 
     @GET("/menu")
-    fun getFoodMenu(): Call<FoodResponse>
+    fun getFoodMenu(): Call<List<MenuData>>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

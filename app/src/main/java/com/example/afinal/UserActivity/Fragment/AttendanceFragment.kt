@@ -3,13 +3,10 @@ package com.example.afinal.UserActivity.Fragment
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.SystemClock
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Chronometer
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,13 +15,6 @@ import com.example.afinal.R
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.RetrofitClient
 //import com.example.afinal.UserActivity.User
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -50,6 +40,7 @@ class AttendanceFragment : Fragment() {
 
 
     private val ATTENDANCE_STATUS_KEY = "attendance_status"
+    private var attendanceStartTime: Long = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,8 +75,6 @@ class AttendanceFragment : Fragment() {
         } else {
             updateUI("In-Office")
         }
-
-
         val currentDateTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
         dateTimeTextView.text = currentDateTime
 
@@ -94,6 +83,7 @@ class AttendanceFragment : Fragment() {
         daymonthTextView.text = currentDayMonth
 
         presentBtn.setOnClickListener {
+            attendanceStartTime = System.currentTimeMillis()
             sendAttendanceStatus("On-Site")
             saveAttendanceStatus("On-Site")
         }
@@ -110,10 +100,12 @@ class AttendanceFragment : Fragment() {
     }
 
     private fun sendAttendanceStatus(status: String) {
-
+        val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
+        val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
+        val timer = overtimeHours
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-        val attendanceData = AttendanceData(userId, status)
+        val attendanceData = AttendanceData(userId, status, timer)
 
         apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -125,13 +117,26 @@ class AttendanceFragment : Fragment() {
                         .show()
                 }
             }
-
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Toast.makeText(activity, "Network error", Toast.LENGTH_SHORT).show()
             }
-
         })
+    }
+    private fun calculateOvertime(checkInTimeMillis: Long, checkOutTimeMillis: Long): Long {
+        val workHoursMillis = checkOutTimeMillis - checkInTimeMillis
+        val workHours = TimeUnit.MILLISECONDS.toHours(workHoursMillis)
 
+        // Define the overtime threshold (e.g., 9 hours)
+        val overtimeThreshold = 9
+
+        // Calculate overtime hours (if any)
+        val overtimeHours = if (workHours > overtimeThreshold) {
+            workHours - overtimeThreshold
+        } else {
+            0
+        }
+
+        return overtimeHours
     }
     private fun updateUI(status: String) {
 
@@ -151,5 +156,6 @@ class AttendanceFragment : Fragment() {
 }
 data class AttendanceData(
     val userId: String,
-    val Emp_status: String
+    val Emp_status: String,
+    val timer: Long
 )

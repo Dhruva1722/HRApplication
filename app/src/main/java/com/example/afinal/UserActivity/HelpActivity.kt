@@ -47,9 +47,7 @@ class HelpActivity : AppCompatActivity() {
                 Toast.makeText(this@HelpActivity, "Network error", Toast.LENGTH_SHORT).show()
             }
         })
-
     }
-
 }
 
 data class Manager(

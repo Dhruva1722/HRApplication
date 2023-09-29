@@ -28,7 +28,6 @@ class CanteenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val view = inflater.inflate(R.layout.fragment_canteen, container, false)
 
         foodListView = view.findViewById(R.id.foodListView)
@@ -38,46 +37,36 @@ class CanteenFragment : Fragment() {
         foodListView.adapter = adapter
         foodListView.choiceMode = ListView.CHOICE_MODE_SINGLE
 
-        // Make an API request to get food items
+
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
+        Log.d("============", "onResponse:  " + apiService)
         val call = apiService.getFoodMenu()
-        call.enqueue(object : Callback<List<FoodItem>> {
-            override fun onResponse(call: Call<List<FoodItem>>, response: Response<List<FoodItem>>) {
+        call.enqueue(object :  Callback<MenuData?> {
+            override fun onResponse(call: Call<MenuData?>, response: Response<MenuData?>) {
+                Log.d("============", "onResponse: ${response} ")
                 if (response.isSuccessful) {
-                    val foodItems = response.body()
-                    if (foodItems != null) {
-                        for (item in foodItems) {
-                            // Add each food item to the adapter
-                            adapter.add(item.menu)
-                        }
-                        adapter.notifyDataSetChanged()
+                    val menuData = response.body()
+                    if (menuData != null && menuData.today != null) {
+                        adapter.add(menuData.today.menu)
+                        Log.d("============", "onResponse: ${menuData.today} ")
                     } else {
                         Toast.makeText(requireContext(), "No data available", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Handle API request failure here
                     Toast.makeText(requireContext(), "API request failed", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onFailure(call: Call<List<FoodItem>>, t: Throwable) {
-                // Handle network error here
+            override fun onFailure(call: Call<MenuData?>, t: Throwable) {
                 Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
             }
         })
-
         return view
     }
 }
-
-private fun Any.enqueue(callback: Callback<List<FoodItem>>) {
+private fun <T> Call<T>.enqueue(callback: Callback<MenuData?>) {
 
 }
 
-data class FoodResponse(
-    val menu: List<FoodItem>
-)
+data class MenuData(val today: MenuItems, val tomorrow: MenuItems)
 
-data class FoodItem(
-    val menu: String
-)
+data class MenuItems(val menu: String)
