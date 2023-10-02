@@ -4,6 +4,7 @@ package com.example.afinal.UserActivity
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.LocationData
 import com.example.afinal.UserActivity.Fragment.MenuData
+import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -41,8 +42,11 @@ interface ApiService {
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>
 
-    @GET("/menu")
-    fun getFoodMenu(): Call<List<MenuData>>
+    @GET("/menu") // Replace with your actual endpoint
+    fun getMenu(): Call<MenuData>
+
+    @POST("/menu/buy")
+    fun buyMenuItems(@Body purchaseData: PurchaseData): Call<Void>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

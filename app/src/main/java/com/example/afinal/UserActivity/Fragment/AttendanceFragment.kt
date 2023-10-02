@@ -3,10 +3,12 @@ package com.example.afinal.UserActivity.Fragment
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Chronometer
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,6 +40,8 @@ class AttendanceFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
 
+    private lateinit var chronometer: Chronometer
+
 
     private val ATTENDANCE_STATUS_KEY = "attendance_status"
     private var attendanceStartTime: Long = 0L
@@ -65,6 +69,7 @@ class AttendanceFragment : Fragment() {
         username = view.findViewById(R.id.Username)
         username.text = " $userName!!"
 
+        chronometer = view.findViewById(R.id.chronometer)
          onsiteIcon = view.findViewById(R.id.onsiteIcon)
          inofficeIcon = view.findViewById(R.id.inofficeIcon)
 
@@ -83,10 +88,44 @@ class AttendanceFragment : Fragment() {
         daymonthTextView.text = currentDayMonth
 
         presentBtn.setOnClickListener {
-            attendanceStartTime = System.currentTimeMillis()
-            sendAttendanceStatus("On-Site")
-            saveAttendanceStatus("On-Site")
+            if (attendanceStartTime == 0L) {
+                // User is marking attendance as "On-Site" for the first time
+                attendanceStartTime = System.currentTimeMillis()
+
+                // Start the Chronometer
+                chronometer.base = SystemClock.elapsedRealtime()
+                chronometer.start()
+                chronometer.visibility = View.VISIBLE
+
+                sendAttendanceStatus("On-Site")
+                saveAttendanceStatus("On-Site")
+            } else {
+                // User is marking attendance as "In-Office"
+                chronometer.stop()
+                chronometer.visibility = View.GONE
+
+                val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
+                val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
+
+                // Check if overtime is greater than 9 hours
+                if (overtimeHours > 9) {
+                    val overtimeHoursExceeded = overtimeHours - 9
+                    // Handle overtime hours exceeding 9 hours (e.g., update UI or database)
+                    // You can also send this information to the server
+                }
+
+                // Continue marking attendance as "In-Office"
+                sendAttendanceStatus("In-Office")
+            }
         }
+
+
+
+//        presentBtn.setOnClickListener {
+//            attendanceStartTime = System.currentTimeMillis()
+//            sendAttendanceStatus("On-Site")
+//            saveAttendanceStatus("On-Site")
+//        }
 
         absentBtn.setOnClickListener {
             sendAttendanceStatus("In-Office")
@@ -110,34 +149,19 @@ class AttendanceFragment : Fragment() {
         apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(activity, "Attendance data saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Attendance data saved", Toast.LENGTH_SHORT).show()
                     updateUI(status)
                 } else {
-                    Toast.makeText(activity, "Failed to save attendance data", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), "Failed to save attendance data", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(activity, "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
             }
         })
     }
-    private fun calculateOvertime(checkInTimeMillis: Long, checkOutTimeMillis: Long): Long {
-        val workHoursMillis = checkOutTimeMillis - checkInTimeMillis
-        val workHours = TimeUnit.MILLISECONDS.toHours(workHoursMillis)
 
-        // Define the overtime threshold (e.g., 9 hours)
-        val overtimeThreshold = 9
-
-        // Calculate overtime hours (if any)
-        val overtimeHours = if (workHours > overtimeThreshold) {
-            workHours - overtimeThreshold
-        } else {
-            0
-        }
-
-        return overtimeHours
-    }
     private fun updateUI(status: String) {
 
             val statusText = if (status == "On-Site") {

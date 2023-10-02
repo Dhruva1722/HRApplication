@@ -79,12 +79,22 @@
             android:layout_marginLeft="10dp"/>
 
 
+        <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_below="@id/userTimeOfAttendence"/>
 
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/userTimeOfAttendence"
+            android:layout_below="@id/chronometer"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp">
 

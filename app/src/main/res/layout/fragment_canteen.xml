@@ -9,7 +9,15 @@
      android:layout_width="match_parent"
      android:layout_height="match_parent"
      android:background="#77C5D9ED"
-     android:gravity="center">
+     android:gravity="center_horizontal"
+     android:layout_gravity="center">
+
+
+<LinearLayout
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal">
 
 
      <LinearLayout
@@ -19,7 +27,6 @@
          android:orientation="vertical"
          android:layout_marginTop="30dp"
          android:layout_marginEnd="10dp"
-         android:layout_marginStart="10dp"
          android:gravity="center"
          android:background="@drawable/loginbg">
 
@@ -40,13 +47,13 @@
 
 
      <LinearLayout
-         android:id="@+id/Card2"
+         android:id="@+id/tommorowMenuCard"
          android:layout_width="170dp"
          android:layout_height="150dp"
          android:background="@drawable/loginbg"
          android:orientation="vertical"
          android:layout_marginTop="30dp"
-         android:layout_marginStart="5dp"
+         android:layout_marginStart="10dp"
          android:gravity="center"
          android:layout_toRightOf="@id/bookCoupenCard1">
 
@@ -66,6 +73,7 @@
 
      </LinearLayout>
 
+</LinearLayout>
 
      <LinearLayout
          android:id="@+id/menuCard"
@@ -77,13 +85,8 @@
          android:layout_marginStart="15dp"
          android:layout_marginEnd="15dp"
          android:layout_marginBottom="10dp"
-         android:layout_below="@id/bookCoupenCard1">
+         android:layout_below="@id/linearLayout">
 
-         <LinearLayout
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_gravity="center"
-             android:layout_marginTop="10dp">
 
 
          <TextView
@@ -92,21 +95,24 @@
              android:text="Today's Menu"
              android:textSize="20sp"
              android:textStyle="bold"
+             android:layout_gravity="center_horizontal"
              android:layout_marginTop="10dp"/>
-
-         </LinearLayout>
 
          <ListView
              android:id="@+id/foodListView"
              android:layout_width="wrap_content"
+             android:layout_height="300dp"
+             android:layout_margin="10dp"/>
+
+
+         <Button
+             android:id="@+id/bookBtnId"
+             android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:layout_margin="15dp"/>
+             android:text="Book"
+             android:layout_gravity="center_horizontal"/>
 
      </LinearLayout>
-
-
-
-
 
  </RelativeLayout>
 

@@ -73,6 +73,11 @@
             android:exported="false"
             android:label="@string/title_activity_maps"
             android:alwaysRetainTaskState="true"/>
+
+        <service
+            android:name=".service.AttendanceForegroundService"
+            android:foregroundServiceType="location|dataSync|mediaPlayback"
+            android:stopWithTask="true" />
     </application>
 
 </manifest>
