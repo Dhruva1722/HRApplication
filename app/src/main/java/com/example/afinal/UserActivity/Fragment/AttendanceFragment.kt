@@ -42,9 +42,13 @@ class AttendanceFragment : Fragment() {
 
     private lateinit var chronometer: Chronometer
 
+    private val BUTTON_STATE_KEY = "button_state"
+
+    private val DATE_KEY = "date"
 
     private val ATTENDANCE_STATUS_KEY = "attendance_status"
     private var attendanceStartTime: Long = 0L
+    private val CHRONOMETER_STATE_KEY = "chronometer_state"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,8 +61,9 @@ class AttendanceFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
 
-        val userName = sharedPreferences.getString("UserName", "loading..")
 
+        val storedDate = sharedPreferences.getString(DATE_KEY, "")
+        val chronometerState = sharedPreferences.getLong(CHRONOMETER_STATE_KEY, 0L)
 
         // Initialize your views
         dateTimeTextView = view.findViewById(R.id.dateTime)
@@ -67,7 +72,14 @@ class AttendanceFragment : Fragment() {
         presentBtn = view.findViewById(R.id.presentBtn)
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
-        username.text = " $userName!!"
+        val userEmail = sharedPreferences.getString("userEmail", "")
+        val parts = userEmail?.split("@")
+        if (parts?.size == 2) {
+            val username = parts[0] // This is the username part
+            // Now you can set the username in your TextView
+//            username.text = "Hello, $username!!"
+        }
+
 
         chronometer = view.findViewById(R.id.chronometer)
          onsiteIcon = view.findViewById(R.id.onsiteIcon)
@@ -87,47 +99,50 @@ class AttendanceFragment : Fragment() {
         val currentDayMonth = SimpleDateFormat("EEEE d,MMM", Locale.getDefault()).format(Date())
         daymonthTextView.text = currentDayMonth
 
+        val isButtonPressed = sharedPreferences.getBoolean(BUTTON_STATE_KEY, false)
+        if (isButtonPressed) {
+            presentBtn.isEnabled = false
+            presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
+
+            chronometer.base = chronometerState
+            chronometer.start()
+            chronometer.visibility = View.VISIBLE
+        }
         presentBtn.setOnClickListener {
             if (attendanceStartTime == 0L) {
-                // User is marking attendance as "On-Site" for the first time
                 attendanceStartTime = System.currentTimeMillis()
-
-                // Start the Chronometer
                 chronometer.base = SystemClock.elapsedRealtime()
                 chronometer.start()
                 chronometer.visibility = View.VISIBLE
 
                 sendAttendanceStatus("On-Site")
                 saveAttendanceStatus("On-Site")
-            } else {
-                // User is marking attendance as "In-Office"
-                chronometer.stop()
-                chronometer.visibility = View.GONE
 
+
+                // Disable the "Present" button
+                presentBtn.isEnabled = false
+                presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
+                val editor = sharedPreferences.edit()
+                editor.putBoolean(BUTTON_STATE_KEY, true)
+                editor.putString(DATE_KEY, currentDateTime)
+                editor.putLong(CHRONOMETER_STATE_KEY, chronometer.base)
+                editor.apply()
+            } else {
                 val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
                 val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
 
-                // Check if overtime is greater than 9 hours
                 if (overtimeHours > 9) {
                     val overtimeHoursExceeded = overtimeHours - 9
-                    // Handle overtime hours exceeding 9 hours (e.g., update UI or database)
-                    // You can also send this information to the server
+                    val toastMessage = "You have worked $overtimeHoursExceeded hours overtime."
+                    Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
                 }
-
-                // Continue marking attendance as "In-Office"
-                sendAttendanceStatus("In-Office")
             }
         }
-
-
-
-//        presentBtn.setOnClickListener {
-//            attendanceStartTime = System.currentTimeMillis()
-//            sendAttendanceStatus("On-Site")
-//            saveAttendanceStatus("On-Site")
-//        }
-
         absentBtn.setOnClickListener {
+            chronometer.stop()
+            chronometer.visibility = View.GONE
+
+            sendAttendanceStatus("In-Office")
             sendAttendanceStatus("In-Office")
         }
         return view
@@ -137,7 +152,6 @@ class AttendanceFragment : Fragment() {
         editor.putString(ATTENDANCE_STATUS_KEY, status)
         editor.apply()
     }
-
     private fun sendAttendanceStatus(status: String) {
         val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
         val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
@@ -161,7 +175,6 @@ class AttendanceFragment : Fragment() {
             }
         })
     }
-
     private fun updateUI(status: String) {
 
             val statusText = if (status == "On-Site") {

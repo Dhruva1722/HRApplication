@@ -36,7 +36,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
@@ -64,11 +63,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButton.setOnClickListener {
-            val email = emailEditText.text.toString()
+            val Emp_email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
             // Perform validation checks
-            if (!isValidEmail(email)) {
+            if (!isValidEmail(Emp_email)) {
                 emailEditText.error = "Enter a valid email address"
                 return@setOnClickListener
             }
@@ -78,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val loginAdmin = LoginData(email, password)
+            val loginAdmin = LoginData(Emp_email, password)
             val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject
             Log.d("-----------", "onCreate: user data" + adminDataJson)
 
@@ -97,7 +96,7 @@ class LoginActivity : AppCompatActivity() {
                             saveUserId(userId)
                             println("User ID : "+ userId)
 
-                            Log.d("-----------", "user id ========" + userId)
+                            Log.d("=============", "user id ========" + userId)
 
                             setLoggedIn(true)
                             Toast.makeText(applicationContext,"login Succeccful",Toast.LENGTH_SHORT).show()
@@ -125,6 +124,7 @@ class LoginActivity : AppCompatActivity() {
         editor.putString("User", userId)
         editor.apply()
     }
+
     private fun setLoggedIn(isLoggedIn: Boolean) {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", isLoggedIn)
@@ -137,7 +137,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
 }
-        data class LoginData(val email: String, val password: String)
+        data class LoginData(val Emp_email: String, val password: String)
         data class LoginResponse(val userId: String)
 
 

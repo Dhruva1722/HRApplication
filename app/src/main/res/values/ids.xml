@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="pace_ly" type="id" />
+    <item name="titleTxt" type="id" />
 </resources>

@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplashScreen"
-    android:background="#000000">
+    android:background="#0d1a34">
 
     <pl.droidsonroids.gif.GifImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:src="@drawable/travel_allowance_tracker_logo_gif2" />
+        android:src="@drawable/multilogo" />
 
 
     <ProgressBar

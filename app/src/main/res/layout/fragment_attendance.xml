@@ -8,7 +8,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#77C5D9ED">
+        android:background="#77C5D9ED"
+        android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/Username"
@@ -83,46 +84,46 @@
             android:id="@+id/chronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:visibility="gone"
             android:layout_below="@id/userTimeOfAttendence"/>
 
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/chronometer"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal">
 
             <LinearLayout
                 android:id="@+id/presentBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#2196F3"
                 android:layout_marginRight="10dp"
-                android:orientation="vertical"
+                android:background="#2196F3"
                 android:gravity="center"
+                android:orientation="vertical"
                 android:paddingStart="10dp">
 
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="100dp"
-                android:src="@drawable/incourser"
-                android:layout_margin="10dp"/>
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/incourser" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
                     android:text="In"
                     android:textColor="@color/white"
                     android:textSize="25sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="10dp"
-                    android:layout_gravity="center"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

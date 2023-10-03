@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".UserActivity.Fragment.CanteenFragment">
 
  <RelativeLayout
@@ -88,29 +89,26 @@
          android:layout_below="@id/linearLayout">
 
 
+         <com.google.android.material.tabs.TabLayout
+             android:id="@+id/tabLayout"
+             android:layout_width="match_parent"
+             android:layout_height="40dp"
+             android:layout_margin="5dp"
+             app:tabGravity="center"
+             app:tabMode="scrollable"
+             app:tabInlineLabel="true"
+             app:tabTextColor="@color/black"
+             app:tabIndicatorColor="#000000"
+             app:tabSelectedTextColor="#000000"/>
 
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Today's Menu"
-             android:textSize="20sp"
-             android:textStyle="bold"
-             android:layout_gravity="center_horizontal"
-             android:layout_marginTop="10dp"/>
-
-         <ListView
-             android:id="@+id/foodListView"
-             android:layout_width="wrap_content"
-             android:layout_height="300dp"
-             android:layout_margin="10dp"/>
+         <androidx.viewpager2.widget.ViewPager2
+             android:id="@+id/menuViewPager"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_marginStart="10dp"
+             android:layout_marginEnd="15dp"/>
 
 
-         <Button
-             android:id="@+id/bookBtnId"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Book"
-             android:layout_gravity="center_horizontal"/>
 
      </LinearLayout>
 

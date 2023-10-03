@@ -5,6 +5,7 @@ import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.LocationData
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
+import com.example.afinal.UserActivity.Fragment.PurchaseData1
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -47,6 +48,8 @@ interface ApiService {
 
     @POST("/menu/buy")
     fun buyMenuItems(@Body purchaseData: PurchaseData): Call<Void>
+    @POST("/menu/buy")
+    fun buyMenuItems(@Body purchaseData: PurchaseData1): Call<Void>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

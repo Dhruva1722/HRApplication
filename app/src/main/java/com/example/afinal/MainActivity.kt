@@ -11,6 +11,7 @@ import android.widget.PopupMenu
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -87,16 +88,15 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             }else if (item.itemId == R.id.nav_help) {
                 fragment = HomeFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
+//            } else if (item.itemId == R.id.nav_logout) {
+////                val editor = sharedPreferences.edit()
+////                editor.putBoolean("isLoggedIn", false)
+////                editor.apply()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                drawerLayout.closeDrawer(GravityCompat.START)
             }
-            //else if (item.itemId == R.id.nav_logout) {
-//                val editor = sharedPreferences.edit()
-//                editor.putBoolean("isLoggedIn", false)
-//                editor.apply()
-//                val intent = Intent(this, LoginActivity::class.java)
-//                startActivity(intent)
-//                finish()
-//                drawerLayout.closeDrawer(GravityCompat.START)
-//            }
             fragment?.let { loadFragment(it) }
             true
         }
@@ -122,7 +122,6 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
                     startActivity(intent)
                     true
                 }
-
                 R.id.action_complain -> {
                     // Handle Feedback action
                     val intent = Intent(this, ComplaintActivity::class.java)
