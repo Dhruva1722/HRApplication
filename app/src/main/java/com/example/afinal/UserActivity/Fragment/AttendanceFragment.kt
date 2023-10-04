@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,7 @@ class AttendanceFragment : Fragment() {
     private lateinit var userId: String
 
     private lateinit var chronometer: Chronometer
+    private var isChronometerRunning = false
 
     private val BUTTON_STATE_KEY = "button_state"
 
@@ -80,7 +82,6 @@ class AttendanceFragment : Fragment() {
 //            username.text = "Hello, $username!!"
         }
 
-
         chronometer = view.findViewById(R.id.chronometer)
          onsiteIcon = view.findViewById(R.id.onsiteIcon)
          inofficeIcon = view.findViewById(R.id.inofficeIcon)
@@ -104,9 +105,9 @@ class AttendanceFragment : Fragment() {
             presentBtn.isEnabled = false
             presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
 
-            chronometer.base = chronometerState
-            chronometer.start()
-            chronometer.visibility = View.VISIBLE
+//            chronometer.base = chronometerState
+//            chronometer.start()
+//            chronometer.visibility = View.VISIBLE
         }
         presentBtn.setOnClickListener {
             if (attendanceStartTime == 0L) {
@@ -117,7 +118,6 @@ class AttendanceFragment : Fragment() {
 
                 sendAttendanceStatus("On-Site")
                 saveAttendanceStatus("On-Site")
-
 
                 // Disable the "Present" button
                 presentBtn.isEnabled = false
@@ -141,6 +141,7 @@ class AttendanceFragment : Fragment() {
         absentBtn.setOnClickListener {
             chronometer.stop()
             chronometer.visibility = View.GONE
+            isChronometerRunning = false
 
             sendAttendanceStatus("In-Office")
             sendAttendanceStatus("In-Office")
@@ -155,10 +156,20 @@ class AttendanceFragment : Fragment() {
     private fun sendAttendanceStatus(status: String) {
         val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
         val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
+        val currentDateTime = SimpleDateFormat(" dd-mm-yy hh:mm a", Locale.getDefault()).format(Date())
+        val  punch_in = currentDateTime
+        val punch_out = currentDateTime
         val timer = overtimeHours
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-        val attendanceData = AttendanceData(userId, status, timer)
+        val attendanceData = if (status == "On-Site") {
+            AttendanceData(userId, status, timer, punch_in)
+        } else {
+            AttendanceData(userId, status, timer, punch_out)
+        }
+        Log.d("-----------", "sendAttendanceStatus: "+ attendanceData)
+
+//        val attendanceData = AttendanceData(userId, status, timer)
 
         apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -176,7 +187,6 @@ class AttendanceFragment : Fragment() {
         })
     }
     private fun updateUI(status: String) {
-
             val statusText = if (status == "On-Site") {
                 onsiteIcon.visibility = View.VISIBLE
                 inofficeIcon.visibility = View.GONE
@@ -194,5 +204,7 @@ class AttendanceFragment : Fragment() {
 data class AttendanceData(
     val userId: String,
     val Emp_status: String,
-    val timer: Long
+    val timer: Long,
+    val punch_in :String
+//    val punch_out :String
 )

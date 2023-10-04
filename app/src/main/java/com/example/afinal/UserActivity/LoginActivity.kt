@@ -63,11 +63,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButton.setOnClickListener {
-            val Emp_email = emailEditText.text.toString()
+            val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
             // Perform validation checks
-            if (!isValidEmail(Emp_email)) {
+            if (!isValidEmail(email)) {
                 emailEditText.error = "Enter a valid email address"
                 return@setOnClickListener
             }
@@ -77,10 +77,9 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val loginAdmin = LoginData(Emp_email, password)
+            val loginAdmin = LoginData(email, password)
             val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject
             Log.d("-----------", "onCreate: user data" + adminDataJson)
-
 
             val call = apiService.loginRequest(adminDataJson)
 
@@ -118,7 +117,6 @@ class LoginActivity : AppCompatActivity() {
             })
         }
     }
-
     private fun saveUserId(userId: String) {
         val editor = sharedPreferences.edit()
         editor.putString("User", userId)
@@ -130,14 +128,12 @@ class LoginActivity : AppCompatActivity() {
         editor.putBoolean("isLoggedIn", isLoggedIn)
         editor.apply()
     }
-
     private fun isValidEmail(email: String): Boolean {
         val pattern = Patterns.EMAIL_ADDRESS
         return pattern.matcher(email).matches()
     }
-
 }
-        data class LoginData(val Emp_email: String, val password: String)
+        data class LoginData(val email: String, val password: String)
         data class LoginResponse(val userId: String)
 
 

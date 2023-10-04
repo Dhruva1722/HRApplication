@@ -45,6 +45,7 @@ class HomeFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User",null)
+        Log.d("+++++++++++++", "user ID--- " + userId)
 
 
         continuebtn = view.findViewById(R.id.continueBtn)
@@ -86,7 +87,6 @@ class HomeFragment : Fragment() {
         return view
     }
 }
-
 
 data class LocationData(
     val userId :String,

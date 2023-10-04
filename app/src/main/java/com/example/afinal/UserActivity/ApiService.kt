@@ -25,7 +25,6 @@ interface ApiService {
 
     @POST("/location")
     fun postLocationData(@Body locationData: LocationData): Call<Any>
-//    fun postLocationData(@Body locationData: LocationData, @Header("authorization") token: Map<String, String>): Call<Any>
 
     @POST("/attandance")
     fun saveAttendance(@Body attendanceData: AttendanceData): Call<Void>
@@ -43,7 +42,7 @@ interface ApiService {
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>
 
-    @GET("/menu") // Replace with your actual endpoint
+    @GET("/menu")
     fun getMenu(): Call<MenuData>
 
     @POST("/menu/buy")
