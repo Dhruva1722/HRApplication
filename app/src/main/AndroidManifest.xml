@@ -8,8 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
     <uses-feature
         android:name="android.hardware.telephony"
@@ -27,7 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FInal"
         tools:targetApi="31">
-
+        <activity
+            android:name=".UserActivity.SaturdaySpecial"
+            android:exported="false" />
+        <activity
+            android:name=".UserActivity.BuyCoupen"
+            android:exported="false" />
         <activity
             android:name=".UserActivity.ComplaintActivity"
             android:exported="false" />
@@ -43,36 +47,28 @@
         <activity
             android:name=".UserActivity.LoginActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:alwaysRetainTaskState="true">
-
-        </activity>
+            android:alwaysRetainTaskState="true"
+            android:exported="true" />
         <activity
             android:name=".SplashScreen"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-        </activity>
-
-<!--                https://developers.google.com/maps/documentation/android-sdk/get-api-key-->
-
+        </activity> <!-- https://developers.google.com/maps/documentation/android-sdk/get-api-key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCPMzDrHp2bAWHWMNorudJ3BqS08pDcVvg" />
 
         <activity
             android:name=".MapActivity.MapsActivity"
+            android:alwaysRetainTaskState="true"
             android:exported="false"
-            android:label="@string/title_activity_maps"
-            android:alwaysRetainTaskState="true"/>
+            android:label="@string/title_activity_maps" />
 
         <service
             android:name=".service.AttendanceForegroundService"

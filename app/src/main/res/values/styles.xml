@@ -2,4 +2,11 @@
 <resources>
 
     <style name="MyCustomTabLayout"></style>
+
+
+
+    <style name="CalendarDateText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
 </resources>

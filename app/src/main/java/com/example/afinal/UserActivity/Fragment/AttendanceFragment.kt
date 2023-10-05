@@ -1,5 +1,6 @@
 package com.example.afinal.UserActivity.Fragment
 
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -25,6 +26,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+
+
 
 
 class AttendanceFragment : Fragment() {
@@ -74,12 +77,12 @@ class AttendanceFragment : Fragment() {
         presentBtn = view.findViewById(R.id.presentBtn)
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
+
         val userEmail = sharedPreferences.getString("userEmail", "")
         val parts = userEmail?.split("@")
         if (parts?.size == 2) {
-            val username = parts[0] // This is the username part
-            // Now you can set the username in your TextView
-//            username.text = "Hello, $username!!"
+            val name = parts[0]
+            username.text = "Hello, $name!!"
         }
 
         chronometer = view.findViewById(R.id.chronometer)
@@ -87,6 +90,8 @@ class AttendanceFragment : Fragment() {
          inofficeIcon = view.findViewById(R.id.inofficeIcon)
 
         val savedStatus = sharedPreferences.getString(ATTENDANCE_STATUS_KEY, "")
+
+        val DateTime = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(Date())
 
         if (savedStatus == "On-Site") {
             updateUI(savedStatus)
@@ -102,13 +107,17 @@ class AttendanceFragment : Fragment() {
 
         val isButtonPressed = sharedPreferences.getBoolean(BUTTON_STATE_KEY, false)
         if (isButtonPressed) {
-            presentBtn.isEnabled = false
-            presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
-
-//            chronometer.base = chronometerState
-//            chronometer.start()
-//            chronometer.visibility = View.VISIBLE
+            val chronometerBase = sharedPreferences.getLong(CHRONOMETER_STATE_KEY, 0L)
+            if (chronometerBase > 0L) {
+                val elapsedTime = SystemClock.elapsedRealtime() - chronometerBase
+                chronometer.base = SystemClock.elapsedRealtime() - elapsedTime
+                chronometer.start()
+                chronometer.visibility = View.VISIBLE
+                presentBtn.isEnabled = false
+                presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
+            }
         }
+
         presentBtn.setOnClickListener {
             if (attendanceStartTime == 0L) {
                 attendanceStartTime = System.currentTimeMillis()
@@ -119,18 +128,16 @@ class AttendanceFragment : Fragment() {
                 sendAttendanceStatus("On-Site")
                 saveAttendanceStatus("On-Site")
 
-                // Disable the "Present" button
                 presentBtn.isEnabled = false
                 presentBtn.setBackgroundResource(R.drawable.btn_disable_bg)
                 val editor = sharedPreferences.edit()
                 editor.putBoolean(BUTTON_STATE_KEY, true)
-                editor.putString(DATE_KEY, currentDateTime)
+                editor.putString(DATE_KEY, DateTime)
                 editor.putLong(CHRONOMETER_STATE_KEY, chronometer.base)
                 editor.apply()
             } else {
                 val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
                 val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
-
                 if (overtimeHours > 9) {
                     val overtimeHoursExceeded = overtimeHours - 9
                     val toastMessage = "You have worked $overtimeHoursExceeded hours overtime."
@@ -138,13 +145,17 @@ class AttendanceFragment : Fragment() {
                 }
             }
         }
+
         absentBtn.setOnClickListener {
             chronometer.stop()
             chronometer.visibility = View.GONE
             isChronometerRunning = false
 
+            val editor = sharedPreferences.edit()
+            editor.remove(CHRONOMETER_STATE_KEY)
+            editor.apply()
             sendAttendanceStatus("In-Office")
-            sendAttendanceStatus("In-Office")
+            saveAttendanceStatus("In-Office")
         }
         return view
     }
@@ -156,20 +167,11 @@ class AttendanceFragment : Fragment() {
     private fun sendAttendanceStatus(status: String) {
         val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
         val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
-        val currentDateTime = SimpleDateFormat(" dd-mm-yy hh:mm a", Locale.getDefault()).format(Date())
-        val  punch_in = currentDateTime
-        val punch_out = currentDateTime
         val timer = overtimeHours
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-        val attendanceData = if (status == "On-Site") {
-            AttendanceData(userId, status, timer, punch_in)
-        } else {
-            AttendanceData(userId, status, timer, punch_out)
-        }
+        val attendanceData = AttendanceData(userId, status, timer)
         Log.d("-----------", "sendAttendanceStatus: "+ attendanceData)
-
-//        val attendanceData = AttendanceData(userId, status, timer)
 
         apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -204,7 +206,5 @@ class AttendanceFragment : Fragment() {
 data class AttendanceData(
     val userId: String,
     val Emp_status: String,
-    val timer: Long,
-    val punch_in :String
-//    val punch_out :String
+    val timer: Long
 )

@@ -93,8 +93,9 @@ class LoginActivity : AppCompatActivity() {
                         if (loginResponse != null) {
                             val userId = loginResponse.userId // Get the user ID
                             saveUserId(userId)
+                            saveUserEmail(email
+                            )
                             println("User ID : "+ userId)
-
                             Log.d("=============", "user id ========" + userId)
 
                             setLoggedIn(true)
@@ -107,15 +108,20 @@ class LoginActivity : AppCompatActivity() {
                           Toast.makeText(applicationContext,"login fail",Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(applicationContext,"getting error of token and userid",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext,"getting error in userid",Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Toast.makeText(applicationContext,"network error",Toast.LENGTH_SHORT).show()
                 }
             })
         }
+    }
+
+    private fun saveUserEmail(email: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString("userEmail", email)
+        editor.apply()
     }
     private fun saveUserId(userId: String) {
         val editor = sharedPreferences.edit()

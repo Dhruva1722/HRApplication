@@ -16,5 +16,9 @@
         android:title="Food Coupen"
         android:icon="@drawable/baseline_fastfood_24"/>
 
+    <item
+        android:id="@+id/bottomnav_event"
+        android:title="Events"
+        android:icon="@drawable/baseline_event_available_24"/>
 
 </menu>

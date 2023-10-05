@@ -22,7 +22,7 @@
 
 
      <LinearLayout
-         android:id="@+id/bookCoupenCard1"
+         android:id="@+id/buyCoupenCard"
          android:layout_width="170dp"
          android:layout_height="150dp"
          android:orientation="vertical"
@@ -34,7 +34,7 @@
          <ImageView
              android:layout_width="60dp"
              android:layout_height="60dp"
-             android:src="@drawable/catering" />
+             android:src="@drawable/restaurant" />
 
          <TextView
              android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
 
 
      <LinearLayout
-         android:id="@+id/tommorowMenuCard"
+         android:id="@+id/saturdayCard"
          android:layout_width="170dp"
          android:layout_height="150dp"
          android:background="@drawable/loginbg"
@@ -56,17 +56,18 @@
          android:layout_marginTop="30dp"
          android:layout_marginStart="10dp"
          android:gravity="center"
-         android:layout_toRightOf="@id/bookCoupenCard1">
+         android:layout_toRightOf="@id/buyCoupenCard">
 
          <ImageView
              android:layout_width="60dp"
              android:layout_height="60dp"
-             android:src="@drawable/restaurant" />
+             android:src="@drawable/catering" />
 
          <TextView
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Tommorrow"
+             android:text="Special"
+             android:gravity="center_horizontal"
              android:textSize="16sp"
              android:textStyle="bold"
              android:layout_marginTop="10dp"/>
@@ -88,12 +89,13 @@
          android:layout_marginBottom="10dp"
          android:layout_below="@id/linearLayout">
 
-
          <com.google.android.material.tabs.TabLayout
              android:id="@+id/tabLayout"
              android:layout_width="match_parent"
              android:layout_height="40dp"
-             android:layout_margin="5dp"
+             android:layout_marginStart="15dp"
+             android:layout_marginEnd="15dp"
+             android:layout_marginTop="10dp"
              app:tabGravity="center"
              app:tabMode="scrollable"
              app:tabInlineLabel="true"

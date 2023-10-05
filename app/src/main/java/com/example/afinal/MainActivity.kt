@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import com.example.afinal.UserActivity.ComplaintActivity
 import com.example.afinal.UserActivity.Fragment.AttendanceFragment
 import com.example.afinal.UserActivity.Fragment.CanteenFragment
+import com.example.afinal.UserActivity.Fragment.EventFragment
 import com.example.afinal.UserActivity.Fragment.HomeFragment
 import com.example.afinal.UserActivity.HelpActivity
 import com.example.afinal.UserActivity.LoginActivity
@@ -88,42 +89,43 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             }else if (item.itemId == R.id.nav_help) {
                 fragment = HomeFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
-//            } else if (item.itemId == R.id.nav_logout) {
-////                val editor = sharedPreferences.edit()
-////                editor.putBoolean("isLoggedIn", false)
-////                editor.apply()
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-                drawerLayout.closeDrawer(GravityCompat.START)
+            }  else if (item.itemId == R.id.nav_logout) {
+                logout()
             }
             fragment?.let { loadFragment(it) }
             true
         }
-
-
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         loadFragment(HomeFragment())
 
     }
-
+    private fun logout(){
+        val editor = sharedPreferences.edit()
+        editor.remove("isLoggedIn")
+        editor.remove("User")
+        editor.remove("userEmail") // Remove the saved email
+        editor.remove("BUTTON_STATE_KEY")
+        editor.remove("DATE_KEY, DateTime")
+        editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
+        editor.apply()
+        finishAffinity()
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.help_menu) // Inflate the menu resource
+        popupMenu.inflate(R.menu.help_menu)
 
-        // Set a listener for menu item clicks
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.action_help -> {
-                    // Handle Help action
                     val intent = Intent(this, HelpActivity::class.java)
                     startActivity(intent)
                     true
                 }
                 R.id.action_complain -> {
-                    // Handle Feedback action
                     val intent = Intent(this, ComplaintActivity::class.java)
                     startActivity(intent)
                     true
@@ -132,7 +134,6 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
                 else -> false
             }
         }
-        // Show the popup menu
         popupMenu.show()
     }
 
@@ -149,16 +150,15 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             fragment = AttendanceFragment()
         } else if (item.itemId == R.id.bottomnav_account) {
             fragment = CanteenFragment()
+        }else if (item.itemId == R.id.bottomnav_event) {
+            fragment = EventFragment()
         }
         fragment?.let { loadFragment(it) }
         return true
     }
-
     fun loadFragment(fragment: Fragment?) {
-        //to attach fragment
         supportFragmentManager.beginTransaction().replace(R.id.relativelayout, fragment!!).commit()
     }
-
 }
 
 

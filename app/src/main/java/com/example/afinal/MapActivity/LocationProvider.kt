@@ -76,7 +76,7 @@ class LocationProvider(private val activity: AppCompatActivity) {
                     "lat , lon" + "-------------" + currentLocation.latitude + "----------" + currentLocation.longitude
                 )
 
-                val timeStamp = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss", Locale.getDefault()).format(Date())
+                val timeStamp = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(Date())
                 val locationInfo =
                    "Time: ${timeStamp}, Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}"
                 Log.d("LocationInfo", locationInfo)
@@ -118,7 +118,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
 
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-
         val call = apiService.saveLocationData(locationData)
 
         call.enqueue(object : Callback<Any> {
@@ -131,7 +130,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
                     Log.e("LocationData", "Failed to save location data.")
                 }
             }
-
             override fun onFailure(call: Call<Any>, t: Throwable) {
                 // Handle network or other errors if needed
                 Log.e("LocationData", "Network error: ${t.message}")
@@ -147,7 +145,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
             sumLat += location.latitude
             sumLng += location.longitude
         }
-
         val smoothedLat = sumLat / locations.size
         val smoothedLng = sumLng / locations.size
 
@@ -167,7 +164,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
             liveAddress.value = null
         }
     }
-
     fun getUserLocation() {
         client.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
@@ -180,7 +176,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
             }
         }
     }
-
     fun trackUser() {
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
@@ -195,7 +190,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
         locations.clear()
         distance = 0
     }
-
   }
 
 data class LocationData(

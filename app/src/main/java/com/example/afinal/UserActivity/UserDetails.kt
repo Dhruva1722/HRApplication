@@ -9,6 +9,9 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
@@ -22,9 +25,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
-import android.util.Base64
-import android.util.Log
-import android.view.LayoutInflater
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -154,8 +154,14 @@ class UserDetails : AppCompatActivity() {
         logoutbtn.setOnClickListener {
 
             val editor = sharedPreferences.edit()
-            editor.putBoolean("isLoggedIn", false)
+            editor.remove("isLoggedIn")
+            editor.remove("User")
+            editor.remove("userEmail") // Remove the saved email
+            editor.remove("BUTTON_STATE_KEY")
+            editor.remove("DATE_KEY, DateTime")
+            editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
             editor.apply()
+            finishAffinity()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
@@ -270,7 +276,17 @@ class UserDetails : AppCompatActivity() {
 
         dialog.show()
     }
+
+    override fun onBackPressed() {
+        if (!isLoggedIn()) {
+        }
+    }
+    private fun isLoggedIn(): Boolean {
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        return isLoggedIn
+    }
 }
+
 
 data class TransportationData(
     val userId : String,

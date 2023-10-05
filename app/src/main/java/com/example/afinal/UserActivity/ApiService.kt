@@ -2,6 +2,7 @@ package com.example.afinal.UserActivity
 
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
+import com.example.afinal.UserActivity.Fragment.Event
 import com.example.afinal.UserActivity.Fragment.LocationData
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
@@ -49,6 +50,9 @@ interface ApiService {
     fun buyMenuItems(@Body purchaseData: PurchaseData): Call<Void>
     @POST("/menu/buy")
     fun buyMenuItems(@Body purchaseData: PurchaseData1): Call<Void>
+
+    @GET("/event")
+    fun getEvents(): Call<List<Event>>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>
