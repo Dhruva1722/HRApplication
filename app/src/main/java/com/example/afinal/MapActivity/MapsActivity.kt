@@ -55,13 +55,16 @@
 
         private val locationProvider by lazy { LocationProvider(this) }
 
-
         private lateinit var sensorManager: SensorManager
         private var accelerometer: Sensor? = null
         private val stableThreshold = 0.10 // Adjust this threshold as needed
         private val stableDurationThresholdMillis = 60000L // Adjust this duration as needed (1 minute in milliseconds)
         private var lastUpdateTimeMillis = 0L
         private var isDeviceStable = false
+
+
+        private var startPoint: String? = null
+        private var endPoint: String? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -73,12 +76,11 @@
             // Find and initialize the TextView widgets
             userCurrentAddress = findViewById(R.id.userCurrentAddress)
 
+
+            val startPoint = intent.getStringExtra("startPoint")
+            val endPoint = intent.getStringExtra("endPoint")
+
             exitbtn.setOnClickListener {
-
-
-//                val mediaPlayer = MediaPlayer.create(this, R.raw.audio)
-//                mediaPlayer.start()
-
 
                 val dialogView = LayoutInflater.from(this).inflate(R.layout.messagepopup, null)
                 val builder = AlertDialog.Builder(this)
@@ -102,8 +104,6 @@
 
                 dialog.show()
             }
-
-
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -120,9 +120,7 @@
                     binding.btnStartStop.setText(com.example.afinal.R.string.start_label)
                 }
             }
-
             presenter.onViewCreated()
-
             helpBtn = findViewById(R.id.helpBtn)
 
             helpBtn.setOnClickListener { v ->
@@ -200,6 +198,35 @@
 
             presenter.onMapLoaded()
             map.uiSettings.isZoomControlsEnabled = true
+
+
+            if (startPoint != null && endPoint != null) {
+                // Convert startPoint and endPoint to LatLng (you may need to geocode them)
+                val startLatLng = getLatLngFromAddress(startPoint!!)
+                val endLatLng = getLatLngFromAddress(endPoint!!)
+
+                // Create a list of LatLng objects representing the route
+                val routeLocations = mutableListOf(startLatLng, endLatLng)
+
+                // Add markers for starting and ending locations
+                map.addMarker(MarkerOptions().position(startLatLng).title("Start"))
+                map.addMarker(MarkerOptions().position(endLatLng).title("End"))
+
+                // Draw the route between starting and ending locations
+                drawRoute(routeLocations,Color.BLUE)
+            }
+        }
+        private fun getLatLngFromAddress(addressStr: String): LatLng {
+            val geocoder = Geocoder(this)
+            val addressList = geocoder.getFromLocationName(addressStr, 1)
+            if (addressList != null) {
+                if (addressList.isNotEmpty()) {
+                    val address = addressList[0]
+                    return LatLng(address.latitude, address.longitude)
+                }
+            }
+            // Handle the case where addressStr couldn't be geocoded
+            return LatLng(0.0, 0.0) // Default to (0, 0) if geocoding fails
         }
 
         private fun startTracking() {
@@ -256,8 +283,6 @@
                 val markerSnippet = "Address: ${address?.getAddressLine(0) ?: "Unknown"}"
                 // Add marker at the current location
                 map.clear()
-
-
                 map.addMarker(
                     MarkerOptions()
                         .position(ui.currentLocation)
@@ -279,16 +304,6 @@
             val polylineOptions = PolylineOptions()
                 .addAll(locations)
                 .color(color)
-
-            // map.clear()
-
-            // Add markers for start and end points
-            if (locations.isNotEmpty()) {
-                val endMarker = MarkerOptions()
-                    .position(locations.last())
-                    .title("End")
-                map.addMarker(endMarker)
-            }
 
             map.addPolyline(polylineOptions)
 

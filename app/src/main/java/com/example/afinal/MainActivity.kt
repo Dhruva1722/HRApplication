@@ -8,10 +8,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -24,30 +24,46 @@ import com.example.afinal.UserActivity.HelpActivity
 import com.example.afinal.UserActivity.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemSelectedListener{
+
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
 
     private lateinit var helpBtn: ImageView
+    private lateinit var logoutBtn: TextView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-
     private lateinit var sharedPreferences: SharedPreferences
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
 
         helpBtn = findViewById(R.id.helpBtn)
 
         helpBtn.setOnClickListener { v ->
             showPopupMenu(v)
         }
+        logoutBtn = findViewById(R.id.logout)
+        logoutBtn.setOnClickListener {
+            val editor = sharedPreferences.edit()
+            editor.remove("isLoggedIn")
+            editor.remove("User")
+            editor.remove("userEmail")
+            editor.remove("BUTTON_STATE_KEY")
+            editor.remove("DATE_KEY, DateTime")
+            editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
+            editor.apply()
+            println("HERE --------------")
+//            finishAffinity()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -77,7 +93,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             }
         }
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
-        navigationView.setNavigationItemSelectedListener {item -> // Handle navigation item selection here
+        navigationView.setNavigationItemSelectedListener { item -> // Handle navigation item selection here
             //drawerLayout.closeDrawer(GravityCompat.START)
             var fragment: Fragment? = null
             if (item.itemId == R.id.nav_attendance) {
@@ -86,11 +102,12 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             } else if (item.itemId == R.id.nav_canteen) {
                 fragment = CanteenFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
-            }else if (item.itemId == R.id.nav_help) {
+            } else if (item.itemId == R.id.nav_help) {
                 fragment = HomeFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
-            }  else if (item.itemId == R.id.nav_logout) {
-                logout()
+            } else if (item.itemId == R.id.nav_event) {
+                fragment = EventFragment()
+                drawerLayout.closeDrawer(GravityCompat.START)
             }
             fragment?.let { loadFragment(it) }
             true
@@ -101,19 +118,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
         loadFragment(HomeFragment())
 
     }
-    private fun logout(){
-        val editor = sharedPreferences.edit()
-        editor.remove("isLoggedIn")
-        editor.remove("User")
-        editor.remove("userEmail") // Remove the saved email
-        editor.remove("BUTTON_STATE_KEY")
-        editor.remove("DATE_KEY, DateTime")
-        editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
-        editor.apply()
-        finishAffinity()
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-    }
+
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
         popupMenu.inflate(R.menu.help_menu)
@@ -125,6 +130,7 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
                     startActivity(intent)
                     true
                 }
+
                 R.id.action_complain -> {
                     val intent = Intent(this, ComplaintActivity::class.java)
                     startActivity(intent)
@@ -139,9 +145,10 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-           true
+            true
         } else super.onOptionsItemSelected(item)
     }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var fragment: Fragment? = null
         if (item.itemId == R.id.bottomnav_home) {
@@ -150,12 +157,13 @@ class MainActivity : AppCompatActivity() ,BottomNavigationView.OnNavigationItemS
             fragment = AttendanceFragment()
         } else if (item.itemId == R.id.bottomnav_account) {
             fragment = CanteenFragment()
-        }else if (item.itemId == R.id.bottomnav_event) {
+        } else if (item.itemId == R.id.bottomnav_event) {
             fragment = EventFragment()
         }
         fragment?.let { loadFragment(it) }
         return true
     }
+
     fun loadFragment(fragment: Fragment?) {
         supportFragmentManager.beginTransaction().replace(R.id.relativelayout, fragment!!).commit()
     }

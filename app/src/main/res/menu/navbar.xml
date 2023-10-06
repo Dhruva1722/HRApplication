@@ -4,21 +4,23 @@
     <item
         android:id="@+id/nav_attendance"
         android:title="Attendance"
-        android:icon="@drawable/baseline_calendar_month_24"/>
+        android:icon="@drawable/baseline_edit_calendar_24" />
 
     <item
         android:id="@+id/nav_canteen"
         android:title="Canteen"
-        android:icon="@drawable/baseline_fastfood_24"/>
+        android:icon="@drawable/baseline_fastfood_24" />
 
     <item
         android:id="@+id/nav_help"
         android:title="Help"
-        android:icon="@drawable/baseline_help_24"/>
+        android:icon="@drawable/baseline_help_24" />
 
     <item
-        android:id="@+id/nav_logout"
-        android:title="Logout"
-        android:icon="@drawable/baseline_exit_to_app_24"/>
+        android:id="@+id/nav_event"
+        android:title="Event"
+        android:icon="@drawable/baseline_event_available_24" />
+
+
 
 </menu>

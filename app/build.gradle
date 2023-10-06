@@ -53,13 +53,10 @@ dependencies {
     implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 
     implementation 'com.airbnb.android:lottie:6.1.0'
-    implementation 'com.google.firebase:firebase-database:20.1.0'
 
     implementation 'org.apache.poi:poi:3.17'
     implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
-    implementation 'com.auth0.android:jwtdecode:2.0.2'
-    implementation 'io.jsonwebtoken:jjwt:0.7.0'
 
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -69,14 +66,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
-    implementation 'com.google.firebase:firebase-auth:21.1.0'
-    implementation 'com.google.firebase:firebase-database-ktx:20.1.0'
-    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "com.google.android.libraries.places:places:3.2.0"
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.1'
 
 
     testImplementation 'junit:junit:4.13.2'

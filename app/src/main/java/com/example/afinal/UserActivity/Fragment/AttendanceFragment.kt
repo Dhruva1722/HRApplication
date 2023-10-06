@@ -86,8 +86,8 @@ class AttendanceFragment : Fragment() {
         }
 
         chronometer = view.findViewById(R.id.chronometer)
-         onsiteIcon = view.findViewById(R.id.onsiteIcon)
-         inofficeIcon = view.findViewById(R.id.inofficeIcon)
+        onsiteIcon = view.findViewById(R.id.onsiteIcon)
+        inofficeIcon = view.findViewById(R.id.inofficeIcon)
 
         val savedStatus = sharedPreferences.getString(ATTENDANCE_STATUS_KEY, "")
 
@@ -189,18 +189,18 @@ class AttendanceFragment : Fragment() {
         })
     }
     private fun updateUI(status: String) {
-            val statusText = if (status == "On-Site") {
-                onsiteIcon.visibility = View.VISIBLE
-                inofficeIcon.visibility = View.GONE
-                "On-Site"
-            } else {
-                onsiteIcon.visibility = View.GONE
-                inofficeIcon.visibility = View.VISIBLE
-                "In-Office"
-            }
-            val message =
-                "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
-            userStatusTime.text = message
+        val statusText = if (status == "On-Site") {
+            onsiteIcon.visibility = View.VISIBLE
+            inofficeIcon.visibility = View.GONE
+            "On-Site"
+        } else {
+            onsiteIcon.visibility = View.GONE
+            inofficeIcon.visibility = View.VISIBLE
+            "In-Office"
+        }
+        val message =
+            "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
+        userStatusTime.text = message
     }
 }
 data class AttendanceData(

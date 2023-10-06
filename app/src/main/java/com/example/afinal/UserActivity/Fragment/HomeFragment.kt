@@ -17,7 +17,6 @@ import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.LoginActivity
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.firestore.auth.User
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +31,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var apiService: ApiService
-
 
     private var userId: String? = null
 
@@ -71,6 +69,8 @@ class HomeFragment : Fragment() {
                         if (response.isSuccessful) {
                             Toast.makeText(activity, "successs", Toast.LENGTH_SHORT).show()
                             val intent = Intent(activity, MapsActivity::class.java)
+                            intent.putExtra("startPoint", startPoint)
+                            intent.putExtra("endPoint", endPoint)
                             startActivity(intent)
                         } else {
                             Toast.makeText(activity, "failll", Toast.LENGTH_SHORT).show()
@@ -87,7 +87,6 @@ class HomeFragment : Fragment() {
         return view
     }
 }
-
 data class LocationData(
     val userId :String,
     val startPoint: String,

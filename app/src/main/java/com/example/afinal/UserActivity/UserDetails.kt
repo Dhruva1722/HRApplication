@@ -23,6 +23,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.afinal.MainActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
@@ -120,6 +121,9 @@ class UserDetails : AppCompatActivity() {
                                 showImagePopup(base64Image)
                                 Toast.makeText(applicationContext, " data saved", Toast.LENGTH_SHORT).show()
                                 showSuccessMessage()
+                                val intent = Intent(this@UserDetails, MainActivity::class.java)
+                                startActivity(intent)
+
                             } else {
                                 Toast.makeText(applicationContext, " data fail to saved", Toast.LENGTH_SHORT).show()
                             }
@@ -147,24 +151,6 @@ class UserDetails : AppCompatActivity() {
 
         helpBtn.setOnClickListener { v ->
             showPopupMenu(v)
-        }
-
-        logoutbtn = findViewById(R.id.logoutBtn)
-
-        logoutbtn.setOnClickListener {
-
-            val editor = sharedPreferences.edit()
-            editor.remove("isLoggedIn")
-            editor.remove("User")
-            editor.remove("userEmail") // Remove the saved email
-            editor.remove("BUTTON_STATE_KEY")
-            editor.remove("DATE_KEY, DateTime")
-            editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
-            editor.apply()
-            finishAffinity()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
         }
 
 
@@ -277,14 +263,6 @@ class UserDetails : AppCompatActivity() {
         dialog.show()
     }
 
-    override fun onBackPressed() {
-        if (!isLoggedIn()) {
-        }
-    }
-    private fun isLoggedIn(): Boolean {
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-        return isLoggedIn
-    }
 }
 
 

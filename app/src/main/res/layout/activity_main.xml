@@ -42,7 +42,6 @@
             android:layout_height="match_parent"
             android:padding="5dp">
 
-
         </RelativeLayout>
 
         <com.google.android.material.navigation.NavigationView
@@ -50,7 +49,31 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:menu="@menu/navbar"/>
+            app:menu="@menu/navbar">
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Log out"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:drawableStart="@drawable/baseline_exit_to_app_24"
+                    android:drawablePadding="5dp"/>
+
+            </LinearLayout>
+
+
+        </com.google.android.material.navigation.NavigationView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
