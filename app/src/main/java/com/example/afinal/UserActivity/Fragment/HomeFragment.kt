@@ -3,6 +3,8 @@ package com.example.afinal.UserActivity.Fragment
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +23,8 @@ import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
 
 class HomeFragment : Fragment() {
@@ -33,6 +37,9 @@ class HomeFragment : Fragment() {
     private lateinit var apiService: ApiService
 
     private var userId: String? = null
+
+
+    private lateinit var geocoder: Geocoder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,12 +60,30 @@ class HomeFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
 
         continuebtn.setOnClickListener {
             val startPoint = yourLocation.text.toString()
             val endPoint = destinationLocation.text.toString()
 
+            val startLocation = findLocation(startPoint)
+            val endLocation = findLocation(endPoint)
 
+            if (startLocation != null && endLocation != null) {
+                // You can access latitude and longitude like this:
+                val startLatitude = startLocation.latitude
+                val startLongitude = startLocation.longitude
+                val endLatitude = endLocation.latitude
+                val endLongitude = endLocation.longitude
+
+                // Now you have the latitude and longitude for both start and end points
+                Log.d("--------------", "Start Latitude: $startLatitude, Start Longitude: $startLongitude")
+                Log.d("++++++++++++++", "End Latitude: $endLatitude, End Longitude: $endLongitude")
+
+                // Proceed with your logic
+            } else {
+                Toast.makeText(activity, "Location not found", Toast.LENGTH_SHORT).show()
+            }
             if (userId != null) {
                 val locationData = LocationData(userId!!, startPoint, endPoint)
                 Log.d("+++++++++++++", "onCreateView: location data " + locationData)
@@ -85,6 +110,21 @@ class HomeFragment : Fragment() {
             }
         }
         return view
+    }
+    private fun findLocation(locationName: String): Address? {
+        try {
+            val addresses: List<Address>? = geocoder.getFromLocationName(locationName, 1)
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address = addresses[0]
+                Log.d("Location", "Latitude: ${address.latitude}, Longitude: ${address.longitude}")
+                Log.d("**********", "findLocation: \"Latitude: ${address.latitude}, Longitude: ${address.longitude}\"")
+                return address
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("Location", "Error finding location: ${e.message}")
+        }
+        return null
     }
 }
 data class LocationData(

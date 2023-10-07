@@ -165,12 +165,13 @@ class AttendanceFragment : Fragment() {
         editor.apply()
     }
     private fun sendAttendanceStatus(status: String) {
-        val elapsedTimeMillis = System.currentTimeMillis() - attendanceStartTime
-        val overtimeHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
-        val timer = overtimeHours
+        val currentTimeMillis = System.currentTimeMillis()
+        val elapsedTimeMillis = currentTimeMillis - attendanceStartTime
+        val workingHours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
+        val timer = workingHours
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-        val attendanceData = AttendanceData(userId, status, timer)
+        val attendanceData = AttendanceData(userId,status,timer)
         Log.d("-----------", "sendAttendanceStatus: "+ attendanceData)
 
         apiService.saveAttendance(attendanceData).enqueue(object : Callback<Void> {
@@ -179,6 +180,7 @@ class AttendanceFragment : Fragment() {
                     Toast.makeText(requireContext(), "Attendance data saved", Toast.LENGTH_SHORT).show()
                     updateUI(status)
                 } else {
+                    Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
                     Toast.makeText(requireContext(), "Failed to save attendance data", Toast.LENGTH_SHORT)
                         .show()
                 }

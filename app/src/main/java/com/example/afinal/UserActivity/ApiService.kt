@@ -27,7 +27,7 @@ interface ApiService {
     @POST("/location")
     fun postLocationData(@Body locationData: LocationData): Call<Any>
 
-    @POST("/attandance")
+    @POST("/attendance")
     fun saveAttendance(@Body attendanceData: AttendanceData): Call<Void>
 
 
@@ -48,6 +48,7 @@ interface ApiService {
 
     @POST("/menu/buy")
     fun buyMenuItems(@Body purchaseData: PurchaseData): Call<Void>
+
     @POST("/menu/buy")
     fun buyMenuItems(@Body purchaseData: PurchaseData1): Call<Void>
 

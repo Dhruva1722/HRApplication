@@ -9,8 +9,6 @@
         <item name="colorPrimary">#00308F</item>
         <item name="colorOnPrimary">#FFFFFF</item>
 
-
-
     </style>
 
     <style name="Theme.FInal" parent="Base.Theme.FInal" />

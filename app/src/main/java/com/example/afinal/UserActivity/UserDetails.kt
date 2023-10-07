@@ -94,7 +94,6 @@ class UserDetails : AppCompatActivity() {
                 else -> ""
             }
             val  Total_expense = billInput.text.toString()
-
             // Check if the user has selected a transportation type and entered total expense.
             if (Transport_type.isNotEmpty() && Total_expense.isNotEmpty() && selectedImagePath != null) {
 
@@ -111,7 +110,6 @@ class UserDetails : AppCompatActivity() {
                     Total_expense,
                     images
                 )
-
                 Log.d("LocationData", "------------" + transportationData)
                 // Call the API to save the data.
                 if (transportationData != null) {
@@ -138,10 +136,7 @@ class UserDetails : AppCompatActivity() {
                 // Display an error message if any required fields are empty.
                 Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
             }
-
         }
-
-
         uploadButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, IMAGE_PICK_REQUEST)
@@ -152,10 +147,7 @@ class UserDetails : AppCompatActivity() {
         helpBtn.setOnClickListener { v ->
             showPopupMenu(v)
         }
-
-
     }
-
     private fun overridePendingTransition(slideLeft: Int) {
 
     }
@@ -193,7 +185,6 @@ class UserDetails : AppCompatActivity() {
                 else -> false
             }
         }
-
         popupMenu.show()
     }
 
@@ -207,12 +198,10 @@ class UserDetails : AppCompatActivity() {
             imageByteBuffer = loadAndConvertImageToByteBuffer(selectedImagePath)
         }
     }
-
     private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
         if (imagePath == null) {
             return ByteBuffer.allocate(0)
         }
-
         try {
             val inputStream = FileInputStream(imagePath)
             val channel = inputStream.channel
@@ -232,7 +221,6 @@ class UserDetails : AppCompatActivity() {
         }
         return ByteBuffer.allocate(0)
     }
-
     private fun getRealPathFromURI(uri: Uri): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = contentResolver.query(uri, projection, null, null, null)
@@ -262,7 +250,6 @@ class UserDetails : AppCompatActivity() {
 
         dialog.show()
     }
-
 }
 
 

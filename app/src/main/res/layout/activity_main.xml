@@ -14,7 +14,6 @@
         app:title="@string/app_name"
         app:titleTextColor="@android:color/white" >
 
-
         <ImageView
             android:id="@+id/helpBtn"
             android:layout_width="23dp"
@@ -23,7 +22,6 @@
             android:layout_gravity="right"
             android:layout_marginEnd="30dp"
             android:src="@drawable/baseline_help_24"/>
-
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -34,7 +32,6 @@
         android:layout_below="@id/toolbar"
         android:layout_above="@id/bottomNavigationView"
         android:contentDescription="Navigation drawer">
-
 
         <RelativeLayout
             android:id="@+id/relativelayout"
@@ -50,8 +47,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:menu="@menu/navbar">
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,11 +67,9 @@
 
             </LinearLayout>
 
-
         </com.google.android.material.navigation.NavigationView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
