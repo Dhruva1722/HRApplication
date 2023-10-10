@@ -16,10 +16,8 @@ import androidx.fragment.app.Fragment
 import com.example.afinal.MapActivity.MapsActivity
 import com.example.afinal.R
 import com.example.afinal.UserActivity.ApiService
-import com.example.afinal.UserActivity.LoginActivity
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.textfield.TextInputEditText
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,8 +35,6 @@ class HomeFragment : Fragment() {
     private lateinit var apiService: ApiService
 
     private var userId: String? = null
-
-
     private lateinit var geocoder: Geocoder
 
     override fun onCreateView(
@@ -49,86 +45,122 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        userId = sharedPreferences.getString("User",null)
+        userId = sharedPreferences.getString("User", null)
         Log.d("+++++++++++++", "user ID--- " + userId)
 
 
         continuebtn = view.findViewById(R.id.continueBtn)
         yourLocation = view.findViewById(R.id.StartPointID)
         destinationLocation = view.findViewById(R.id.EndPointID)
-
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
         continuebtn.setOnClickListener {
+
+//            val intent = Intent(activity, MapsActivity::class.java)
+//            startActivity(intent)
+
             val startPoint = yourLocation.text.toString()
             val endPoint = destinationLocation.text.toString()
 
-            val startLocation = findLocation(startPoint)
-            val endLocation = findLocation(endPoint)
 
-            if (startLocation != null && endLocation != null) {
-                // You can access latitude and longitude like this:
-                val startLatitude = startLocation.latitude
-                val startLongitude = startLocation.longitude
-                val endLatitude = endLocation.latitude
-                val endLongitude = endLocation.longitude
+            val startPointLatLng = getLatLngFromAddress(startPoint)
+            val endPointLatLng = getLatLngFromAddress( endPoint)
 
-                // Now you have the latitude and longitude for both start and end points
-                Log.d("--------------", "Start Latitude: $startLatitude, Start Longitude: $startLongitude")
-                Log.d("++++++++++++++", "End Latitude: $endLatitude, End Longitude: $endLongitude")
+            Log.d("---------------", "onCreateView: points ${startPointLatLng} --- ${endPointLatLng}")
 
-                // Proceed with your logic
-            } else {
-                Toast.makeText(activity, "Location not found", Toast.LENGTH_SHORT).show()
-            }
-            if (userId != null) {
-                val locationData = LocationData(userId!!, startPoint, endPoint)
-                Log.d("+++++++++++++", "onCreateView: location data " + locationData)
+            val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
+            if (startPointLatLng != null && endPointLatLng != null) {
+
+                val startLatitude = startPointLatLng.first
+                val startLongitude = startPointLatLng.second
+                val endLatitude = endPointLatLng.first
+                val endLongitude = endPointLatLng.second
+
+                val startPointname = startPoint
+                val endPointname = endPoint
+                val startPoint = StartPoint( startPointname,startLatitude,startLongitude)
+                val endPoint = EndPoint(endPointname , endLatitude,endLongitude)
+
+                val locationData = LocationInfo(
+                    userId!!, startPoint,endPoint)
+                Log.d("---------------", "onCreateView: points ${locationData}")
                 val call = apiService.postLocationData(locationData)
                 call.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (response.isSuccessful) {
-                            Toast.makeText(activity, "successs", Toast.LENGTH_SHORT).show()
+                            Log.d("API Success", "Response successful  ")
+                            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                            Log.d("API Success", "Response successful")
                             val intent = Intent(activity, MapsActivity::class.java)
-                            intent.putExtra("startPoint", startPoint)
-                            intent.putExtra("endPoint", endPoint)
                             startActivity(intent)
                         } else {
-                            Toast.makeText(activity, "failll", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Faill to save ", Toast.LENGTH_SHORT).show()
+                            Log.e("API Error", response.message())
                         }
                     }
+
                     override fun onFailure(call: Call<Any>, t: Throwable) {
-                        Toast.makeText(activity, "network error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_SHORT).show()
+                        Log.e("Network Error", t.message ?: "Unknown error")
                     }
                 })
-            } else {
-                Toast.makeText(activity, "User ID is null", Toast.LENGTH_SHORT).show()
             }
         }
         return view
     }
-    private fun findLocation(locationName: String): Address? {
+
+    fun getLatLngFromAddress(address :String): Pair<Double,     Double>? {
         try {
-            val addresses: List<Address>? = geocoder.getFromLocationName(locationName, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
-                val address = addresses[0]
-                Log.d("Location", "Latitude: ${address.latitude}, Longitude: ${address.longitude}")
-                Log.d("**********", "findLocation: \"Latitude: ${address.latitude}, Longitude: ${address.longitude}\"")
-                return address
+            val addresses: MutableList<Address>? = geocoder.getFromLocationName(address, 1)
+            if (addresses != null) {
+                if (addresses.isNotEmpty()) {
+                    val latitude = addresses[0].latitude
+                    val longitude = addresses[0].longitude
+                    return Pair(latitude, longitude)
+                }
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.e("Location", "Error finding location: ${e.message}")
         }
         return null
     }
+
 }
-data class LocationData(
-    val userId :String,
-    val startPoint: String,
-    val endPoint: String
+
+private fun <T> Call<T>.enqueue(t: T) {
+
+}
+
+
+data class LocationInfo(
+    val userId: String,
+    val startPoint: StartPoint,
+    val endPoint: EndPoint
 )
+
+data class StartPoint(
+    val startPointname: String,
+    val startLatitude: Double,
+    val startLongitude: Double
+)
+
+data class EndPoint(
+    val endPointname: String,
+    val endLatitude: Double,
+    val endLongitude: Double
+)
+
+
+
+
+
+
+
+
+
+
+

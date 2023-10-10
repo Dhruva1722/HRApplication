@@ -42,17 +42,21 @@ class TodayFoodFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val storedPurchaseDate = sharedPreferences.getString("purchaseDate", "")
+
+        val currentDateTime = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
         userId = sharedPreferences.getString("User",null)
 
 
-        val currentDateTime = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
         buyBtn = view.findViewById(R.id.bookBtnId)
 
         if (storedPurchaseDate != currentDateTime) {
             buyBtn.isEnabled = true
+            hasPurchased = false // Reset the hasPurchased flag for a new day
         } else {
             buyBtn.isEnabled = false
+            hasPurchased = true // User has already made a purchase today
         }
 
         buyBtn.setOnClickListener {
@@ -64,6 +68,7 @@ class TodayFoodFragment : Fragment() {
 
                 hasPurchased = true
                Toast.makeText(context, "This Coupen is valid till today", Toast.LENGTH_SHORT).show()
+                saveCoupen()
             } else {
                 Toast.makeText(context, "You have already made a purchase today.", Toast.LENGTH_SHORT).show()
             }
@@ -72,7 +77,6 @@ class TodayFoodFragment : Fragment() {
         adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1)
         foodListView.adapter = adapter
         foodListView.choiceMode = ListView.CHOICE_MODE_SINGLE
-
 
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
         Log.d("============", "onResponse:  " + apiService)
@@ -95,6 +99,13 @@ class TodayFoodFragment : Fragment() {
 
         return view
     }
+
+    private fun saveCoupen() {
+        val currentDateTime = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val editor = sharedPreferences.edit()
+        editor.putString("purchaseDate", currentDateTime)
+        editor.apply()
+    }
     private fun makePurchase(userId: String, numberOfCoupons: Int, purchaseDate: String) {
 
         val purchaseData = PurchaseData(
@@ -113,12 +124,15 @@ class TodayFoodFragment : Fragment() {
                     Toast.makeText(context, "Purchase failed", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
             }
         })
     }
+}
+
+private fun Any.putLong(s: String, storedPurchaseDate: String?) {
+
 }
 
 private fun <T> Call<T>.enqueue(callback: Callback<MenuData>) {

@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
@@ -77,8 +78,6 @@ class UserDetails : AppCompatActivity() {
         billInput = findViewById(R.id.billInput)
 
 
-
-
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
 
@@ -119,8 +118,11 @@ class UserDetails : AppCompatActivity() {
                                 showImagePopup(base64Image)
                                 Toast.makeText(applicationContext, " data saved", Toast.LENGTH_SHORT).show()
                                 showSuccessMessage()
-                                val intent = Intent(this@UserDetails, MainActivity::class.java)
-                                startActivity(intent)
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    val intent = Intent(this@UserDetails, MainActivity::class.java)
+                                    startActivity(intent)
+                                }, 3000)
 
                             } else {
                                 Toast.makeText(applicationContext, " data fail to saved", Toast.LENGTH_SHORT).show()
@@ -152,7 +154,6 @@ class UserDetails : AppCompatActivity() {
 
     }
 
-
     private fun showSuccessMessage() {
         val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
         val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)
@@ -174,7 +175,6 @@ class UserDetails : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
-
                 R.id.action_complain -> {
                     // Handle Feedback action
                     val intent = Intent(this, ComplaintActivity::class.java)
@@ -251,7 +251,6 @@ class UserDetails : AppCompatActivity() {
         dialog.show()
     }
 }
-
 
 data class TransportationData(
     val userId : String,

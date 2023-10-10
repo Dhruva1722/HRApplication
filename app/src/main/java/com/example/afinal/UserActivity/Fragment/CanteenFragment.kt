@@ -31,16 +31,13 @@ class CanteenFragment : Fragment() {
         viewPager = view.findViewById(R.id.menuViewPager)
         tabLayout = view.findViewById(R.id.tabLayout)
 
-
-
-
         adapter = MenuPagerAdapter(this)
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = "Today's Menu"
-                1 -> tab.text = "Tommorrow Menu"
+                1 -> tab.text = "Tomorrow Menu"
             }
         }.attach()
 

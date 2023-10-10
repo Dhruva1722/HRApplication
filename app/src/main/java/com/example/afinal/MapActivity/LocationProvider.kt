@@ -2,11 +2,9 @@ package com.example.afinal.MapActivity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
-import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -19,12 +17,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -110,6 +108,7 @@ class LocationProvider(private val activity: AppCompatActivity) {
 
                 val locationData = LocationData(userId, latitude, longitude, distance)
                 saveLocationDataToApi(locationData)
+                saveLocationToFile(locationInfo)
             }
         }
     }
@@ -135,6 +134,19 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 Log.e("LocationData", "Network error: ${t.message}")
             }
         })
+    }
+
+    private fun saveLocationToFile(locationInfo: String) {
+        try {
+            val fileName = "location_data.txt"
+            val fileOutputStream = activity.openFileOutput(fileName, Context.MODE_APPEND)
+            val outputStreamWriter = OutputStreamWriter(fileOutputStream)
+            outputStreamWriter.write(locationInfo + "\n")
+            outputStreamWriter.close()
+            Log.d("LocationSaved", "Location data saved to file.")
+        } catch (e: Exception) {
+            Log.e("LocationSaveError", "Error saving location data: ${e.message}")
+        }
     }
 
     private fun calculateSmoothedLatLng(locations: List<LatLng>): LatLng {
@@ -191,27 +203,14 @@ class LocationProvider(private val activity: AppCompatActivity) {
         distance = 0
     }
   }
-
 data class LocationData(
     val userId: String,
     val latitude: Double,
     val longitude: Double,
-    val distance: Int
+    var distance: Int
 )
 
 
-//private fun saveLocationToFile(locationInfo: String) {
-//    try {
-//        val fileName = "location_data.txt"
-//        val fileOutputStream = activity.openFileOutput(fileName, Context.MODE_APPEND)
-//        val outputStreamWriter = OutputStreamWriter(fileOutputStream)
-//        outputStreamWriter.write(locationInfo + "\n")
-//        outputStreamWriter.close()
-//        Log.d("LocationSaved", "Location data saved to file.")
-//    } catch (e: Exception) {
-//        Log.e("LocationSaveError", "Error saving location data: ${e.message}")
-//    }
-//}
 
 //saveLocationToFile(locationInfo)
 

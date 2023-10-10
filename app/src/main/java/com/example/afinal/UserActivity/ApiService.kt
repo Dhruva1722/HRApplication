@@ -3,15 +3,17 @@ package com.example.afinal.UserActivity
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.Event
-import com.example.afinal.UserActivity.Fragment.LocationData
+import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.example.afinal.UserActivity.Fragment.PurchaseData1
 import com.google.gson.JsonObject
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 interface ApiService {
@@ -23,9 +25,8 @@ interface ApiService {
     @POST("/emplogin")
     fun loginRequest(@Body credentials: JsonObject): Call<LoginResponse>
 
-
     @POST("/location")
-    fun postLocationData(@Body locationData: LocationData): Call<Any>
+    fun postLocationData(@Body locationData: LocationInfo): Call<Any>
 
     @POST("/attendance")
     fun saveAttendance(@Body attendanceData: AttendanceData): Call<Void>
