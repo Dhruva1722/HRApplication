@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat
 class EventFragment : Fragment() {
 
     private lateinit var listView: ListView
-    private lateinit var apiService: ApiService
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

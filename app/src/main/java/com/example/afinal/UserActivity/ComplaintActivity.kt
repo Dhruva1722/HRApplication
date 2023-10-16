@@ -42,7 +42,6 @@ class ComplaintActivity : AppCompatActivity() {
         submitButton.setOnClickListener {
             submitComplaint();
         }
-
     }
 
     private fun submitComplaint() {
@@ -51,7 +50,6 @@ class ComplaintActivity : AppCompatActivity() {
 
         if (complaintMessage.isNotEmpty() && userId != null) {
             val apiService = RetrofitClient.getClient().create(ApiService::class.java)
-
 
             val requestBody = ComplaintRequest(userId!!, complaintMessage)
             Log.d("==================", "submitComplaint: employee complain  ${requestBody}")
@@ -72,7 +70,6 @@ class ComplaintActivity : AppCompatActivity() {
         } else {
             Toast.makeText(applicationContext, "Please enter a complaint message", Toast.LENGTH_SHORT).show()
         }
-
     }
 
 }

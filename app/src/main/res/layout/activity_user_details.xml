@@ -15,7 +15,6 @@
         app:title="@string/app_name"
         app:titleTextColor="@android:color/white" >
 
-
             <ImageView
                 android:id="@+id/helpBtn"
                 android:layout_width="23dp"
@@ -24,7 +23,6 @@
                 android:layout_gravity="right"
                 android:layout_marginEnd="30dp"
                 android:src="@drawable/baseline_help_24"/>
-
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -91,7 +89,6 @@
             android:layout_gravity="center"
             android:orientation="horizontal">
 
-            <!--on below line we are creating a radio buttons-->
             <RadioButton
                 android:id="@+id/idBtnBusRadio"
                 android:layout_width="70dp"
@@ -128,8 +125,6 @@
                 android:textColor="@color/black"
                 android:textSize="12sp" />
         </RadioGroup>
-
-
 
     </LinearLayout>
 
@@ -169,12 +164,11 @@
             android:layout_marginBottom="5dp"
             android:layout_centerHorizontal="true"/>
 
-
-        <ImageView
+        <Button
             android:id="@+id/uploadButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose File"
             android:layout_marginTop="5dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/expensesBillTxt"/>
@@ -197,7 +191,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/saveBtn"
+            android:id="@+id/saveToDatabase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"

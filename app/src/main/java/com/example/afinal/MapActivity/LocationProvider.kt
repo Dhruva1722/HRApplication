@@ -75,9 +75,9 @@ class LocationProvider(private val activity: AppCompatActivity) {
                 )
 
                 val timeStamp = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(Date())
-                val locationInfo =
+                val locationInfo1 =
                    "Time: ${timeStamp}, Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}"
-                Log.d("LocationInfo", locationInfo)
+                Log.d("LocationInfo", locationInfo1)
 
                 val lastLocation = locations.lastOrNull()
                 if (lastLocation != null) {
@@ -108,7 +108,7 @@ class LocationProvider(private val activity: AppCompatActivity) {
 
                 val locationData = LocationData(userId, latitude, longitude, distance)
                 saveLocationDataToApi(locationData)
-                saveLocationToFile(locationInfo)
+                saveLocationToFile(locationInfo1)
             }
         }
     }
