@@ -10,6 +10,7 @@ import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.example.afinal.UserActivity.Fragment.PurchaseData1
 import com.google.gson.JsonObject
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -40,7 +41,7 @@ interface ApiService {
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
     @POST("/form")
-    fun saveTransportationData(@Body data: TransportationData): Call<Any>
+    suspend fun saveTransportationData(@Body transportationData: TransportationData): Response<Any>
 
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>

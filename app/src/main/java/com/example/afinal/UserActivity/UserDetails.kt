@@ -24,13 +24,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.MainActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.nio.ByteBuffer
+
 
 class UserDetails : AppCompatActivity() {
 
@@ -49,6 +54,7 @@ class UserDetails : AppCompatActivity() {
     private lateinit var uploadButton: Button
     private lateinit var imgContainer: RelativeLayout
     private lateinit var billInput : TextInputEditText
+
 
     private val IMAGE_PICK_REQUEST = 300
 
@@ -75,63 +81,114 @@ class UserDetails : AppCompatActivity() {
         userId = sharedPreferences.getString("User", null) ?: ""
 
 
+
+
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
+//        savebtn.setOnClickListener {
+//            val Transport_type = when {
+//                busRadio.isChecked -> "Bus"
+//                bikeRadio.isChecked -> "Bike"
+//                trainRadio.isChecked -> "Train"
+//                flightRadio.isChecked -> "Flight"
+//                else -> ""
+//            }
+//            val Total_expense = billInput.text.toString()
+//
+//
+//            val imageInfo = loadAndConvertImageToByteArray(selectedImagePath)
+//            val imageByteArray = imageInfo.first
+//            val ImageName = imageInfo.second
+//
+//                val base64Image = Base64.encodeToString(imageByteArray, Base64.DEFAULT)
+//
+//                // Calculate fuel in liters for Car or Bike
+//                var fuelInLiters = "0"
+//                if (Transport_type == "Car" || Transport_type == "Bike") {
+//                    fuelInLiters = Total_expense
+//                }
+//
+//                val transportationData = TransportationData(
+//                    userId!!,
+//                    Transport_type,
+//                    Total_expense,
+//                    ImageData(base64Image, "image/jpeg"),
+//                    ImageName!!
+//                )
+//
+//                Log.d("---------------", "onCreate: User Details : $transportationData")
+//                if (transportationData != null) {
+//                    apiService.saveTransportationData(transportationData)
+//                        .enqueue(object : Callback<Any> {
+//                            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+//                                if (response.isSuccessful) {
+//                                    Toast.makeText(applicationContext, "Data saved", Toast.LENGTH_SHORT).show()
+//                                    showSuccessMessage()
+//                                    val handler = Handler()
+//                                    handler.postDelayed({
+//                                        val intent = Intent(this@UserDetails, MainActivity::class.java)
+//                                        startActivity(intent)
+//                                    }, 3000)
+//                                } else {
+//                                    Toast.makeText(applicationContext, "Failed to save data", Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//
+//                            override fun onFailure(call: Call<Any>, t: Throwable) {
+//                                Toast.makeText(applicationContext, "Network error", Toast.LENGTH_SHORT).show()
+//                            }
+//                        })
+//            }
+//        }
+
         savebtn.setOnClickListener {
-            val Transport_type = when {
+            val transportType = when {
                 busRadio.isChecked -> "Bus"
                 bikeRadio.isChecked -> "Bike"
                 trainRadio.isChecked -> "Train"
                 flightRadio.isChecked -> "Flight"
                 else -> ""
             }
-            val Total_expense = billInput.text.toString()
+            val totalExpense = billInput.text.toString()
 
-            if (selectedImagePath != null) {
-                val imageInfo = loadAndConvertImageToByteArray(selectedImagePath)
-                val imageByteArray = imageInfo.first
-                val ImageName = imageInfo.second
+            // Manually create a sample ImageData object (replace with your actual image data)
+            val images = ImageData("base64_encoded_image_data", "image/jpeg")
+            val imageName = "sample_image.jpg"
 
-                val base64Image = Base64.encodeToString(imageByteArray, Base64.DEFAULT)
+            val userId = "651e4e37b38144033cf2fae5"
 
-                // Calculate fuel in liters for Car or Bike
-                var fuelInLiters = "0"
-                if (Transport_type == "Car" || Transport_type == "Bike") {
-                    fuelInLiters = Total_expense
-                }
+            val transportationData = TransportationData(
+                userId,
+                transportType,
+                totalExpense,
+                images,
+                imageName
+            )
 
-                val transportationData = TransportationData(
-                    userId!!,
-                    Transport_type,
-                    Total_expense,
-                    images = ImageData(data = base64Image, contentType = "image/*"),
-                    ImageName = ImageName!!
-                )
+            Log.d("---------------", "onCreate: User Details : $transportationData")
 
-                Log.d("---------------", "onCreate: User Details : $transportationData")
-                if (transportationData != null) {
-                    apiService.saveTransportationData(transportationData)
-                        .enqueue(object : Callback<Any> {
-                            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                                if (response.isSuccessful) {
-                                    Toast.makeText(applicationContext, "Data saved", Toast.LENGTH_SHORT).show()
-                                    showSuccessMessage()
-                                    val handler = Handler()
-                                    handler.postDelayed({
-                                        val intent = Intent(this@UserDetails, MainActivity::class.java)
-                                        startActivity(intent)
-                                    }, 3000)
-                                } else {
-                                    Toast.makeText(applicationContext, "Failed to save data", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<Any>, t: Throwable) {
-                                Toast.makeText(applicationContext, "Network error", Toast.LENGTH_SHORT).show()
-                            }
-                        })
-                } else {
-                    Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response = apiService.saveTransportationData(transportationData)
+                    if (response.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(applicationContext, "Data saved", Toast.LENGTH_SHORT).show()
+                            showSuccessMessage()
+                            val handler = Handler()
+                            handler.postDelayed({
+                                val intent = Intent(this@UserDetails, MainActivity::class.java)
+                                startActivity(intent)
+                            }, 3000)
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(applicationContext, "Failed to save data", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Network error", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -198,6 +255,8 @@ class UserDetails : AppCompatActivity() {
         cursor?.close()
         return imagePath
     }
+
+
     private fun showSuccessMessage() {
         val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
         val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)

@@ -37,13 +37,8 @@ class AttendanceFragment : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
+    private var isPunchedIn: Boolean = false
 
-
-    private val BUTTON_STATE_KEY = "button_state"
-
-    private val DATE_KEY = "date"
-
-    private val ATTENDANCE_STATUS_KEY = "attendance_status"
 
 
     override fun onCreateView(
@@ -56,9 +51,9 @@ class AttendanceFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
+        isPunchedIn = sharedPreferences.getBoolean("isPunchedIn", false)
 
 
-        // Initialize your views
         dateTimeTextView = view.findViewById(R.id.dateTime)
         daymonthTextView = view.findViewById(R.id.dayMonth)
         userStatusTime = view.findViewById(R.id.userTimeOfAttendence)
@@ -76,7 +71,6 @@ class AttendanceFragment : Fragment() {
         onsiteIcon = view.findViewById(R.id.onsiteIcon)
         inofficeIcon = view.findViewById(R.id.inofficeIcon)
 
-
         val currentDateTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
         dateTimeTextView.text = currentDateTime
 
@@ -86,66 +80,87 @@ class AttendanceFragment : Fragment() {
 
 
         presentBtn.setOnClickListener {
-
-
-            onsiteIcon.visibility = View.VISIBLE
-            inofficeIcon.visibility = View.GONE
-
-            markAttendance(action = "Punch In", empStatus = "onsite")
+            punchIn()
         }
         absentBtn.setOnClickListener {
-
-            onsiteIcon.visibility = View.GONE
-            inofficeIcon.visibility = View.VISIBLE
-
-            markAttendance(action = "Punch Out", empStatus = "inoffice")
+            punchOut()
         }
         return view
     }
 
-    fun isValidAction(action: String): Boolean {
-        return action == ActionConstants.PUNCH_IN || action == ActionConstants.PUNCH_OUT
+    private fun punchIn() {
+        val isPunchIn = true
+        savePunchInStatus(isPunchIn)
+        setIconVisibility(isPunchIn)
+
+
+        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
+
+        val attendanceData = AttendanceData(userId, isPunchIn)
+
+        val call = apiService.saveAttendance(attendanceData)
+
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Punched in successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to punch in", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
-    private fun markAttendance(action: String,empStatus:String) {
 
+    private fun punchOut() {
+        val isPunchIn = false
 
-        if (isValidAction(action)) {
-            val attendanceData = AttendanceData(userId, action, empStatus)
+        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
-            val apiService = RetrofitClient.getClient().create(ApiService::class.java)
+        val attendanceData = AttendanceData(userId, isPunchIn)
 
-            val call = apiService.saveAttendance(attendanceData)
-            call.enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
-                        Log.d("API Success", "Response successful")
-                    } else {
-                        Toast.makeText(requireContext(), "Fail", Toast.LENGTH_SHORT).show()
-                        Log.d("API fail", "Response successful")
-                    }
+        val call = apiService.saveAttendance(attendanceData)
+
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Punched out successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to punch out", Toast.LENGTH_SHORT).show()
                 }
+            }
 
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
-                    Log.d("API Error", "Response successful")
-                }
-            })
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun savePunchInStatus(isPunchIn: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isPunchIn", isPunchIn)
+        editor.apply()
+    }
+
+    private fun setIconVisibility(isPunchIn: Boolean) {
+        if (isPunchIn) {
+            onsiteIcon.visibility = View.VISIBLE
+//            inofficeIcon.visibility = View.GONE
         } else {
-            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
-            Log.d("API Success", "Response successful")
-    }
-
-
+//            onsiteIcon.visibility = View.GONE
+            inofficeIcon.visibility = View.VISIBLE
+        }
     }
 }
-    object ActionConstants {
-        const val PUNCH_IN = "Punch In"
-        const val PUNCH_OUT = "Punch Out"
-    }
 
-    data class AttendanceData(
-        val userId: String,
-        val action: String,
-        val Emp_status: String
-    )
+
+data class AttendanceData(
+    val userId: String,
+    val isPunchIn: Boolean
+)
+
+
+
