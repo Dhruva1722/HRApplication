@@ -3,6 +3,7 @@ package com.example.afinal.UserActivity
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.Event
+import com.example.afinal.UserActivity.Fragment.Leave
 //import com.example.afinal.UserActivity.Fragment.LocationData
 import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
@@ -36,12 +37,15 @@ interface ApiService {
     @POST("/attendance")
     fun saveAttendance(@Body attendanceData: AttendanceData): Call<Void>
 
+    @GET("/leave") // Update the URL to match your server's endpoint
+    fun getLeaveApplications(): Call<List<Leave>>
+
 
     @POST("/latLong")
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
     @POST("/form")
-    suspend fun saveTransportationData(@Body transportationData: TransportationData): Response<Any>
+    fun saveTransportationData(@Body data: TransportationData): Call<Any>
 
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>

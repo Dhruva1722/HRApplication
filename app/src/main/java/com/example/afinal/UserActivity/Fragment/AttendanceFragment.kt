@@ -38,7 +38,10 @@ class AttendanceFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
     private var isPunchedIn: Boolean = false
+    private var isDateChanged: Boolean = false
 
+    private val ATTENDANCE_STATUS_KEY = "attendance_status"
+    private val LAST_ATTENDANCE_DATE_KEY = "last_attendance_date"
 
 
     override fun onCreateView(
@@ -52,6 +55,8 @@ class AttendanceFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
         isPunchedIn = sharedPreferences.getBoolean("isPunchedIn", false)
+
+        val lastAttendanceDate = sharedPreferences.getString(LAST_ATTENDANCE_DATE_KEY, "")
 
 
         dateTimeTextView = view.findViewById(R.id.dateTime)
@@ -78,6 +83,25 @@ class AttendanceFragment : Fragment() {
         val currentDayMonth = SimpleDateFormat("EEEE d,MMM", Locale.getDefault()).format(Date())
         daymonthTextView.text = currentDayMonth
 
+        val savedStatus = sharedPreferences.getString(ATTENDANCE_STATUS_KEY, "")
+        if (savedStatus == "On-Site") {
+            updateUI(savedStatus)
+        } else {
+            updateUI("In-Office")
+            updateUI(savedStatus ?: "")
+        }
+
+        isDateChanged = hasDateChanged(lastAttendanceDate)
+
+        if (isPunchedIn) {
+            if (isDateChanged) {
+                presentBtn.isEnabled = true
+                absentBtn.isEnabled = true
+            } else {
+                presentBtn.isEnabled = false
+                absentBtn.isEnabled = false
+            }
+        }
 
         presentBtn.setOnClickListener {
             punchIn()
@@ -87,16 +111,18 @@ class AttendanceFragment : Fragment() {
         }
         return view
     }
+    private fun hasDateChanged(lastAttendanceDate: String?): Boolean {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        return currentDate != lastAttendanceDate
+    }
 
     private fun punchIn() {
         val isPunchIn = true
-        savePunchInStatus(isPunchIn)
-        setIconVisibility(isPunchIn)
-
 
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         val attendanceData = AttendanceData(userId, isPunchIn)
+
 
         val call = apiService.saveAttendance(attendanceData)
 
@@ -113,6 +139,9 @@ class AttendanceFragment : Fragment() {
                 Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
             }
         })
+        saveAttendanceStatus("On-Site")
+        saveLastAttendanceDate()
+
     }
 
     private fun punchOut() {
@@ -121,6 +150,7 @@ class AttendanceFragment : Fragment() {
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         val attendanceData = AttendanceData(userId, isPunchIn)
+
 
         val call = apiService.saveAttendance(attendanceData)
 
@@ -137,22 +167,61 @@ class AttendanceFragment : Fragment() {
                 Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
             }
         })
+        saveAttendanceStatus("In-Office")
+        saveLastAttendanceDate()
     }
-
-    private fun savePunchInStatus(isPunchIn: Boolean) {
+    private fun saveLastAttendanceDate() {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val editor = sharedPreferences.edit()
-        editor.putBoolean("isPunchIn", isPunchIn)
+        editor.putString(LAST_ATTENDANCE_DATE_KEY, currentDate)
         editor.apply()
     }
 
-    private fun setIconVisibility(isPunchIn: Boolean) {
-        if (isPunchIn) {
+    private fun saveAttendanceStatus(status: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(ATTENDANCE_STATUS_KEY, status)
+        editor.apply()
+        updateUI(status)
+    }
+
+    private fun updateUI(status: String) {
+        val statusText = if (status == "On-Site") {
             onsiteIcon.visibility = View.VISIBLE
-//            inofficeIcon.visibility = View.GONE
+            inofficeIcon.visibility = View.GONE
+            "On-Site"
         } else {
-//            onsiteIcon.visibility = View.GONE
+            onsiteIcon.visibility = View.GONE
             inofficeIcon.visibility = View.VISIBLE
+            "In-Office"
         }
+        val message =
+            "You marked $statusText at ${SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())}."
+        userStatusTime.text = message
+    }
+
+    private fun fetchLeaveApplications() {
+        val retrofit = RetrofitClient.getClient() // Create your Retrofit instance
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val call = apiService.getLeaveApplications()
+
+        call.enqueue(object : Callback<List<Leave>> {
+            override fun onResponse(call: Call<List<Leave>>, response: Response<List<Leave>>) {
+                if (response.isSuccessful) {
+                    val leaveApplications = response.body()
+                    // Handle the list of leave applications here
+                    // You can display them in a ListView or RecyclerView
+                } else {
+                    // Handle API error here
+                    Toast.makeText(requireContext(), "Failed to retrieve leave applications", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Leave>>, t: Throwable) {
+                // Handle network error here
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
 
@@ -162,5 +231,13 @@ data class AttendanceData(
     val isPunchIn: Boolean
 )
 
+data class Leave(
+    val _id: String,
+    val userRef: String,
+    val startDate: String,
+    val endDate: String,
+    val status: String,
+    val numberOfDays: Int
+)
 
 
