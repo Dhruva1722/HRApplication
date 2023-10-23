@@ -20,9 +20,12 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import com.example.afinal.MainActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputEditText
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,81 +72,57 @@ class UserDetails : AppCompatActivity() {
         bikeRadio = findViewById(R.id.idBtnBikeRadio)
         trainRadio = findViewById(R.id.idBtnTrainRadio)
         flightRadio = findViewById(R.id.idBtnFlightRadio)
-        imgContainer = findViewById(R.id.imageContainer)
-        billInput = findViewById(R.id.billInput)
+//        billInput = findViewById(R.id.billInput)
 
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
 
-
-
-
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
+
         savebtn.setOnClickListener {
-            val Transport_type = when {
-                busRadio.isChecked -> "Bus"
-                bikeRadio.isChecked -> "Bike"
-                trainRadio.isChecked -> "Train"
-                flightRadio.isChecked -> "Flight"
-                else -> ""
-            }
-            val Total_expense = billInput.text.toString()
 
+            val Transport_type = "bus"
+            val Total_expense = "2000"
+            val Food = "300"
+            val Water = "20"
+            val Other_Transport = "300"
+            val Hotel = "2000"
+            val images = "sdhskjgh"
+            val ImageName = "name.png"
 
-            val imageInfo = loadAndConvertImageToByteArray(selectedImagePath)
-            val imageByteArray = imageInfo.first
-            val ImageName = imageInfo.second
+            val userExpense = UserExpense(
+                Transport_type,
+                Total_expense,
+                Food,
+                Water,
+                Hotel,
+                Other_Transport,
+                images,
+                ImageName
+            )
 
-            val base64Image = Base64.encodeToString(imageByteArray, Base64.DEFAULT)
-            val images = base64Image
+            val call = apiService.saveUserExpense(userExpense)
+            Log.d("---------------", "onCreateView: points ${userExpense}")
 
-                // Calculate fuel in liters for Car or Bike
-                var fuelInLiters = "0"
-                if (Transport_type == "Car" || Transport_type == "Bike") {
-                    fuelInLiters = Total_expense
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful) {
+                        val message = response.body()?.string() // Get any response message from the server
+                        Toast.makeText(this@UserDetails, " successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@UserDetails, "Fail", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
-            val Food = 30.0
-            val water = 10.0
-            val  Hotel =  100.0
-            val Other_Transport = 100.0
-
-                val transportationData = TransportationData(
-                    userId!!,
-                    Transport_type,
-                    Total_expense,
-                    Food,
-                    water,
-                    Hotel,
-                    Other_Transport,
-                    images,
-                    ImageName.toString()
-                )
-
-                Log.d("---------------", "onCreate: User Details : $transportationData")
-                if (transportationData != null) {
-                    apiService.saveTransportationData(transportationData)
-                        .enqueue(object : Callback<Any> {
-                            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                                if (response.isSuccessful) {
-                                    Toast.makeText(applicationContext, "Data saved", Toast.LENGTH_SHORT).show()
-                                    showSuccessMessage()
-                                    val handler = Handler()
-                                    handler.postDelayed({
-                                        val intent = Intent(this@UserDetails, MainActivity::class.java)
-                                        startActivity(intent)
-                                    }, 3000)
-                                } else {
-                                    Toast.makeText(applicationContext, "Failed to save data", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<Any>, t: Throwable) {
-                                Toast.makeText(applicationContext, "Network error", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@UserDetails, "Netwrok error ", Toast.LENGTH_SHORT).show()
                 }
+            })
+
         }
 
         val helpBtn = findViewById<ImageView>(R.id.helpBtn)
@@ -159,11 +138,11 @@ class UserDetails : AppCompatActivity() {
     }
 
 
+
     private fun loadAndConvertImageToByteArray(imagePath: String?): Pair<ByteArray, String?> {
         if (imagePath == null) {
             return Pair(ByteArray(0), null)
         }
-
         try {
             val inputStream = FileInputStream(imagePath)
             val channel = inputStream.channel
@@ -179,7 +158,6 @@ class UserDetails : AppCompatActivity() {
             val imageName = imagePath.substring(imagePath.lastIndexOf("/") + 1)
             buffer.get(byteArray)
             Log.d("---------------", "onCreate: User Details : $imageName")
-
             return Pair(byteArray, imageName)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
@@ -189,13 +167,13 @@ class UserDetails : AppCompatActivity() {
         return Pair(ByteArray(0), null)
     }
 
-    private fun showSuccessMessage() {
-        val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
-        val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)
-
-        thankYouTextView.visibility = View.VISIBLE
-        successIconImageView.visibility = View.VISIBLE
-    }
+//    private fun showSuccessMessage() {
+//        val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
+//        val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)
+//
+//        thankYouTextView.visibility = View.VISIBLE
+//        successIconImageView.visibility = View.VISIBLE
+//    }
 
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
@@ -220,16 +198,15 @@ class UserDetails : AppCompatActivity() {
     }
 }
 
-data class TransportationData(
-    val userId: String,
-    val Transport_type:String,
+data class UserExpense(
+    val Transport_type: String,
     val Total_expense: String,
-    val Food: Double,
-    val water: Double,
-    val Hotel: Double,
-    val Other_Transport: Double,
-    val images: String,
-    val ImageName: String
+    val Food: String,
+    val Water: String,
+    val Hotel: String,
+    val Other_Transport: String,
+    val images : String,
+    val ImageName :String
 )
 data class ImageData(
     val data: String,

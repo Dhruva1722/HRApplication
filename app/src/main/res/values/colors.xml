@@ -3,4 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple_200" />
+
+    <color name="normalColor">#FF5733</color>
+    <color name="pressedColor">#FFD700</color>
+
+
 </resources>
