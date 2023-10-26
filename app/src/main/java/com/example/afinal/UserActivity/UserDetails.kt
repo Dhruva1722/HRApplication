@@ -5,9 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -16,33 +13,18 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat.startActivity
-import com.example.afinal.MainActivity
 import com.example.afinal.R
-import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.nio.ByteBuffer
 
 
 class UserDetails : AppCompatActivity() {
-
-    private lateinit var helpBtn: ImageView
-
     private lateinit var savebtn: Button
-
-    private var selectedImagePath: String? = null
-    private lateinit var selectedImageUri: Uri
 
     private lateinit var radioGroup: RadioGroup
     private lateinit var busRadio: RadioButton
@@ -50,11 +32,16 @@ class UserDetails : AppCompatActivity() {
     private lateinit var trainRadio: RadioButton
     private lateinit var flightRadio: RadioButton
     private lateinit var uploadButton: Button
-    private lateinit var imgContainer: RelativeLayout
-    private lateinit var billInput : TextInputEditText
+    private lateinit var totalExpense : TextInputLayout
+    private lateinit var foodInput : TextInputLayout
+    private lateinit var waterInput : TextInputLayout
+    private lateinit var hotelInput : TextInputLayout
+    private lateinit var otherInput : TextInputLayout
 
 
-    private val IMAGE_PICK_REQUEST = 300
+
+    val IMAGE_PICK_REQUEST = 300
+    val selectedImageUris: MutableList<Uri> = mutableListOf()
 
     private lateinit var sharedPreferences: SharedPreferences
     private var userId: String? = null
@@ -72,7 +59,11 @@ class UserDetails : AppCompatActivity() {
         bikeRadio = findViewById(R.id.idBtnBikeRadio)
         trainRadio = findViewById(R.id.idBtnTrainRadio)
         flightRadio = findViewById(R.id.idBtnFlightRadio)
-//        billInput = findViewById(R.id.billInput)
+        totalExpense = findViewById(R.id.billInput)
+        foodInput = findViewById(R.id.foodBill)
+        waterInput = findViewById(R.id.waterInput)
+        hotelInput = findViewById(R.id.hotelInput)
+        otherInput = findViewById(R.id.otherExp)
 
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("User", null) ?: ""
@@ -82,23 +73,32 @@ class UserDetails : AppCompatActivity() {
 
         savebtn.setOnClickListener {
 
-            val Transport_type = "bus"
-            val Total_expense = "2000"
-            val Food = "300"
-            val Water = "20"
-            val Other_Transport = "300"
-            val Hotel = "2000"
-            val images = "sdhskjgh"
-            val ImageName = "name.png"
+            val Transport_type = when {
+                busRadio.isChecked -> "Bus"
+                bikeRadio.isChecked -> "Bike"
+                trainRadio.isChecked -> "Train"
+                flightRadio.isChecked -> "Flight"
+                else -> ""
+            }
+
+            val Total_expense = totalExpense.editText!!.text.toString()
+            val Food = foodInput.editText!!.text.toString()
+            val Water = waterInput.editText!!.text.toString()
+            val Hotel = hotelInput.editText!!.text.toString()
+            val Other_Transport = otherInput.editText!!.text.toString()
+
+            val images = "sabardfhdjdlgijipojdkvj nxkld"
+            val ImageName = "sabar.png"
 
             val userExpense = UserExpense(
+                userId!!,
                 Transport_type,
-                Total_expense,
                 Food,
                 Water,
                 Hotel,
                 Other_Transport,
-                images,
+                Total_expense,
+                images ,
                 ImageName
             )
 
@@ -112,6 +112,7 @@ class UserDetails : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
                         val message = response.body()?.string() // Get any response message from the server
+                        Log.d("---------------", "onCreateView: points ${message}")
                         Toast.makeText(this@UserDetails, " successfully", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@UserDetails, "Fail", Toast.LENGTH_SHORT).show()
@@ -122,7 +123,6 @@ class UserDetails : AppCompatActivity() {
                     Toast.makeText(this@UserDetails, "Netwrok error ", Toast.LENGTH_SHORT).show()
                 }
             })
-
         }
 
         val helpBtn = findViewById<ImageView>(R.id.helpBtn)
@@ -132,52 +132,18 @@ class UserDetails : AppCompatActivity() {
 
         val uploadButton = findViewById<Button>(R.id.uploadButton)
         uploadButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             startActivityForResult(intent, IMAGE_PICK_REQUEST)
         }
     }
 
 
-
-    private fun loadAndConvertImageToByteArray(imagePath: String?): Pair<ByteArray, String?> {
-        if (imagePath == null) {
-            return Pair(ByteArray(0), null)
-        }
-        try {
-            val inputStream = FileInputStream(imagePath)
-            val channel = inputStream.channel
-            val size = channel.size()
-            val byteArray = ByteArray(size.toInt())
-
-            val buffer = ByteBuffer.allocate(size.toInt())
-            channel.read(buffer)
-            channel.close()
-            inputStream.close()
-
-            buffer.flip()
-            val imageName = imagePath.substring(imagePath.lastIndexOf("/") + 1)
-            buffer.get(byteArray)
-            Log.d("---------------", "onCreate: User Details : $imageName")
-            return Pair(byteArray, imageName)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return Pair(ByteArray(0), null)
-    }
-
-//    private fun showSuccessMessage() {
-//        val thankYouTextView = findViewById<TextView>(R.id.thankYouTextView)
-//        val successIconImageView = findViewById<ImageView>(R.id.successIconImageView)
-//
-//        thankYouTextView.visibility = View.VISIBLE
-//        successIconImageView.visibility = View.VISIBLE
-//    }
-
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.help_menu) // Inflate the menu resource
+        popupMenu.inflate(R.menu.help_menu)
 
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
@@ -199,19 +165,23 @@ class UserDetails : AppCompatActivity() {
 }
 
 data class UserExpense(
+    val userId:String,
     val Transport_type: String,
-    val Total_expense: String,
     val Food: String,
     val Water: String,
     val Hotel: String,
     val Other_Transport: String,
-    val images : String,
-    val ImageName :String
+    val Total_expense: String,
+    val images: String,
+    val ImageName: String
 )
-data class ImageData(
-    val data: String,
-    val contentType: String
-)
+
+
+
+
+
+
+
 
 
 

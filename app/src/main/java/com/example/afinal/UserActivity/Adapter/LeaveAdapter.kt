@@ -1,45 +1,52 @@
 package com.example.afinal.UserActivity.Adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.afinal.R
-import com.example.afinal.UserActivity.Fragment.Leave
+//import com.example.afinal.UserActivity.Fragment.LeaveInfo
 
-class LeaveAdapter(private val context: Context, private val leaveList: List<Leave>) : BaseAdapter() {
-
-    override fun getCount(): Int {
-        return leaveList.size
-    }
-    override fun getItem(position: Int): Any {
-        return leaveList[position]
-    }
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View
-        val viewHolder: ViewHolder
-
-        if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.leave_item, null)
-            viewHolder = ViewHolder(view)
-            view.tag = viewHolder
-        } else {
-            view = convertView
-            viewHolder = view.tag as ViewHolder
-        }
-        val leave = getItem(position) as Leave
-        viewHolder.statusTextView.text = "Status: ${leave.status}"
-        viewHolder.daysTextView.text = "Number of Days: ${leave.numberOfDays}"
-        return view
-    }
-    private class ViewHolder(view: View) {
-        val statusTextView: TextView = view.findViewById(R.id.statusTextView)
-        val daysTextView: TextView = view.findViewById(R.id.daysTextView)
-    }
-}
+//class LeaveAdapter: ListAdapter<LeaveInfo, LeaveAdapter.ViewHolder>(LeaveInfoDiffCallback()) {
+//
+//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+//        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.leave_item, parent, false)
+//        return ViewHolder(itemView)
+//    }
+//
+//    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+//        val currentItem = getItem(position)
+//        holder.bind(currentItem)
+//    }
+//
+//    fun updateData(leaveApplications: List<LeaveInfo>) {
+//
+//    }
+//
+//    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+//        private val textStartDate: TextView = itemView.findViewById(R.id.textStartDate)
+//        private val textEndDate: TextView = itemView.findViewById(R.id.textEndDate)
+//        private val textStatus: TextView = itemView.findViewById(R.id.textStatus)
+//        private val textNumberOfDays: TextView = itemView.findViewById(R.id.textNumberOfDays)
+//
+//        fun bind(leaveInfo: LeaveInfo) {
+//            textStartDate.text = "Start Date: ${leaveInfo.startDate}"
+//            textEndDate.text = "End Date: ${leaveInfo.endDate}"
+//            textStatus.text = "Status: ${leaveInfo.status}"
+//            textNumberOfDays.text = "Number of Days: ${leaveInfo.numberOfDays}"
+//        }
+//    }
+//
+//    private class LeaveInfoDiffCallback : DiffUtil.ItemCallback<LeaveInfo>() {
+//        override fun areItemsTheSame(oldItem: LeaveInfo, newItem: LeaveInfo): Boolean {
+//            return oldItem == newItem
+//        }
+//
+//        override fun areContentsTheSame(oldItem: LeaveInfo, newItem: LeaveInfo): Boolean {
+//            return oldItem == newItem
+//        }
+//    }
+//}

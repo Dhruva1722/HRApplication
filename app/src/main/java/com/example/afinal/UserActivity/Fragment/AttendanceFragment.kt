@@ -8,16 +8,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.databinding.DataBindingUtil.setContentView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.afinal.R
-import com.example.afinal.UserActivity.Adapter.LeaveAdapter
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.RetrofitClient
 //import com.example.afinal.UserActivity.User
@@ -40,6 +37,8 @@ class AttendanceFragment : Fragment() {
     private lateinit var presentBtn: LinearLayout
     private lateinit var absentBtn: LinearLayout
 
+
+
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
     private var isPunchedIn: Boolean = false
@@ -48,7 +47,7 @@ class AttendanceFragment : Fragment() {
     private val ATTENDANCE_STATUS_KEY = "attendance_status"
     private val LAST_ATTENDANCE_DATE_KEY = "last_attendance_date"
 
-    private lateinit var adapter: ArrayAdapter<String>
+    val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +63,6 @@ class AttendanceFragment : Fragment() {
 
         val lastAttendanceDate = sharedPreferences.getString(LAST_ATTENDANCE_DATE_KEY, "")
 
-
         dateTimeTextView = view.findViewById(R.id.dateTime)
         daymonthTextView = view.findViewById(R.id.dayMonth)
         userStatusTime = view.findViewById(R.id.userTimeOfAttendence)
@@ -72,7 +70,6 @@ class AttendanceFragment : Fragment() {
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
 
-        val listView = view.findViewById<ListView>(R.id.getLeaveStatus)
 
 
         val userEmail = sharedPreferences.getString("userEmail", "")
@@ -119,36 +116,9 @@ class AttendanceFragment : Fragment() {
             punchOut()
         }
 
-        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
-            val call = apiService.getLeaveData()
-            call.enqueue(object : Callback<List<Leave>> {
-                override fun onResponse(call: Call<List<Leave>>, response: Response<List<Leave>>) {
-                    if (response.isSuccessful) {
-                        val leaveDataList = response.body()
-                        if (leaveDataList != null) {
-
-                            val leaveItems = leaveDataList.map {
-                                "Start Date: ${it.startDate}, End Date: ${it.endDate}, Status: ${it.status}, Days: ${it.numberOfDays}"
-                            }.toTypedArray()
-
-                            Log.d("=============", "onResponse: leaveData ${leaveItems}")
-                            // Create an adapter and set it to the ListView
-                            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, leaveItems)
-                            listView.adapter = adapter
-                            Toast.makeText(requireContext(), " successfully", Toast.LENGTH_SHORT).show()
-
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Leave>>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_SHORT).show()
-                }
-            })
-
-
         return view
     }
+
     private fun hasDateChanged(lastAttendanceDate: String?): Boolean {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         return currentDate != lastAttendanceDate
@@ -242,13 +212,6 @@ class AttendanceFragment : Fragment() {
 data class AttendanceData(
     val userId: String,
     val isPunchIn: Boolean
-)
-
-data class Leave(
-    val startDate: String,
-    val endDate: String,
-    val status: String,
-    val numberOfDays: Int
 )
 
 

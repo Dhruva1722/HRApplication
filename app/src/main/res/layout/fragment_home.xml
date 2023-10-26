@@ -14,7 +14,7 @@
 
         <ImageView
             android:layout_width="350dp"
-            android:layout_height="300dp"
+            android:layout_height="290dp"
             android:src="@drawable/mesuredistance"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"/>
@@ -63,14 +63,14 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"/>
 
-
-
-<!--        <ListView-->
-<!--            android:id="@+id/listView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:divider="@android:color/darker_gray"-->
-<!--            android:dividerHeight="1dp" />-->
+        <TextView
+            android:id="@+id/totalDistanceTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:padding="9dp"
+            android:text="Total Distance : 0.0"
+            android:layout_margin="20dp"/>
 
 
     </LinearLayout>

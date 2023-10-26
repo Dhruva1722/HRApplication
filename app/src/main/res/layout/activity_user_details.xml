@@ -236,8 +236,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Water Bill"
-            android:layout_below="@id/foodBill"
+            android:hint="Hotel Bill"
+            android:layout_below="@id/waterInput"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="10dp"
@@ -254,26 +254,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Water Bill"
-            android:layout_below="@id/foodBill"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:id="@id/waterInput">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:textColor="@color/black" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
             android:hint="Other Expense"
-            android:layout_below="@id/waterInput"
+            android:layout_below="@id/hotelInput"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="10dp"
@@ -285,7 +267,6 @@
                 android:textSize="15sp"
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <Button
             android:id="@+id/saveToDatabase"

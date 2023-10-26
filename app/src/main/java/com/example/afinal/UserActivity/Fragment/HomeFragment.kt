@@ -6,18 +6,22 @@ import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.afinal.MainActivity
 import com.example.afinal.MapActivity.MapsActivity
 import com.example.afinal.R
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.textfield.TextInputEditText
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,7 +34,7 @@ class HomeFragment : Fragment() {
     private lateinit var continuebtn: Button
     private lateinit var yourLocation: TextInputEditText
     private lateinit var destinationLocation: TextInputEditText
-
+    private lateinit var totalDistanceTextView:TextView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var apiService: ApiService
 
@@ -52,10 +56,14 @@ class HomeFragment : Fragment() {
         continuebtn = view.findViewById(R.id.continueBtn)
         yourLocation = view.findViewById(R.id.StartPointID)
         destinationLocation = view.findViewById(R.id.EndPointID)
+
+        totalDistanceTextView = view.findViewById(R.id.totalDistanceTxt)
+
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         geocoder = Geocoder(requireContext(), Locale.getDefault())
+
 
 
         continuebtn.setOnClickListener {
@@ -88,8 +96,11 @@ class HomeFragment : Fragment() {
 //                        if (response.isSuccessful) {
 //                            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
 //                            Log.d("API Success", "Response successful --------")
-//                            val intent = Intent(activity, MapsActivity::class.java)
-//                            startActivity(intent)
+//                            val handler = Handler()
+//                            handler.postDelayed({
+//                                val intent = Intent(requireContext(), MainActivity::class.java)
+//                                startActivity(intent)
+//                            }, 7000)
 //                        } else {
 //                            Toast.makeText(requireContext(), "Faill to save ", Toast.LENGTH_SHORT)
 //                                .show()
@@ -121,6 +132,34 @@ class HomeFragment : Fragment() {
             return null
         }
 
+//    private fun fetchLocationData(userId: String) {
+//        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
+//        apiService.getTotalDistance(userId).enqueue(object : Callback<DistanceResponse> {
+//            override fun onResponse(call: Call<DistanceResponse>, response: Response<DistanceResponse>) {
+//                if (response.isSuccessful) {
+//                    val locationData = response.body()
+//                    if (locationData != null) {
+//                        // Update your UI with the location data
+//                        totalDistanceTextView.text = "Total Distance: ${locationData.distance}"
+//                        Log.d("API Distance ", "Response successful -------- ${locationData.distance}")
+//                    } else {
+//                        // Handle the case when the response body is empty
+//                        Toast.makeText(requireContext(), "Location data is empty", Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    // Handle the case when the server request is not successful
+//                    Toast.makeText(requireContext(), "Failed to fetch location data", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<DistanceResponse>, t: Throwable) {
+//                // Handle network error
+//                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
+
+
 }
 private fun <T> Call<T>.enqueue(t: T) {
 
@@ -142,25 +181,12 @@ data class LocationInfo(
     val endPoint: EndPoint
 )
 
+//data class DistanceResponse(
+//    val startPoint: StartPoint,
+//    val endPoint: EndPoint,
+//    val distance: Double
+//)
 
-
-//data class LocationInfo(
-//    val userId: String,
-//    val startPoint: startPoint,
-//    val endPoint: endPoint
-//)
-//
-//data class startPoint(
-//    val startPointname: String,
-//    val startLatitude: Double,
-//    val startLongitude: Double
-//)
-//
-//data class endPoint(
-//    val endPointname: String,
-//    val endLatitude: Double,
-//    val endLongitude: Double
-//)
 
 
 

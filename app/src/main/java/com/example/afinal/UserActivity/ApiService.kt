@@ -2,10 +2,8 @@ package com.example.afinal.UserActivity
 
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
+//import com.example.afinal.UserActivity.Fragment.DistanceResponse
 import com.example.afinal.UserActivity.Fragment.Event
-import com.example.afinal.UserActivity.Fragment.Leave
-//import com.example.afinal.UserActivity.Fragment.Leave
-//import com.example.afinal.UserActivity.Fragment.LocationData
 import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
@@ -35,11 +33,14 @@ interface ApiService {
         @Body locationData: LocationInfo
     ): Call<Any>
 
+//    @GET("/location/{id}")
+//    fun getTotalDistance(@Path("id") userId: String): Call<DistanceResponse>
 
     @POST("/attendance")
     fun saveAttendance (@Body attendanceData: AttendanceData): Call<Void>
-    @GET("/leave")
-    fun getLeaveData(): Call<List<Leave>>
+
+
+
     @POST("/latLong")
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
