@@ -1,10 +1,14 @@
 package com.example.afinal.UserActivity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -17,10 +21,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class UserDetails : AppCompatActivity() {
@@ -87,8 +96,24 @@ class UserDetails : AppCompatActivity() {
             val Hotel = hotelInput.editText!!.text.toString()
             val Other_Transport = otherInput.editText!!.text.toString()
 
-            val images = "sabardfhdjdlgijipojdkvj nxkld"
-            val ImageName = "sabar.png"
+            if (selectedImageUris.isEmpty()) {
+                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Use the first selected image URI (you can loop through all selected images if needed)
+            fun createRequestBodyFromFile(filePath: String, mediaType: MediaType): RequestBody {
+                val file = File(filePath)
+                return RequestBody.create(mediaType, file)
+            }
+
+//            val mediaType = "image/*".toMediaTypeOrNull()
+//            val images = createRequestBodyFromFile(imagePath, mediaType)
+//
+//            val ImageName = MultipartBody.Part.createFormData("image", imageFile.name, images)
+
+            val images= ""
+            val ImageName = ""
 
             val userExpense = UserExpense(
                 userId!!,
@@ -98,7 +123,7 @@ class UserDetails : AppCompatActivity() {
                 Hotel,
                 Other_Transport,
                 Total_expense,
-                images ,
+                images,
                 ImageName
             )
 
@@ -140,6 +165,47 @@ class UserDetails : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                val selectedImageUri = data.data
+                val imageStream: InputStream? = contentResolver.openInputStream(selectedImageUri!!)
+                val selectedImageBitmap: Bitmap = BitmapFactory.decodeStream(imageStream)
+
+                // Now you can process or display the 'selectedImageBitmap' as needed
+                // For example, you can convert it to a file and upload it
+
+                // Example: Convert the Bitmap to a file
+                val imageFile = File(filesDir, "selected_image.jpg")
+                val outputStream = FileOutputStream(imageFile)
+                selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.close()
+
+                // Now 'imageFile' contains the path to the selected and processed image
+            }
+        }
+    }
+
+    private fun getRealPathFromURI(contentUri: Uri?): String {
+        val cursor = contentResolver.query(contentUri!!, null, null, null, null)
+        if (cursor == null) {
+            Log.d("ImageErro", "getRealPathFromURI: ${cursor} ")
+            return ""
+        }
+
+        cursor.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                if (columnIndex >= 0) {
+                    val filePath = cursor.getString(columnIndex)
+                    return filePath ?: ""
+                }
+            }
+        }
+
+        return ""
+    }
 
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
@@ -163,6 +229,11 @@ class UserDetails : AppCompatActivity() {
         popupMenu.show()
     }
 }
+
+private fun String.toMediaTypeOrNull(): MediaType? {
+    TODO("Not yet implemented")
+}
+
 
 data class UserExpense(
     val userId:String,

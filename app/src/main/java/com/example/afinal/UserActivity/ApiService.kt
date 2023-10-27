@@ -4,6 +4,8 @@ package com.example.afinal.UserActivity
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 //import com.example.afinal.UserActivity.Fragment.DistanceResponse
 import com.example.afinal.UserActivity.Fragment.Event
+import com.example.afinal.UserActivity.Fragment.LeaveApplication
+import com.example.afinal.UserActivity.Fragment.LeaveRequest
 import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
@@ -39,7 +41,14 @@ interface ApiService {
     @POST("/attendance")
     fun saveAttendance (@Body attendanceData: AttendanceData): Call<Void>
 
+    @POST("/leave/{id}")
+    fun postLeaveRequest(
+        @Path("id") userId: String,
+        @Body leaveRequest: LeaveRequest
+    ): Call<ResponseBody>
 
+    @GET("/leave/{id}") // Adjust the URL to match your API endpoint
+    fun getLeaveApplications(@Path("id") userId: String): Call<List<LeaveApplication>>
 
     @POST("/latLong")
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
