@@ -116,6 +116,7 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/absentBtn"
                 android:layout_width="wrap_content"
@@ -127,13 +128,11 @@
                 android:gravity="center"
                 android:paddingStart="10dp">
 
-
             <ImageView
                 android:layout_width="120dp"
                 android:layout_height="80dp"
                android:src="@drawable/outcourser"
                 android:layout_margin="10dp"/>
-
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -155,12 +154,13 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/btnLY"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:background="@drawable/loginbg">
 
             <TextView
                 android:id="@+id/leaveBalanceTv"
@@ -168,28 +168,25 @@
                 android:layout_height="wrap_content"
                 android:text="Leave Balance "
                 android:textSize="20dp"
+                android:textStyle="bold"
                 android:layout_margin="5dp"/>
-
 
          <Button
              android:id="@+id/applyForLeaveBtn"
-             android:layout_width="match_parent"
+             android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Apply For Leave"
-             android:layout_marginStart="20dp"
-             android:layout_marginEnd="20dp"/>
-
+             android:text="Apply For Leave" />
 
             <ListView
                 android:id="@+id/leaveStatusList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp" />
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp" />
 
         </LinearLayout>
-
-
-
 
     </RelativeLayout>
 

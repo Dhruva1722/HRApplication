@@ -1,52 +1,70 @@
 package com.example.afinal.UserActivity.Adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.example.afinal.R
-//import com.example.afinal.UserActivity.Fragment.LeaveInfo
+import com.example.afinal.UserActivity.Fragment.LeaveInfo
 
-//class LeaveAdapter: ListAdapter<LeaveInfo, LeaveAdapter.ViewHolder>(LeaveInfoDiffCallback()) {
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-//        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.leave_item, parent, false)
-//        return ViewHolder(itemView)
-//    }
-//
-//    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        val currentItem = getItem(position)
-//        holder.bind(currentItem)
-//    }
-//
-//    fun updateData(leaveApplications: List<LeaveInfo>) {
-//
-//    }
-//
-//    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//        private val textStartDate: TextView = itemView.findViewById(R.id.textStartDate)
-//        private val textEndDate: TextView = itemView.findViewById(R.id.textEndDate)
-//        private val textStatus: TextView = itemView.findViewById(R.id.textStatus)
-//        private val textNumberOfDays: TextView = itemView.findViewById(R.id.textNumberOfDays)
-//
-//        fun bind(leaveInfo: LeaveInfo) {
-//            textStartDate.text = "Start Date: ${leaveInfo.startDate}"
-//            textEndDate.text = "End Date: ${leaveInfo.endDate}"
-//            textStatus.text = "Status: ${leaveInfo.status}"
-//            textNumberOfDays.text = "Number of Days: ${leaveInfo.numberOfDays}"
-//        }
-//    }
-//
-//    private class LeaveInfoDiffCallback : DiffUtil.ItemCallback<LeaveInfo>() {
-//        override fun areItemsTheSame(oldItem: LeaveInfo, newItem: LeaveInfo): Boolean {
-//            return oldItem == newItem
-//        }
-//
-//        override fun areContentsTheSame(oldItem: LeaveInfo, newItem: LeaveInfo): Boolean {
-//            return oldItem == newItem
-//        }
-//    }
-//}
+
+
+class LeaveAdapter(private val context: Context, private val leaveList: List<LeaveInfo>) : BaseAdapter() {
+
+    override fun getCount(): Int {
+        return leaveList.size
+    }
+
+    override fun getItem(position: Int): Any {
+        return leaveList[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view: View
+        val viewHolder: ViewHolder
+
+        if (convertView == null) {
+            view = LayoutInflater.from(context).inflate(R.layout.leavestatus, null)
+            viewHolder = ViewHolder(view)
+            view.tag = viewHolder
+        } else {
+            view = convertView
+            viewHolder = view.tag as ViewHolder
+        }
+
+        val leave = leaveList[position]
+
+        viewHolder.numOfDays.text = " ${leave.numberOfDays}"
+        viewHolder.status.text = " ${leave.status}"
+        viewHolder.startDate.text = " ${leave.startDate}"
+        viewHolder.endDate.text = " ${leave.endDate}"
+
+        // Handle button click here if needed
+        viewHolder.cancelLeaveBtn.setOnClickListener {
+            // Handle cancel button click
+        }
+
+        return view
+    }
+
+    private class ViewHolder(view: View) {
+        val numOfDays: TextView = view.findViewById(R.id.numOfDays)
+        val status: TextView = view.findViewById(R.id.status)
+        val startDate: TextView = view.findViewById(R.id.startDate)
+        val endDate: TextView = view.findViewById(R.id.endDate)
+        val cancelLeaveBtn: ImageView = view.findViewById(R.id.cancelLeaveBtn)
+    }
+}
+
+
+
+
+

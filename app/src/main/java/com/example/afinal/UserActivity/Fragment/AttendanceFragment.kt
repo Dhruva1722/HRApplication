@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.afinal.R
+import com.example.afinal.UserActivity.Adapter.LeaveAdapter
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.textfield.TextInputLayout
@@ -81,7 +82,7 @@ class AttendanceFragment : Fragment() {
         leaveadapter = ArrayAdapter(requireContext(), R.layout.leavestatus)
         listOfLeave.adapter = leaveadapter
 
-        fetchLeaveApplications()
+        fetchLeaveApplications(userId)
         applyBtn = view.findViewById(R.id.applyForLeaveBtn)
 
         applyBtn.setOnClickListener {
@@ -139,10 +140,8 @@ class AttendanceFragment : Fragment() {
 
          val builder = AlertDialog.Builder(requireContext())
 
-        // Inflate the custom layout for the dialog
         val view = layoutInflater.inflate(R.layout.leave_item, null)
 
-        // Find the TextViews in the custom layout
         val textStartDate = view.findViewById<TextInputLayout>(R.id.textStartDate)
         val textEndDate = view.findViewById<TextInputLayout>(R.id.textEndDate)
         val applyBtn = view.findViewById<Button>(R.id.applyBtn)
@@ -160,7 +159,6 @@ class AttendanceFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Convert user input dates to Unix timestamps
             val startDate = convertToUnixTimestamp(startDateStr)
             val endDate = convertToUnixTimestamp(endDateStr)
 
@@ -171,7 +169,6 @@ class AttendanceFragment : Fragment() {
 
                 val startDate = convertToISO8601(startDate)
                 val endDate = convertToISO8601(endDate)
-
 
                 val leaveRequest = LeaveRequest(startDate, endDate)
                 Log.d("LeaveApplicationDialog", "LeaveRequest: $leaveRequest")
@@ -228,7 +225,6 @@ class AttendanceFragment : Fragment() {
 
         val attendanceData = AttendanceData(userId, isPunchIn)
 
-
         val call = apiService.saveAttendance(attendanceData)
 
         call.enqueue(object : Callback<Void> {
@@ -255,7 +251,6 @@ class AttendanceFragment : Fragment() {
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         val attendanceData = AttendanceData(userId, isPunchIn)
-
 
         val call = apiService.saveAttendance(attendanceData)
 
@@ -304,34 +299,37 @@ class AttendanceFragment : Fragment() {
         userStatusTime.text = message
     }
 
-    private fun fetchLeaveApplications() {
+    private fun fetchLeaveApplications(userId: String) {
         val call = apiService.getLeaveApplications(userId)
-        call.enqueue(object : Callback<List<LeaveApplication>> {
-            override fun onResponse(call: Call<List<LeaveApplication>>, response: Response<List<LeaveApplication>>) {
+        call.enqueue(object : Callback<LeaveResponse> {
+            override fun onResponse(call: Call<LeaveResponse>, response: Response<LeaveResponse>) {
                 if (response.isSuccessful) {
-                    val leaveApplications = response.body()
-                    if (leaveApplications != null) {
-                        val leaveData = mutableListOf<String>()
-                        for (leaveApplication in leaveApplications) {
-                            val status = "Status: ${leaveApplication.status}"
-                            val days = "Number of Days: ${leaveApplication.availableLeave}"
-                            val dates = "Start/End Date: ${leaveApplication.startDate} - ${leaveApplication.endDate}"
-                         val leaveItem = "$status\n$days\n$dates"
-//                            val leaveItem = "$days"
-                            leaveData.add(leaveItem)
-                        }
-                        leaveadapter.clear()
-                        leaveadapter.addAll(leaveData)
+                    val leaveResponse = response.body()
+                    if (leaveResponse != null) {
+                        val totalNumberOfDays = leaveResponse.totalNumberOfDays
+                        val leaveApplications = leaveResponse.leaveApplications
+
+                        val totalNumberOfDaysTextView = view!!.findViewById<TextView>(R.id.leaveBalanceTv)
+                        totalNumberOfDaysTextView.text = "Total Number of Days: $totalNumberOfDays"
+
+                        val leaveListView = view!!.findViewById<ListView>(R.id.leaveStatusList)
+                        val leaveAdapter = LeaveAdapter(requireContext(), leaveApplications)
+                        leaveListView.adapter = leaveAdapter
                     } else {
-                        Toast.makeText(requireContext(), "No leave applications available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No data available", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(requireContext(), "API request failed", Toast.LENGTH_SHORT).show()
+                    val errorMessage = when (response.code()) {
+                        404 -> "User not found"
+                        else -> "API request failed"
+                    }
+                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+
                 }
             }
 
-            override fun onFailure(call: Call<List<LeaveApplication>>, t: Throwable) {
-                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<LeaveResponse>, t: Throwable) {
+                Toast.makeText(requireContext(), "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -342,14 +340,20 @@ data class AttendanceData(
     val userId: String,
     val isPunchIn: Boolean
 )
+
 data class LeaveRequest(
     val startDate: String,
     val endDate: String
 )
 
-data class LeaveApplication(
+data class LeaveResponse(
+    val totalNumberOfDays: Int,
+    val leaveApplications: List<LeaveInfo>
+)
+
+data class LeaveInfo(
     val startDate: String,
     val endDate: String,
     val status: String,
-    val availableLeave: Int
+    val numberOfDays: Int
 )

@@ -4,45 +4,105 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:id="@+id/numOfDaysTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NumberOfDays :"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"/>
 
     <TextView
         android:id="@+id/numOfDays"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="NumberOfDays"
-        android:textSize="20sp"
+        android:text="0.0 "
+        android:textSize="15sp"
+        android:layout_toRightOf="@id/numOfDaysTV"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"/>
+        android:textColor="@color/black"
+        android:layout_marginStart="0dp"/>
+
+    <TextView
+        android:id="@+id/statusTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status :"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_below="@id/numOfDaysTV"/>
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status"
-        android:textSize="20sp"
+        android:text="Pending"
+        android:textSize="15sp"
+        android:textColor="@color/black"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_below="@id/numOfDays"/>
+        android:layout_marginStart="5dp"
+        android:layout_below="@id/numOfDays"
+        android:layout_toRightOf="@id/statusTV" />
 
 
     <TextView
-        android:id="@+id/startEndDate"
+        android:id="@+id/startDateTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="StartEndDate"
-        android:textSize="20sp"
+        android:text="StartDate :"
+        android:textSize="15sp"
+        android:textColor="@color/black"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:layout_below="@id/status"/>
 
-    <Button
-        android:id="@+id/cancelLeaveBtn"
+    <TextView
+        android:id="@+id/startDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="cancel"
-        android:textSize="20sp"
-        android:layout_below="@id/startEndDate"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        android:text="StartDate"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="0dp"
+        android:layout_toRightOf="@id/startDateTV"
+        android:layout_below="@id/status"/>
+
+    <TextView
+        android:id="@+id/endDateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EndDate :"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_below="@id/startDate"/>
+
+    <TextView
+        android:id="@+id/endDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EndDate"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_toRightOf="@id/endDateTV"
+        android:layout_below="@id/startDate"/>
+
+
+    <ImageView
+        android:id="@+id/cancelLeaveBtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/baseline_delete_24"
+        android:layout_toRightOf="@id/numOfDays"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>

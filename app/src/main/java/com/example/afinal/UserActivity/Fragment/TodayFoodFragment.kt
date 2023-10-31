@@ -53,10 +53,10 @@ class TodayFoodFragment : Fragment() {
 
         if (storedPurchaseDate != currentDateTime) {
             buyBtn.isEnabled = true
-            hasPurchased = false // Reset the hasPurchased flag for a new day
+            hasPurchased = false
         } else {
             buyBtn.isEnabled = false
-            hasPurchased = true // User has already made a purchase today
+            hasPurchased = true
         }
 
         buyBtn.setOnClickListener {
@@ -111,7 +111,8 @@ class TodayFoodFragment : Fragment() {
         val purchaseData = PurchaseData(
             userId = userId,
             numberOfCoupons = numberOfCoupons,
-            purchaseDate = purchaseDate
+            purchaseDate = purchaseDate,
+            menuType = "Today"
         )
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
         val call = apiService.buyMenuItems(purchaseData)
@@ -150,5 +151,6 @@ data class Canteen(
 data class PurchaseData(
     val userId: String,
     val numberOfCoupons: Int,
-    val purchaseDate: String
+    val purchaseDate: String,
+    val menuType :String
 )

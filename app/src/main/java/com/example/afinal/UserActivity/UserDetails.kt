@@ -49,8 +49,8 @@ class UserDetails : AppCompatActivity() {
 
 
 
-    val IMAGE_PICK_REQUEST = 300
-    val selectedImageUris: MutableList<Uri> = mutableListOf()
+    private val PICK_IMAGES_REQUEST = 1
+    private val selectedImageUris = mutableListOf<Uri>()
 
     private lateinit var sharedPreferences: SharedPreferences
     private var userId: String? = null
@@ -90,64 +90,42 @@ class UserDetails : AppCompatActivity() {
                 else -> ""
             }
 
-            val Total_expense = totalExpense.editText!!.text.toString()
-            val Food = foodInput.editText!!.text.toString()
-            val Water = waterInput.editText!!.text.toString()
-            val Hotel = hotelInput.editText!!.text.toString()
-            val Other_Transport = otherInput.editText!!.text.toString()
+            val totalExpense = totalExpense.editText!!.text.toString()
+            val food = foodInput.editText!!.text.toString()
+            val water = waterInput.editText!!.text.toString()
+            val hotel = hotelInput.editText!!.text.toString()
+            val otherTransport = otherInput.editText!!.text.toString()
+            val imageName = ""
+            val imageBase64 = ""
 
-            if (selectedImageUris.isEmpty()) {
-                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Use the first selected image URI (you can loop through all selected images if needed)
-            fun createRequestBodyFromFile(filePath: String, mediaType: MediaType): RequestBody {
-                val file = File(filePath)
-                return RequestBody.create(mediaType, file)
-            }
-
-//            val mediaType = "image/*".toMediaTypeOrNull()
-//            val images = createRequestBodyFromFile(imagePath, mediaType)
-//
-//            val ImageName = MultipartBody.Part.createFormData("image", imageFile.name, images)
-
-            val images= ""
-            val ImageName = ""
-
-            val userExpense = UserExpense(
+            val formData = FormData(
                 userId!!,
                 Transport_type,
-                Food,
-                Water,
-                Hotel,
-                Other_Transport,
-                Total_expense,
-                images,
-                ImageName
+                totalExpense,
+                food,
+                water,
+                hotel,
+                otherTransport,
+                FormDataImages(imageBase64, "image/jpeg"), // Update with the correct image content type
+                imageName
             )
-
-            val call = apiService.saveUserExpense(userExpense)
-            Log.d("---------------", "onCreateView: points ${userExpense}")
-
-            call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
+            Log.d("-----", "onCreate: ${formData}")
+            apiService.saveFormData(formData).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
-                        val message = response.body()?.string() // Get any response message from the server
-                        Log.d("---------------", "onCreateView: points ${message}")
-                        Toast.makeText(this@UserDetails, " successfully", Toast.LENGTH_SHORT).show()
+                        // Handle a successful response
+                        Toast.makeText(this@UserDetails, "Data saved successfully", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@UserDetails, "Fail", Toast.LENGTH_SHORT).show()
+                        // Handle an unsuccessful response
+                        Toast.makeText(this@UserDetails, "Failed to save data", Toast.LENGTH_SHORT).show()
                     }
                 }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(this@UserDetails, "Netwrok error ", Toast.LENGTH_SHORT).show()
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    // Handle the network error
+                    Toast.makeText(this@UserDetails, "Network error", Toast.LENGTH_SHORT).show()
                 }
             })
+
         }
 
         val helpBtn = findViewById<ImageView>(R.id.helpBtn)
@@ -155,34 +133,37 @@ class UserDetails : AppCompatActivity() {
             showPopupMenu(v)
         }
 
-        val uploadButton = findViewById<Button>(R.id.uploadButton)
-        uploadButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            startActivityForResult(intent, IMAGE_PICK_REQUEST)
+        val uploadBtn = findViewById<Button>(R.id.uploadButton)
+        uploadBtn.setOnClickListener {
+            openImagePicker()
         }
+    }
+
+    fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        startActivityForResult(intent, PICK_IMAGES_REQUEST)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
+
+        if (requestCode == PICK_IMAGES_REQUEST && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                val selectedImageUri = data.data
-                val imageStream: InputStream? = contentResolver.openInputStream(selectedImageUri!!)
-                val selectedImageBitmap: Bitmap = BitmapFactory.decodeStream(imageStream)
+                if (data.clipData != null) {
+                    // Multiple images are selected
+                    val count = data.clipData!!.itemCount
+                    for (i in 0 until count) {
+                        val imageUri = data.clipData!!.getItemAt(i).uri
+                        selectedImageUris.add(imageUri)
+                    }
+                } else if (data.data != null) {
+                    // Single image is selected
+                    val imageUri = data.data
+                    selectedImageUris.add(imageUri!!)
+                }
 
-                // Now you can process or display the 'selectedImageBitmap' as needed
-                // For example, you can convert it to a file and upload it
-
-                // Example: Convert the Bitmap to a file
-                val imageFile = File(filesDir, "selected_image.jpg")
-                val outputStream = FileOutputStream(imageFile)
-                selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                outputStream.close()
-
-                // Now 'imageFile' contains the path to the selected and processed image
             }
         }
     }
@@ -230,21 +211,24 @@ class UserDetails : AppCompatActivity() {
     }
 }
 
-private fun String.toMediaTypeOrNull(): MediaType? {
-    TODO("Not yet implemented")
-}
 
 
-data class UserExpense(
-    val userId:String,
+
+data class FormData(
+    val userId :String,
     val Transport_type: String,
+    val Total_expense: String,
     val Food: String,
     val Water: String,
     val Hotel: String,
     val Other_Transport: String,
-    val Total_expense: String,
-    val images: String,
+    val images: FormDataImages,
     val ImageName: String
+)
+
+data class FormDataImages(
+    val data: String,
+    val contentType: String
 )
 
 

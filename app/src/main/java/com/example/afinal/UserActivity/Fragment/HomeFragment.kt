@@ -89,7 +89,6 @@ class HomeFragment : Fragment() {
 //                        endPointLatLng.second.toString()
 //                    )
 //                )
-//
 //                Log.d("---------------", "onCreateView: points ${locationData}")
 //                apiService.postLocationData(  userId,locationData).enqueue(object : Callback<Any> {
 //                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
@@ -114,7 +113,6 @@ class HomeFragment : Fragment() {
 //                })
 //            }
         }
-
             return view
         }
 
@@ -131,38 +129,6 @@ class HomeFragment : Fragment() {
             }
             return null
         }
-
-//    private fun fetchLocationData(userId: String) {
-//        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
-//        apiService.getTotalDistance(userId).enqueue(object : Callback<DistanceResponse> {
-//            override fun onResponse(call: Call<DistanceResponse>, response: Response<DistanceResponse>) {
-//                if (response.isSuccessful) {
-//                    val locationData = response.body()
-//                    if (locationData != null) {
-//                        // Update your UI with the location data
-//                        totalDistanceTextView.text = "Total Distance: ${locationData.distance}"
-//                        Log.d("API Distance ", "Response successful -------- ${locationData.distance}")
-//                    } else {
-//                        // Handle the case when the response body is empty
-//                        Toast.makeText(requireContext(), "Location data is empty", Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    // Handle the case when the server request is not successful
-//                    Toast.makeText(requireContext(), "Failed to fetch location data", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<DistanceResponse>, t: Throwable) {
-//                // Handle network error
-//                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
-
-
-}
-private fun <T> Call<T>.enqueue(t: T) {
-
 }
 
 data class StartPoint(
@@ -170,7 +136,6 @@ data class StartPoint(
     val startLatitude: String,
     val startLongitude: String
 )
-
 data class EndPoint(
     val endPointname: String,
     val endLatitude: String,
@@ -181,11 +146,7 @@ data class LocationInfo(
     val endPoint: EndPoint
 )
 
-//data class DistanceResponse(
-//    val startPoint: StartPoint,
-//    val endPoint: EndPoint,
-//    val distance: Double
-//)
+
 
 
 
