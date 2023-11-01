@@ -40,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
         if (isLoggedIn) {
-            // User is already logged in, navigate to MainActivity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish() // Finish the LoginActivity to prevent going back
@@ -55,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
 
 
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
-
 
         newUserTextView.setOnClickListener {
             val intent = Intent(this, RegistrationActivity::class.java)
@@ -138,6 +136,7 @@ class LoginActivity : AppCompatActivity() {
         val pattern = Patterns.EMAIL_ADDRESS
         return pattern.matcher(email).matches()
     }
+
 }
         data class LoginData(val email: String, val password: String)
         data class LoginResponse(val userId: String)

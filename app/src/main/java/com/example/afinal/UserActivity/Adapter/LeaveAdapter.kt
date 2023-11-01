@@ -51,7 +51,6 @@ class LeaveAdapter(private val context: Context, private val leaveList: List<Lea
         viewHolder.cancelLeaveBtn.setOnClickListener {
             // Handle cancel button click
         }
-
         return view
     }
 

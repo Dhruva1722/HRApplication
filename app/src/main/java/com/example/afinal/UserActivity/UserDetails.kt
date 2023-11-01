@@ -21,15 +21,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
-import okhttp3.MediaType
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.IOException
+import java.nio.ByteBuffer
 
 
 class UserDetails : AppCompatActivity() {
@@ -49,8 +51,13 @@ class UserDetails : AppCompatActivity() {
 
 
 
-    private val PICK_IMAGES_REQUEST = 1
-    private val selectedImageUris = mutableListOf<Uri>()
+    private lateinit var imageByteBuffer: ByteBuffer
+
+    private var selectedImagePath: String? = null
+    private lateinit var selectedImageUri: Uri
+
+
+    private val IMAGE_PICK_REQUEST = 126
 
     private lateinit var sharedPreferences: SharedPreferences
     private var userId: String? = null
@@ -80,37 +87,114 @@ class UserDetails : AppCompatActivity() {
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
 
+//        savebtn.setOnClickListener {
+//
+//            val Transport_type = when {
+//                busRadio.isChecked -> "Bus"
+//                bikeRadio.isChecked -> "Bike"
+//                trainRadio.isChecked -> "Train"
+//                flightRadio.isChecked -> "Flight"
+//                else -> ""
+//            }
+//
+//            val byteArray = ByteArray(imageByteBuffer.remaining())
+//            imageByteBuffer.get(byteArray)
+//
+//            val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
+//
+//            val images = ImageData(data = base64Image, contentType = "image/*")
+//
+//            val  Total_expense = totalExpense.editText!!.text.toString()
+//            val Food = foodInput.editText!!.text.toString()
+//            val Water = waterInput.editText!!.text.toString()
+//            val Hotel = hotelInput.editText!!.text.toString()
+//            val  Other_Transport = otherInput.editText!!.text.toString()
+//
+//            val ImageName = selectedImageUri.lastPathSegment
+//
+//            val formData = FormData(
+//                userId!!,
+//                Transport_type,
+//                Total_expense,
+//                Food,
+//                Water,
+//                Hotel,
+//                Other_Transport,
+//                images,
+//                ImageName!!
+//            )
+//            Log.d("-----", "onCreate: ${formData}")
+//            apiService.saveFormData(formData).enqueue(object : Callback<Void> {
+//                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+//                    if (response.isSuccessful) {
+//                        // Handle a successful response
+//                        Toast.makeText(this@UserDetails, "Data saved successfully", Toast.LENGTH_SHORT).show()
+//                    } else {
+//                        // Handle an unsuccessful response
+//                        Toast.makeText(this@UserDetails, "Failed to save data", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                override fun onFailure(call: Call<Void>, t: Throwable) {
+//                    // Handle the network error
+//                    Toast.makeText(this@UserDetails, "Network error", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//
+//        }
+
         savebtn.setOnClickListener {
+              val Transport_type = when {
+                            busRadio.isChecked -> "Bus"
+                            bikeRadio.isChecked -> "Bike"
+                            trainRadio.isChecked -> "Train"
+                            flightRadio.isChecked -> "Flight"
+                            else -> ""
+                        }
 
-            val Transport_type = when {
-                busRadio.isChecked -> "Bus"
-                bikeRadio.isChecked -> "Bike"
-                trainRadio.isChecked -> "Train"
-                flightRadio.isChecked -> "Flight"
-                else -> ""
-            }
+            val  Total_expense = totalExpense.editText!!.text.toString()
+            val Food = foodInput.editText!!.text.toString()
+            val Water = waterInput.editText!!.text.toString()
+            val Hotel = hotelInput.editText!!.text.toString()
+            val  Other_Transport = otherInput.editText!!.text.toString()
+            // Convert string values to RequestBody
+            val userIdRequestBody = RequestBody.create(null, userId!!)
+            val transportTypeRequestBody = RequestBody.create(null, Transport_type)
+            val totalexpenseTypeRequestBody = RequestBody.create(null,Total_expense)
+            val fuelInLitersRequestBody = RequestBody.create(null, "0") // Set as needed for Car or Bike
+            val foodRequestBody = RequestBody.create(null, Food)
+            val waterRequestBody = RequestBody.create(null, Water)
+            val hotelRequestBody = RequestBody.create(null, Hotel)
+            val otherTransportRequestBody = RequestBody.create(null, Other_Transport)
 
-            val totalExpense = totalExpense.editText!!.text.toString()
-            val food = foodInput.editText!!.text.toString()
-            val water = waterInput.editText!!.text.toString()
-            val hotel = hotelInput.editText!!.text.toString()
-            val otherTransport = otherInput.editText!!.text.toString()
-            val imageName = ""
-            val imageBase64 = ""
+            val imageFile = File(selectedImagePath)
+            val imageRequestBody = RequestBody.create(null, imageFile)
+            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
 
-            val formData = FormData(
-                userId!!,
-                Transport_type,
-                totalExpense,
-                food,
-                water,
-                hotel,
-                otherTransport,
-                FormDataImages(imageBase64, "image/jpeg"), // Update with the correct image content type
-                imageName
-            )
-            Log.d("-----", "onCreate: ${formData}")
-            apiService.saveFormData(formData).enqueue(object : Callback<Void> {
+            val requestData = "User ID: $userId\n" +
+                    "Transport Type: $Transport_type\n" +
+                    "Total Expense: $Total_expense\n" +
+                    "Food: $Food\n" +
+                    "Water: $Water\n" +
+                    "Hotel: $Hotel\n" +
+                    "Other Transport: $Other_Transport\n" +
+                    "image data: $imageRequestBody\n"+
+                    "Image File Name: ${imageFile.name}"
+
+            Log.d("UserDetails", "Data being sent to API:\n$requestData")
+
+
+            // Make the API request
+            apiService.saveFormData(
+                userIdRequestBody,
+                transportTypeRequestBody,
+                totalexpenseTypeRequestBody,
+                fuelInLitersRequestBody,
+                foodRequestBody,
+                waterRequestBody,
+                hotelRequestBody,
+                otherTransportRequestBody,
+                imagePart,
+            ).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
                         // Handle a successful response
@@ -139,53 +223,83 @@ class UserDetails : AppCompatActivity() {
         }
     }
 
-    fun openImagePicker() {
+    private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        startActivityForResult(intent, PICK_IMAGES_REQUEST)
+        startActivityForResult(intent, IMAGE_PICK_REQUEST)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImageUri = data.data!!
+            selectedImagePath = getRealPathFromURI(selectedImageUri)
 
-        if (requestCode == PICK_IMAGES_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                if (data.clipData != null) {
-                    // Multiple images are selected
-                    val count = data.clipData!!.itemCount
-                    for (i in 0 until count) {
-                        val imageUri = data.clipData!!.getItemAt(i).uri
-                        selectedImageUris.add(imageUri)
-                    }
-                } else if (data.data != null) {
-                    // Single image is selected
-                    val imageUri = data.data
-                    selectedImageUris.add(imageUri!!)
-                }
+            val compressedImagePath = compressImage(selectedImagePath)
 
-            }
+            // Load the compressed image as a ByteBuffer
+            imageByteBuffer = loadAndConvertImageToByteBuffer(compressedImagePath)
         }
     }
 
-    private fun getRealPathFromURI(contentUri: Uri?): String {
-        val cursor = contentResolver.query(contentUri!!, null, null, null, null)
-        if (cursor == null) {
-            Log.d("ImageErro", "getRealPathFromURI: ${cursor} ")
-            return ""
+    private fun compressImage(imagePath: String?): String {
+        val options = BitmapFactory.Options()
+        options.inSampleSize = 2 // You can adjust this value as needed to control image quality
+
+        val sourceBitmap = BitmapFactory.decodeFile(imagePath, options)
+        val compressedImagePath = createImageFile(sourceBitmap)
+
+        sourceBitmap.recycle()
+
+        return compressedImagePath
+    }
+
+    private fun createImageFile(bitmap: Bitmap): String {
+        val file = File(cacheDir, "compressed_image.jpg")
+        try {
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return file.absolutePath
+    }
+
+    private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
+        if (imagePath == null) {
+            return ByteBuffer.allocate(0)
         }
 
-        cursor.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val columnIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-                if (columnIndex >= 0) {
-                    val filePath = cursor.getString(columnIndex)
-                    return filePath ?: ""
-                }
-            }
-        }
+        try {
+            val inputStream = FileInputStream(imagePath)
+            val channel = inputStream.channel
+            val size = channel.size()
+            val buffer = ByteBuffer.allocate(size.toInt())
 
-        return ""
+            channel.read(buffer)
+            channel.close()
+            inputStream.close()
+
+            buffer.flip()
+            return buffer
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return ByteBuffer.allocate(0)
+    }
+
+    private fun getRealPathFromURI(uri: Uri): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = contentResolver.query(uri, projection, null, null, null)
+        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.moveToFirst()
+        val imagePath = cursor?.getString(columnIndex!!)
+        cursor?.close()
+        return imagePath
     }
 
     private fun showPopupMenu(view: View) {
@@ -211,9 +325,6 @@ class UserDetails : AppCompatActivity() {
     }
 }
 
-
-
-
 data class FormData(
     val userId :String,
     val Transport_type: String,
@@ -222,15 +333,14 @@ data class FormData(
     val Water: String,
     val Hotel: String,
     val Other_Transport: String,
-    val images: FormDataImages,
+    val images: ImageData,
     val ImageName: String
 )
 
-data class FormDataImages(
+data class ImageData(
     val data: String,
     val contentType: String
 )
-
 
 
 

@@ -320,7 +320,7 @@ class AttendanceFragment : Fragment() {
                     }
                 } else {
                     val errorMessage = when (response.code()) {
-                        404 -> "User not found"
+                        404 -> "No Data Available for Leave"
                         else -> "API request failed"
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()

@@ -10,12 +10,16 @@ import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.example.afinal.UserActivity.Fragment.PurchaseData1
 import com.google.gson.JsonObject
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 
@@ -52,9 +56,22 @@ interface ApiService {
     @POST("/latLong")
     fun saveLocationData(@Body locationData: com.example.afinal.MapActivity.LocationData): Call<Any>
 
-    @POST("/form")
-    fun saveFormData(@Body formData: FormData): Call<Void>
+//    @POST("/form")
+//    fun saveFormData(@Body formData: FormData): Call<Void>
 
+    @Multipart
+    @POST("form") // Replace with your API endpoint
+    fun saveFormData(
+        @Part("userId") userId: RequestBody,
+        @Part("Transport_type") transportType: RequestBody,
+        @Part("Total_expense") totalexpense: RequestBody,
+        @Part("Fuel_in_liters") fuelInLiters: RequestBody,
+        @Part("Food") food: RequestBody,
+        @Part("Water") water: RequestBody,
+        @Part("Hotel") hotel: RequestBody,
+        @Part("Other_Transport") otherTransport: RequestBody,
+        @Part image:MultipartBody.Part
+    ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
 

@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             editor.remove("isLoggedIn")
             editor.remove("User")
             editor.remove("userEmail")
-            editor.remove("BUTTON_STATE_KEY")
+            editor.remove("ATTENDANCE_STATUS_KEY")
+            editor.remove("LAST_ATTENDANCE_DATE_KEY")
             editor.remove("DATE_KEY, DateTime")
-            editor.remove("CHRONOMETER_STATE_KEY, chronometer.base")
             editor.apply()
             println("HERE --------------")
 //            finishAffinity()
@@ -116,7 +116,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         loadFragment(HomeFragment())
-
     }
 
     private fun showPopupMenu(view: View) {

@@ -52,11 +52,11 @@ class TodayFoodFragment : Fragment() {
         buyBtn = view.findViewById(R.id.bookBtnId)
 
         if (storedPurchaseDate != currentDateTime) {
-            buyBtn.isEnabled = true
-            hasPurchased = false
+//            buyBtn.isEnabled = true
+//            hasPurchased = false
         } else {
-            buyBtn.isEnabled = false
-            hasPurchased = true
+//            buyBtn.isEnabled = false
+//            hasPurchased = true
         }
 
         buyBtn.setOnClickListener {
@@ -64,11 +64,11 @@ class TodayFoodFragment : Fragment() {
                 val numberOfCoupons = 1
                 val purchaseDate = currentDateTime
                 userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate) }
-                buyBtn.isEnabled = false
+//                buyBtn.isEnabled = false
 
                 hasPurchased = true
                Toast.makeText(context, "This Coupen is valid till today", Toast.LENGTH_SHORT).show()
-                saveCoupen()
+//                saveCoupen()
             } else {
                 Toast.makeText(context, "You have already made a purchase today.", Toast.LENGTH_SHORT).show()
             }
@@ -85,7 +85,7 @@ class TodayFoodFragment : Fragment() {
                     if (response.isSuccessful) {
                         val menuData = response.body()
                         menuData?.today?.menu?.let { todayMenuText ->
-                            val menuItemsArray = todayMenuText.split(", ")
+                            val menuItemsArray = todayMenuText.split(",")
                             adapter.addAll(menuItemsArray)
                         }
                     } else {
