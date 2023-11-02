@@ -119,22 +119,16 @@ class TommorrowFoodFragment : Fragment() {
     }
 }
 
-private fun <T> Call<T>.enqueue(callback: Callback<MenuData1>) {
-
-}
-
-
-data class MenuData1(
-    val today: Canteen1?,
-    val tomorrow: Canteen1?
-)
+//data class MenuData1(
+//    val today: Canteen1?,
+//    val tomorrow: Canteen1?
+//)
 
 data class Canteen1(
     val date: String?,
     val menu: String?,
     val status: String?
 )
-
 
 data class PurchaseData1(
     val userId: String,

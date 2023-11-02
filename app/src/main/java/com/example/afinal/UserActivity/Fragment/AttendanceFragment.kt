@@ -1,6 +1,7 @@
 package com.example.afinal.UserActivity.Fragment
 
 //import com.example.afinal.UserActivity.User
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,17 +11,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CalendarView
+import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.example.afinal.R
 import com.example.afinal.UserActivity.Adapter.LeaveAdapter
 import com.example.afinal.UserActivity.ApiService
 import com.example.afinal.UserActivity.RetrofitClient
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import com.google.android.material.textfield.TextInputLayout
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -28,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -54,6 +62,9 @@ class AttendanceFragment : Fragment() {
 
     private val ATTENDANCE_STATUS_KEY = "attendance_status"
     private val LAST_ATTENDANCE_DATE_KEY = "last_attendance_date"
+
+    private var isDatePickerDialogVisible = false
+    private var startDatePicker: MaterialDatePicker<Long>? = null
 
     val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
@@ -88,6 +99,8 @@ class AttendanceFragment : Fragment() {
         applyBtn.setOnClickListener {
          LeaveApplicationDialog()
         }
+
+
 
         val userEmail = sharedPreferences.getString("userEmail", "")
         val parts = userEmail?.split("@")
@@ -135,10 +148,29 @@ class AttendanceFragment : Fragment() {
 
         return view
     }
+    private fun showDatePickerDialog() {
+        if (!isDatePickerDialogVisible) {
+            // Create and configure the MaterialDatePicker
+            startDatePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select a date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+                .build()
 
+            // Set an event listener for when the dialog is dismissed
+            startDatePicker?.addOnDismissListener {
+                isDatePickerDialogVisible = false
+                // Handle any dismissal-related logic
+            }
+
+            // Show the MaterialDatePicker
+            startDatePicker?.show(childFragmentManager, "StartDatePicker")
+            isDatePickerDialogVisible = true
+        }
+    }
     private fun LeaveApplicationDialog() {
 
-         val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext())
 
         val view = layoutInflater.inflate(R.layout.leave_item, null)
 
@@ -146,10 +178,17 @@ class AttendanceFragment : Fragment() {
         val textEndDate = view.findViewById<TextInputLayout>(R.id.textEndDate)
         val applyBtn = view.findViewById<Button>(R.id.applyBtn)
 
+          textStartDate.setOnClickListener {
+              showDatePickerDialog()
+          }
+        textEndDate.setOnClickListener {
+            showDatePickerDialog()
+        }
 
         applyBtn.setOnClickListener {
-            val startDateStr = textStartDate.editText!!.text.toString()
-            val endDateStr = textEndDate.editText!!.text.toString()
+
+        val startDateStr = textStartDate.editText!!.text.toString()
+        val endDateStr = textEndDate.editText!!.text.toString()
 
             Log.d("LeaveApplicationDialog", "startDateStr: $startDateStr")
             Log.d("LeaveApplicationDialog", "endDateStr: $endDateStr")
@@ -198,7 +237,7 @@ class AttendanceFragment : Fragment() {
         dialog.show()
     }
     private fun convertToUnixTimestamp(dateStr: String): Long? {
-        val dateFormat = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         return try {
             val date = dateFormat.parse(dateStr)

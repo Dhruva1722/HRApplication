@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -87,61 +88,6 @@ class UserDetails : AppCompatActivity() {
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
 
-//        savebtn.setOnClickListener {
-//
-//            val Transport_type = when {
-//                busRadio.isChecked -> "Bus"
-//                bikeRadio.isChecked -> "Bike"
-//                trainRadio.isChecked -> "Train"
-//                flightRadio.isChecked -> "Flight"
-//                else -> ""
-//            }
-//
-//            val byteArray = ByteArray(imageByteBuffer.remaining())
-//            imageByteBuffer.get(byteArray)
-//
-//            val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
-//
-//            val images = ImageData(data = base64Image, contentType = "image/*")
-//
-//            val  Total_expense = totalExpense.editText!!.text.toString()
-//            val Food = foodInput.editText!!.text.toString()
-//            val Water = waterInput.editText!!.text.toString()
-//            val Hotel = hotelInput.editText!!.text.toString()
-//            val  Other_Transport = otherInput.editText!!.text.toString()
-//
-//            val ImageName = selectedImageUri.lastPathSegment
-//
-//            val formData = FormData(
-//                userId!!,
-//                Transport_type,
-//                Total_expense,
-//                Food,
-//                Water,
-//                Hotel,
-//                Other_Transport,
-//                images,
-//                ImageName!!
-//            )
-//            Log.d("-----", "onCreate: ${formData}")
-//            apiService.saveFormData(formData).enqueue(object : Callback<Void> {
-//                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-//                    if (response.isSuccessful) {
-//                        // Handle a successful response
-//                        Toast.makeText(this@UserDetails, "Data saved successfully", Toast.LENGTH_SHORT).show()
-//                    } else {
-//                        // Handle an unsuccessful response
-//                        Toast.makeText(this@UserDetails, "Failed to save data", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//                override fun onFailure(call: Call<Void>, t: Throwable) {
-//                    // Handle the network error
-//                    Toast.makeText(this@UserDetails, "Network error", Toast.LENGTH_SHORT).show()
-//                }
-//            })
-//
-//        }
-
         savebtn.setOnClickListener {
               val Transport_type = when {
                             busRadio.isChecked -> "Bus"
@@ -167,7 +113,7 @@ class UserDetails : AppCompatActivity() {
             val otherTransportRequestBody = RequestBody.create(null, Other_Transport)
 
             val imageFile = File(selectedImagePath)
-            val imageRequestBody = RequestBody.create(null, imageFile)
+            val imageRequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
 
             val requestData = "User ID: $userId\n" +
@@ -177,11 +123,10 @@ class UserDetails : AppCompatActivity() {
                     "Water: $Water\n" +
                     "Hotel: $Hotel\n" +
                     "Other Transport: $Other_Transport\n" +
-                    "image data: $imageRequestBody\n"+
+                    "image data: $imagePart\n"+
                     "Image File Name: ${imageFile.name}"
 
             Log.d("UserDetails", "Data being sent to API:\n$requestData")
-
 
             // Make the API request
             apiService.saveFormData(
@@ -350,143 +295,57 @@ data class ImageData(
 
 
 
-//override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//    super.onActivityResult(requestCode, resultCode, data)
-//    if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-//        selectedImageUri = data.data!!
-//        val selectedImageUri = getRealPathFromURI(selectedImageUri)
-//        if (selectedImageUri != null) {
-//            selectedImagePath = selectedImageUri
-//        } else {
-//            Toast.makeText(applicationContext, "Getting image error", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-//}
-
-//private fun getRealPathFromURI(uri: Uri): String? {
-//    val projection = arrayOf(MediaStore.Images.Media.DATA)
-//    val cursor = contentResolver.query(uri, projection, null, null, null)
-//    val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-//    cursor?.moveToFirst()
-//    val imagePath = cursor?.getString(columnIndex!!)
-//    cursor?.close()
-//    return imagePath
-//}
-
-
-
 //        savebtn.setOnClickListener {
-//            val transportType = when {
+//
+//            val Transport_type = when {
 //                busRadio.isChecked -> "Bus"
 //                bikeRadio.isChecked -> "Bike"
 //                trainRadio.isChecked -> "Train"
 //                flightRadio.isChecked -> "Flight"
 //                else -> ""
 //            }
-//            val totalExpense = billInput.text.toString()
 //
-//            // Manually create a sample ImageData object (replace with your actual image data)
-//            val images = ImageData("base64_encoded_image_data", "image/jpeg")
-//            val imageName = "sample_image.jpg"
+//            val byteArray = ByteArray(imageByteBuffer.remaining())
+//            imageByteBuffer.get(byteArray)
 //
-//            val userId = "651e4e37b38144033cf2fae5"
+//            val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
 //
-//            val transportationData = TransportationData(
-//                userId,
-//                transportType,
-//                totalExpense,
+//            val images = ImageData(data = base64Image, contentType = "image/*")
+//
+//            val  Total_expense = totalExpense.editText!!.text.toString()
+//            val Food = foodInput.editText!!.text.toString()
+//            val Water = waterInput.editText!!.text.toString()
+//            val Hotel = hotelInput.editText!!.text.toString()
+//            val  Other_Transport = otherInput.editText!!.text.toString()
+//
+//            val ImageName = selectedImageUri.lastPathSegment
+//
+//            val formData = FormData(
+//                userId!!,
+//                Transport_type,
+//                Total_expense,
+//                Food,
+//                Water,
+//                Hotel,
+//                Other_Transport,
 //                images,
-//                imageName
+//                ImageName!!
 //            )
-//
-//            Log.d("---------------", "onCreate: User Details : $transportationData")
-//
-//            CoroutineScope(Dispatchers.IO).launch {
-//                try {
-//                    val response = apiService.saveTransportationData(transportationData)
+//            Log.d("-----", "onCreate: ${formData}")
+//            apiService.saveFormData(formData).enqueue(object : Callback<Void> {
+//                override fun onResponse(call: Call<Void>, response: Response<Void>) {
 //                    if (response.isSuccessful) {
-//                        withContext(Dispatchers.Main) {
-//                            Toast.makeText(applicationContext, "Data saved", Toast.LENGTH_SHORT).show()
-//                            showSuccessMessage()
-//                            val handler = Handler()
-//                            handler.postDelayed({
-//                                val intent = Intent(this@UserDetails, MainActivity::class.java)
-//                                startActivity(intent)
-//                            }, 3000)
-//                        }
+//                        // Handle a successful response
+//                        Toast.makeText(this@UserDetails, "Data saved successfully", Toast.LENGTH_SHORT).show()
 //                    } else {
-//                        withContext(Dispatchers.Main) {
-//                            Toast.makeText(applicationContext, "Failed to save data", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                } catch (e: Exception) {
-//                    withContext(Dispatchers.Main) {
-//                        Toast.makeText(applicationContext, "Network error", Toast.LENGTH_SHORT).show()
+//                        // Handle an unsuccessful response
+//                        Toast.makeText(this@UserDetails, "Failed to save data", Toast.LENGTH_SHORT).show()
 //                    }
 //                }
-//            }
-//  }
-
-
+//                override fun onFailure(call: Call<Void>, t: Throwable) {
+//                    // Handle the network error
+//                    Toast.makeText(this@UserDetails, "Network error", Toast.LENGTH_SHORT).show()
+//                }
+//            })
 //
-//    uploadButton.setOnClickListener {
-//        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//        startActivityForResult(intent, IMAGE_PICK_REQUEST)
-//    }
-//
-//    helpBtn = findViewById(R.id.helpBtn)
-//
-//    helpBtn.setOnClickListener { v ->
-//        showPopupMenu(v)
-//    }
-//}
-//
-//override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//    super.onActivityResult(requestCode, resultCode, data)
-//    if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-//        selectedImageUri = data.data!!
-//        val selectedImageUri = getRealPathFromURI(selectedImageUri)
-//        if (selectedImageUri != null) {
-//            val imageInfo = loadAndConvertImageToByteArray(selectedImageUri)
-//            Log.d("**********", "onCreate:Image info: ${imageInfo}")
-//        } else {
-//            Toast.makeText(applicationContext, "Getting image error", Toast.LENGTH_SHORT).show()
 //        }
-//    }
-//}
-//
-//private fun loadAndConvertImageToByteArray(imagePath: String?): Pair<ByteArray, String?> {
-//    if (imagePath == null) {
-//        return Pair(ByteArray(0), null)
-//    }
-//    try {
-//        val inputStream = FileInputStream(imagePath)
-//        val channel = inputStream.channel
-//        val size = channel.size()
-//        val byteArray = ByteArray(size.toInt())
-//
-//        val buffer = ByteBuffer.allocate(size.toInt())
-//        channel.read(buffer)
-//        channel.close()
-//        inputStream.close()
-//
-//        buffer.flip()
-//        val imageName = imagePath.substring(imagePath.lastIndexOf("/") + 1)
-//        return Pair(byteArray, imageName)
-//    } catch (e: FileNotFoundException) {
-//        e.printStackTrace()
-//    } catch (e: IOException) {
-//        e.printStackTrace()
-//    }
-//    return Pair(ByteArray(0), null)
-//}
-//
-//private fun getRealPathFromURI(uri: Uri): String? {
-//    val projection = arrayOf(MediaStore.Images.Media.DATA)
-//    val cursor = contentResolver.query(uri, projection, null, null, null)
-//    val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-//    cursor?.moveToFirst()
-//    val imagePath = cursor?.getString(columnIndex!!)
-//    cursor?.close()
-//    return imagePath
-//}

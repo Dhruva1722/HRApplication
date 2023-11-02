@@ -17,13 +17,13 @@
         android:id="@+id/textStartDate">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:drawableEnd="@drawable/baseline_calendar_month_24"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:inputType="date"
             android:textColor="@color/black" />
-    </com.google.android.material.textfield.TextInputLayout>
 
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -40,39 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:inputType="date"
             android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-
-        <TextView
-            android:id="@+id/textStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status: "
-            android:textSize="20sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="5dp"/>
-
-        <TextView
-            android:id="@+id/textNumberOfDays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Number of Days: "
-            android:textSize="20sp"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="50dp"
-            android:layout_marginTop="5dp"/>
-
-
-
-    </RelativeLayout>
 
 
     <Button

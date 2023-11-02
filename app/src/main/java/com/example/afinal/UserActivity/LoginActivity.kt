@@ -70,10 +70,10 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-//            if (password.length < 6) {
-//                passwordEditText.error = "Password must be at least 6 characters long"
-//                return@setOnClickListener
-//            }
+            if (password.length < 6) {
+                passwordEditText.error = "Password must be at least 6 characters long"
+                return@setOnClickListener
+            }
 
             val loginAdmin = LoginData(email, password)
             val adminDataJson = gson.toJsonTree(loginAdmin).asJsonObject

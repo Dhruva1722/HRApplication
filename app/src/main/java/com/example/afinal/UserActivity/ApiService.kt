@@ -28,7 +28,6 @@ interface ApiService {
     @POST("/empregister")
     fun registerUser(@Body registrationData: JsonObject): Call<Any>
 
-
     @POST("/emplogin")
     fun loginRequest(@Body credentials: JsonObject): Call<LoginResponse>
 
