@@ -41,7 +41,6 @@ class CanteenFragment : Fragment() {
             }
         }.attach()
 
-
         buyCoupenCard = view.findViewById(R.id.buyCoupenCard)
         buyCoupenCard.setOnClickListener {
             val intent = Intent(activity, BuyCoupen::class.java)

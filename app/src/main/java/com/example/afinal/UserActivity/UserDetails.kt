@@ -54,10 +54,11 @@ class UserDetails : AppCompatActivity() {
 
     private lateinit var imageByteBuffer: ByteBuffer
 
-    private var selectedImagePath: String? = null
-    private lateinit var selectedImageUri: Uri
+//    private var selectedImageUri: String? = null
 
 
+    private var imageUrl: String? = null
+    private var imageName : String? = null
     private val IMAGE_PICK_REQUEST = 126
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -112,8 +113,16 @@ class UserDetails : AppCompatActivity() {
             val hotelRequestBody = RequestBody.create(null, Hotel)
             val otherTransportRequestBody = RequestBody.create(null, Other_Transport)
 
-            val imageFile = File(selectedImagePath)
-            val imageRequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
+//            val imageFile = File(selectedImagePath)
+//            val imageRequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
+//            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name ,imageRequestBody)
+
+//            val imageUrlRequestBody = RequestBody.create(MediaType.parse("image/png"), imageUrl)
+//            val imageNameRequestBody = RequestBody.create(MediaType.parse("text/plain"), imageName)
+
+            // Create MultipartBody.Part for the image file
+            val imageFile = File(imageUrl)
+            val imageRequestBody = RequestBody.create(MediaType.parse("image/png"), imageFile)
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
 
             val requestData = "User ID: $userId\n" +
@@ -123,8 +132,8 @@ class UserDetails : AppCompatActivity() {
                     "Water: $Water\n" +
                     "Hotel: $Hotel\n" +
                     "Other Transport: $Other_Transport\n" +
-                    "image data: $imagePart\n"+
-                    "Image File Name: ${imageFile.name}"
+                    "image data: $imageRequestBody\n"+
+                    "Image File Name: $imageName"
 
             Log.d("UserDetails", "Data being sent to API:\n$requestData")
 
@@ -138,6 +147,7 @@ class UserDetails : AppCompatActivity() {
                 waterRequestBody,
                 hotelRequestBody,
                 otherTransportRequestBody,
+                imageRequestBody,
                 imagePart,
             ).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -174,16 +184,36 @@ class UserDetails : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_REQUEST)
     }
 
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+//            selectedImageUri = data.data!!
+//            selectedImagePath = getRealPathFromURI(selectedImageUri)
+//
+//            val compressedImagePath = compressImage(selectedImagePath)
+//
+//            // Load the compressed image as a ByteBuffer
+//            imageByteBuffer = loadAndConvertImageToByteBuffer(compressedImagePath)
+//        }
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            selectedImageUri = data.data!!
-            selectedImagePath = getRealPathFromURI(selectedImageUri)
 
-            val compressedImagePath = compressImage(selectedImagePath)
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
+            // Get the selected image's URI
+            val selectedImageUri: Uri? = data?.data
 
-            // Load the compressed image as a ByteBuffer
-            imageByteBuffer = loadAndConvertImageToByteBuffer(compressedImagePath)
+            if (selectedImageUri != null) {
+                // Convert the URI to an image URL
+                imageUrl = selectedImageUri.toString()
+                val imageFile = File(selectedImageUri.path)
+                val imageName = imageFile.name
+
+                Log.d("+++++++++", "onActivityResult: ${imageFile}  ***** ${imageName}")
+            } else {
+                Toast.makeText(this, "Failed to get the selected image", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

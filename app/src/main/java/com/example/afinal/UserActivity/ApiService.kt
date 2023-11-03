@@ -14,7 +14,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -69,7 +68,8 @@ interface ApiService {
         @Part("Water") water: RequestBody,
         @Part("Hotel") hotel: RequestBody,
         @Part("Other_Transport") otherTransport: RequestBody,
-        @Part image:MultipartBody.Part
+        @Part image: RequestBody,
+        @Part("ImageName") imageName: MultipartBody.Part,
     ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>

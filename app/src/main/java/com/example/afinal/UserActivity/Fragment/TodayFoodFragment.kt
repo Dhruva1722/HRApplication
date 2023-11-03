@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Toast
 import com.example.afinal.R
@@ -31,6 +30,7 @@ class TodayFoodFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private var userId: String? = null
+    private var menuId: String? = null
     private var hasPurchased = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,26 +47,30 @@ class TodayFoodFragment : Fragment() {
 
         userId = sharedPreferences.getString("User",null)
 
+        menuId = sharedPreferences.getString("menuRef",null)
+
         buyBtn = view.findViewById(R.id.bookBtnId)
 
         if (storedPurchaseDate != currentDateTime) {
-//            buyBtn.isEnabled = true
-//            hasPurchased = false
+            buyBtn.isEnabled = true
+            hasPurchased = false
         } else {
-//            buyBtn.isEnabled = false
-//            hasPurchased = true
+            buyBtn.isEnabled = false
+            hasPurchased = true
         }
 //
         buyBtn.setOnClickListener {
             if (!hasPurchased) {
                 val numberOfCoupons = 1
                 val purchaseDate = currentDateTime
-                userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate) }
-//                buyBtn.isEnabled = false
+                val  menuRef = menuId
+                userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate,
+                    menuRef!!) }
+                buyBtn.isEnabled = false
 
                 hasPurchased = true
                Toast.makeText(context, "This Coupen is valid till today", Toast.LENGTH_SHORT).show()
-//                saveCoupen()
+                saveCoupen()
             } else {
                 Toast.makeText(context, "You have already made a purchase today.", Toast.LENGTH_SHORT).show()
             }
@@ -84,9 +88,12 @@ class TodayFoodFragment : Fragment() {
                         val menuData = response.body()
                         Log.d("===========", "onResponse: ${menuData}")
                         menuData?.today?.let { todayCanteen ->
-                            val menuId = todayCanteen._Id
+                            val menuRef = todayCanteen._id
+                            val editor = sharedPreferences.edit()
+                            editor.putString("menuRef", menuRef)
+                            editor.apply()
                             val menuText = todayCanteen.menu
-                            Log.d("----------", "onResponse: ${todayCanteen._Id}")
+                            Log.d("----------", "onResponse: ${todayCanteen._id}")
                             val menuItemsArray = menuText!!.split(",").map { menuItem ->
                                 "$menuItem"
                             }
@@ -95,11 +102,6 @@ class TodayFoodFragment : Fragment() {
                             Log.d("-----------", "onResponse: ${menuItemsArray}")
                         }
 
-//                        menuData?.today?.menu?.let { todayMenuText ->
-//                            val menuItemsArray = todayMenuText.split(",")
-//                            adapter.addAll(menuItemsArray)
-//                            Log.d("-----------", "onResponse: ${menuItemsArray}")
-//                        }
                     } else {
                         Toast.makeText(requireContext(),"Data not find",Toast.LENGTH_SHORT).show()
                     }
@@ -117,13 +119,16 @@ class TodayFoodFragment : Fragment() {
         editor.putString("purchaseDate", currentDateTime)
         editor.apply()
     }
-    private fun makePurchase(userId: String, numberOfCoupons: Int, purchaseDate: String) {
+    private fun makePurchase(userId: String, numberOfCoupons: Int, purchaseDate: String, menuId: String) {
 
         val purchaseData = PurchaseData(
             userId = userId,
             numberOfCoupons = numberOfCoupons,
-            purchaseDate = purchaseDate
+            purchaseDate = purchaseDate,
+            menuRef = menuId
         )
+        Log.d("----------", "onResponse: $purchaseData")
+
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
         val call = apiService.buyMenuItems(purchaseData)
 
@@ -132,6 +137,8 @@ class TodayFoodFragment : Fragment() {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Purchase successful", Toast.LENGTH_SHORT).show()
                 } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown Error"
+                    Log.e("Purchase Failed", "Response: ${errorBody}")
                     Toast.makeText(context, "Purchase failed", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -146,7 +153,7 @@ data class MenuData(
     val tomorrow: Canteen?
 )
 data class Canteen(
-    val _Id: String?,
+    val _id: String?,
     val date: String?,
     val menu: String?,
     val status: String?
@@ -154,5 +161,6 @@ data class Canteen(
 data class PurchaseData(
     val userId: String,
     val numberOfCoupons: Int,
-    val purchaseDate: String
+    val purchaseDate: String,
+    val menuRef: String?
 )

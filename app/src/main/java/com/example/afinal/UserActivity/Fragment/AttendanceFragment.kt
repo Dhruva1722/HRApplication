@@ -178,9 +178,9 @@ class AttendanceFragment : Fragment() {
         val textEndDate = view.findViewById<TextInputLayout>(R.id.textEndDate)
         val applyBtn = view.findViewById<Button>(R.id.applyBtn)
 
-          textStartDate.setOnClickListener {
-              showDatePickerDialog()
-          }
+        textStartDate.setOnClickListener {
+            showDatePickerDialog()
+        }
         textEndDate.setOnClickListener {
             showDatePickerDialog()
         }
