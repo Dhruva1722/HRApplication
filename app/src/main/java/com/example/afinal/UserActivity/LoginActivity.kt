@@ -111,6 +111,7 @@ class LoginActivity : AppCompatActivity() {
                 }
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Toast.makeText(applicationContext,"network error",Toast.LENGTH_SHORT).show()
+                    Log.d("*****************", "Network error: ${t.message}")
                 }
             })
         }

@@ -57,7 +57,6 @@ class LocationProvider(private val activity: AppCompatActivity) {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
 
-
             val sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
             userId = sharedPreferences.getString("User", null) ?: ""
 

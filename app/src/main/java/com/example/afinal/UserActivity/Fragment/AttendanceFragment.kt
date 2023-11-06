@@ -363,11 +363,11 @@ class AttendanceFragment : Fragment() {
                         else -> "API request failed"
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-
                 }
             }
 
             override fun onFailure(call: Call<LeaveResponse>, t: Throwable) {
+                Log.d("*****************", "Network error: ${t.message}")
                 Toast.makeText(requireContext(), "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
