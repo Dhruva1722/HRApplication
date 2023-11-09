@@ -36,6 +36,7 @@ class TodayFoodFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_today_food, container, false)
 
         foodListView = view.findViewById(R.id.foodListView)

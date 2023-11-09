@@ -9,6 +9,7 @@ import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.example.afinal.UserActivity.Fragment.PurchaseData1
+import com.example.afinal.UserActivity.Fragment.User
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -58,7 +59,7 @@ interface ApiService {
 //    fun saveFormData(@Body formData: FormData): Call<Void>
 
     @Multipart
-    @POST("form") // Replace with your API endpoint
+    @POST("/form") // Replace with your API endpoint
     fun saveFormData(
         @Part("userId") userId: RequestBody,
         @Part("Transport_type") transportType: RequestBody,
@@ -68,8 +69,8 @@ interface ApiService {
         @Part("Water") water: RequestBody,
         @Part("Hotel") hotel: RequestBody,
         @Part("Other_Transport") otherTransport: RequestBody,
-        @Part image: RequestBody,
-        @Part("ImageName") imageName: MultipartBody.Part,
+        @Part image: MultipartBody.Part, // Remove the name from @Part
+        @Part("ImageName") imageName: RequestBody // Add RequestBody for the name
     ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
@@ -88,6 +89,10 @@ interface ApiService {
 
     @GET("/event")
     fun getEvents(): Call<List<Event>>
+
+
+    @GET("user/{Id}") // Replace with your actual endpoint
+    fun getUserData(@Path("Id") userId: String): Call<User>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>

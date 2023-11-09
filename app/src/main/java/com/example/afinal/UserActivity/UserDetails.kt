@@ -120,10 +120,10 @@ class UserDetails : AppCompatActivity() {
 //            val imageUrlRequestBody = RequestBody.create(MediaType.parse("image/png"), imageUrl)
 //            val imageNameRequestBody = RequestBody.create(MediaType.parse("text/plain"), imageName)
 
-            // Create MultipartBody.Part for the image file
             val imageFile = File(imageUrl)
             val imageRequestBody = RequestBody.create(MediaType.parse("image/png"), imageFile)
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
+            val imageNameRequestBody = RequestBody.create(MediaType.parse("image/png"), imageName)
 
             val requestData = "User ID: $userId\n" +
                     "Transport Type: $Transport_type\n" +
@@ -147,8 +147,8 @@ class UserDetails : AppCompatActivity() {
                 waterRequestBody,
                 hotelRequestBody,
                 otherTransportRequestBody,
-                imageRequestBody,
                 imagePart,
+                imageNameRequestBody,
             ).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
@@ -164,7 +164,6 @@ class UserDetails : AppCompatActivity() {
                     Toast.makeText(this@UserDetails, "Network error", Toast.LENGTH_SHORT).show()
                 }
             })
-
         }
 
         val helpBtn = findViewById<ImageView>(R.id.helpBtn)
@@ -184,18 +183,7 @@ class UserDetails : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_REQUEST)
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-//            selectedImageUri = data.data!!
-//            selectedImagePath = getRealPathFromURI(selectedImageUri)
-//
-//            val compressedImagePath = compressImage(selectedImagePath)
-//
-//            // Load the compressed image as a ByteBuffer
-//            imageByteBuffer = loadAndConvertImageToByteBuffer(compressedImagePath)
-//        }
-//    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -207,10 +195,16 @@ class UserDetails : AppCompatActivity() {
             if (selectedImageUri != null) {
                 // Convert the URI to an image URL
                 imageUrl = selectedImageUri.toString()
-                val imageFile = File(selectedImageUri.path)
-                val imageName = imageFile.name
 
-                Log.d("+++++++++", "onActivityResult: ${imageFile}  ***** ${imageName}")
+                // Compress the image before uploading
+                val compressedImageFile = compressImage(getRealPathFromURI(selectedImageUri))
+
+                Log.d("+++++++++", "onActivityResult: $compressedImageFile ***** $imageName")
+
+//                val imageNameRequestBody =
+//                    RequestBody.create(MediaType.parse(""), imageName)
+
+                // Now, use `imagePart` and `imageNameRequestBody` for further processing.
             } else {
                 Toast.makeText(this, "Failed to get the selected image", Toast.LENGTH_SHORT).show()
             }

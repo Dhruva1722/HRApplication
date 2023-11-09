@@ -187,8 +187,8 @@ class AttendanceFragment : Fragment() {
 
         applyBtn.setOnClickListener {
 
-        val startDateStr = textStartDate.editText!!.text.toString()
-        val endDateStr = textEndDate.editText!!.text.toString()
+            val startDateStr = textStartDate.editText!!.text.toString()
+            val endDateStr = textEndDate.editText!!.text.toString()
 
             Log.d("LeaveApplicationDialog", "startDateStr: $startDateStr")
             Log.d("LeaveApplicationDialog", "endDateStr: $endDateStr")

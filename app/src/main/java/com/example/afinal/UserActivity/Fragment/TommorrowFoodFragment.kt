@@ -30,7 +30,9 @@ class TommorrowFoodFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private var userId: String? = null
+    private var menuId: String? = null
     private var hasPurchased = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +45,8 @@ class TommorrowFoodFragment : Fragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val storedPurchaseDate = sharedPreferences.getString("purchaseDate", "")
         userId = sharedPreferences.getString("User",null)
+        menuId = sharedPreferences.getString("menuRefTomorrow",null)
+
 
         val currentDateTime = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         buyBtn = view.findViewById(R.id.bookBtnId)
@@ -56,8 +60,9 @@ class TommorrowFoodFragment : Fragment() {
             if (!hasPurchased) {
                 val numberOfCoupons = 1
                 val purchaseDate = currentDateTime
-                userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate) }
-                buyBtn.isEnabled = false
+                val  menuRef = menuId
+                userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate , menuRef!!) }
+//                buyBtn.isEnabled = false
 
                 hasPurchased = true
                 Toast.makeText(context, "This Coupen is valid till today", Toast.LENGTH_SHORT).show()
@@ -75,11 +80,28 @@ class TommorrowFoodFragment : Fragment() {
             override fun onResponse(call: Call<MenuData>, response: Response<MenuData>) {
                 if (response.isSuccessful) {
                     val menuData = response.body()
-                    menuData?.tomorrow?.menu?.let { tomorrowMenuText ->
-                        val menuItemsArray = tomorrowMenuText.split(", ")
-                        adapter.clear()
+
+                    menuData?.tomorrow?.let { tomorrowCanteen ->
+                        val menuRef = tomorrowCanteen._id
+                        val editor = sharedPreferences.edit()
+                        editor.putString("menuRefTomorrow", menuRef)
+                        editor.apply()
+                        val menuText = tomorrowCanteen.menu
+                        Log.d("----------", "onResponse: ${tomorrowCanteen._id}")
+                        val menuItemsArray = menuText!!.split(",").map { menuItem ->
+                            "$menuItem"
+                        }
                         adapter.addAll(menuItemsArray)
+
+                        Log.d("-----------", "onResponse: ${menuItemsArray}")
                     }
+
+//
+//                    menuData?.tomorrow?.menu?.let { tomorrowMenuText ->
+//                        val menuItemsArray = tomorrowMenuText.split(", ")
+//                        adapter.clear()
+//                        adapter.addAll(menuItemsArray)
+//                    }
                 } else {
                     Toast.makeText(requireContext(), "Data not found", Toast.LENGTH_SHORT).show()
                 }
@@ -93,13 +115,17 @@ class TommorrowFoodFragment : Fragment() {
     }
 
 
-    private fun makePurchase(userId: String, numberOfCoupons: Int, purchaseDate: String) {
+    private fun makePurchase(userId: String, numberOfCoupons: Int, purchaseDate: String ,menuId: String) {
 
         val purchaseData = PurchaseData1(
             userId = userId,
             numberOfCoupons = numberOfCoupons,
-            purchaseDate = purchaseDate
+            purchaseDate = purchaseDate,
+            menuRef = menuId
         )
+
+        Log.d("----------", "onResponse: $purchaseData")
+
         val apiService = RetrofitClient.getClient().create(ApiService::class.java)
         val call = apiService.buyMenuItems(purchaseData)
 
@@ -125,6 +151,7 @@ class TommorrowFoodFragment : Fragment() {
 //)
 
 data class Canteen1(
+    val _id: String?,
     val date: String?,
     val menu: String?,
     val status: String?
@@ -133,5 +160,6 @@ data class Canteen1(
 data class PurchaseData1(
     val userId: String,
     val numberOfCoupons: Int,
-    val purchaseDate: String
+    val purchaseDate: String,
+    val menuRef: String?
 )

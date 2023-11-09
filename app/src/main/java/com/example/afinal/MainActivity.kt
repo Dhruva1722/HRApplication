@@ -20,6 +20,7 @@ import com.example.afinal.UserActivity.Fragment.AttendanceFragment
 import com.example.afinal.UserActivity.Fragment.CanteenFragment
 import com.example.afinal.UserActivity.Fragment.EventFragment
 import com.example.afinal.UserActivity.Fragment.HomeFragment
+import com.example.afinal.UserActivity.Fragment.ProfileFragment
 import com.example.afinal.UserActivity.HelpActivity
 import com.example.afinal.UserActivity.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -108,6 +109,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             } else if (item.itemId == R.id.nav_event) {
                 fragment = EventFragment()
                 drawerLayout.closeDrawer(GravityCompat.START)
+            }else if (item.itemId == R.id.nav_profile) {
+                fragment = ProfileFragment()
+                drawerLayout.closeDrawer(GravityCompat.START)
             }
             fragment?.let { loadFragment(it) }
             true
@@ -158,6 +162,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             fragment = CanteenFragment()
         } else if (item.itemId == R.id.bottomnav_event) {
             fragment = EventFragment()
+        }else if (item.itemId == R.id.bottomnav_profile) {
+            fragment = ProfileFragment()
         }
         fragment?.let { loadFragment(it) }
         return true
