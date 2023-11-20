@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
     <uses-feature
         android:name="android.hardware.telephony"
@@ -18,7 +17,6 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -27,7 +25,17 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.FInal"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".UserActivity.LeaveStatus"
+            android:exported="false" />
+        <activity
+            android:name=".UserActivity.TripDetails"
+            android:exported="false" />
+        <activity
+            android:name=".UserActivity.Profile_Page"
+            android:exported="false" />
         <activity
             android:name=".UserActivity.SaturdaySpecial"
             android:exported="false" />

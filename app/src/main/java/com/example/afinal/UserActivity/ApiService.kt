@@ -9,7 +9,6 @@ import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
 import com.example.afinal.UserActivity.Fragment.PurchaseData1
-import com.example.afinal.UserActivity.Fragment.User
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -74,6 +73,12 @@ interface ApiService {
     ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
+
+    @POST("/Users/{id}")
+    fun editUserdata(
+        @Path("id") userId: String,
+        @Body leaveRequest: LeaveRequest
+    ): Call<ResponseBody>
 
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>
