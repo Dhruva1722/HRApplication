@@ -1,69 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UserActivity.Profile_Page">
-
-
-    <LinearLayout
-        android:id="@+id/headerLY"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="#0457B1">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Profile"
-                android:fontFamily="sans-serif-black"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="5dp"/>
-
-            <LinearLayout
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/idBtnSendData"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:src="@drawable/baseline_save_alt_24"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center"/>
-
-                <ImageView
-                    android:id="@+id/idBtnEditData"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:src="@drawable/baseline_edit_24"
-                    android:gravity="center" />
-
-            </LinearLayout>
-
-
-
-
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/headerLY">
+        android:layout_height="match_parent">
 
-
+        <RelativeLayout
+            android:id="@+id/profileLy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
@@ -72,11 +21,19 @@
                 android:src="@drawable/woman"
                 android:layout_centerHorizontal="true" />
 
+            <ImageView
+                android:id="@+id/uploadImageBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/camera"
+                android:layout_alignBottom="@id/profileImage"
+                android:layout_marginStart="100dp"/>
+        </RelativeLayout>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/profileImage"
+            android:layout_below="@id/profileLy"
             android:layout_marginBottom="10dp">
 
             <RelativeLayout
@@ -88,8 +45,6 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:hint=" Employe ID"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"/>
@@ -98,8 +53,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Employe Name"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -111,8 +64,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Employe Email ID"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -125,8 +76,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Department"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -139,8 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Expertise"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -152,8 +99,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Designation"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -166,8 +111,6 @@
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:hint="DOB"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -179,8 +122,6 @@
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:hint="DOJ"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
@@ -195,8 +136,6 @@
                     android:layout_height="50dp"
                     android:hint="Blood Group"
                     android:textStyle="bold"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
@@ -211,8 +150,6 @@
                     android:layout_height="50dp"
                     android:hint="Qualification"
                     android:textStyle="bold"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
@@ -225,8 +162,6 @@
                     android:layout_height="50dp"
                     android:hint="Employe Number"
                     android:textStyle="bold"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -237,9 +172,7 @@
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:hint="City"
-                    android:enabled="false"
                     android:textStyle="bold"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -251,9 +184,7 @@
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:hint="State"
-                    android:enabled="false"
                     android:textStyle="bold"
-                    android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -264,8 +195,6 @@
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:hint="Country"
-                    android:enabled="false"
-                    android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -274,10 +203,13 @@
                     android:layout_below="@id/empNumber"
                     android:layout_toRightOf="@id/empState"/>
 
-
-
-
-
+                <ImageView
+                    android:id="@+id/saveEmpData"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/empCountry"
+                    android:src="@drawable/baseline_check_circle_24"
+                    android:layout_centerHorizontal="true"/>
 
             </RelativeLayout>
 
@@ -287,7 +219,5 @@
 
 
     </RelativeLayout>
-
-
 
 </RelativeLayout>

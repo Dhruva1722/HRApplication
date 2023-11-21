@@ -3,8 +3,6 @@ package com.example.afinal.UserActivity
 
 import com.example.afinal.UserActivity.Fragment.AttendanceData
 import com.example.afinal.UserActivity.Fragment.Event
-import com.example.afinal.UserActivity.Fragment.LeaveRequest
-import com.example.afinal.UserActivity.Fragment.LeaveResponse
 import com.example.afinal.UserActivity.Fragment.LocationInfo
 import com.example.afinal.UserActivity.Fragment.MenuData
 import com.example.afinal.UserActivity.Fragment.PurchaseData
@@ -18,6 +16,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -58,7 +57,7 @@ interface ApiService {
 //    fun saveFormData(@Body formData: FormData): Call<Void>
 
     @Multipart
-    @POST("/form") // Replace with your API endpoint
+    @POST("/form")
     fun saveFormData(
         @Part("userId") userId: RequestBody,
         @Part("Transport_type") transportType: RequestBody,
@@ -74,11 +73,11 @@ interface ApiService {
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
 
-    @POST("/Users/{id}")
-    fun editUserdata(
+    @PUT("/Users/{id}")
+    fun updateUserData(
         @Path("id") userId: String,
-        @Body leaveRequest: LeaveRequest
-    ): Call<ResponseBody>
+        @Body employeeUpdateData: UserData
+    ): Call<Void>
 
     @GET("/manager")
     fun getManagers(): Call<List<Manager>>

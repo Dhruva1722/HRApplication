@@ -14,22 +14,12 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="350dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/loginbg">
 
-        <TextView
-            android:id="@+id/Username"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:fontFamily="@font/inriaserifregular"
-            android:textColor="@color/black"
-            android:textSize="25sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"/>
 
         <ImageView
             android:id="@+id/onsiteIcon"
@@ -37,10 +27,11 @@
             android:layout_height="40dp"
             android:src="@drawable/onsite"
             android:visibility="gone"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:layout_toRightOf="@id/Username"
             android:layout_marginStart="30dp" />
+
 
         <ImageView
             android:id="@+id/inofficeIcon"
@@ -48,12 +39,25 @@
             android:layout_height="40dp"
             android:src="@drawable/inoffice"
             android:visibility="gone"
-            android:layout_toRightOf="@id/Username"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="10dp"/>
+            <TextView
+                android:id="@+id/Username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/inriaserifregular"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/onsiteIcon"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"/>
 
-        <TextView
+
+            <TextView
             android:id="@+id/dateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -154,50 +158,50 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/leaveBalanceTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available Leave Balance "
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/absentBtn"/>
+<!--            <TextView-->
+<!--                android:id="@+id/leaveBalanceTv"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Available Leave Balance "-->
+<!--                android:textSize="20dp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:layout_below="@id/absentBtn"/>-->
 
         </RelativeLayout>
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:layout_below="@id/btnLY"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="@drawable/loginbg">
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="350dp"-->
+<!--            android:layout_below="@id/btnLY"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:orientation="vertical"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:background="@drawable/loginbg">-->
 
-         <Button
-             android:id="@+id/applyForLeaveBtn"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Apply For Leave"
-             android:layout_marginTop="10dp"/>
+<!--         <Button-->
+<!--             android:id="@+id/applyForLeaveBtn"-->
+<!--             android:layout_width="wrap_content"-->
+<!--             android:layout_height="wrap_content"-->
+<!--             android:text="Apply For Leave"-->
+<!--             android:layout_marginTop="10dp"/>-->
 
-            <ListView
-                android:id="@+id/leaveStatusList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp" />
+<!--            <ListView-->
+<!--                android:id="@+id/leaveStatusList"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="15dp"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:layout_marginBottom="30dp" />-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
     </LinearLayout>
 

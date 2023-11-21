@@ -24,6 +24,8 @@ import androidx.fragment.app.Fragment
 import com.example.afinal.R
 import com.example.afinal.UserActivity.Adapter.LeaveAdapter
 import com.example.afinal.UserActivity.ApiService
+import com.example.afinal.UserActivity.LeaveRequest
+import com.example.afinal.UserActivity.LeaveResponse
 import com.example.afinal.UserActivity.RetrofitClient
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -52,8 +54,6 @@ class AttendanceFragment : Fragment() {
     private lateinit var presentBtn: LinearLayout
     private lateinit var absentBtn: LinearLayout
 
-    private lateinit var applyBtn : Button
-    private lateinit var leaveadapter: ArrayAdapter<String>
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userId: String
@@ -89,17 +89,6 @@ class AttendanceFragment : Fragment() {
         absentBtn = view.findViewById(R.id.absentBtn)
         username = view.findViewById(R.id.Username)
 
-        val listOfLeave = view.findViewById<ListView>(R.id.leaveStatusList)
-        leaveadapter = ArrayAdapter(requireContext(), R.layout.leavestatus)
-        listOfLeave.adapter = leaveadapter
-
-        fetchLeaveApplications(userId)
-        applyBtn = view.findViewById(R.id.applyForLeaveBtn)
-
-        applyBtn.setOnClickListener {
-         LeaveApplicationDialog()
-        }
-
 
 
         val userEmail = sharedPreferences.getString("userEmail", "")
@@ -127,7 +116,7 @@ class AttendanceFragment : Fragment() {
             updateUI(savedStatus ?: "")
         }
 
-        isDateChanged = hasDateChanged(lastAttendanceDate)
+       isDateChanged = hasDateChanged(lastAttendanceDate)
 
         if (isPunchedIn) {
             if (isDateChanged) {
@@ -168,90 +157,7 @@ class AttendanceFragment : Fragment() {
             isDatePickerDialogVisible = true
         }
     }
-    private fun LeaveApplicationDialog() {
 
-        val builder = AlertDialog.Builder(requireContext())
-
-        val view = layoutInflater.inflate(R.layout.leave_item, null)
-
-        val textStartDate = view.findViewById<TextInputLayout>(R.id.textStartDate)
-        val textEndDate = view.findViewById<TextInputLayout>(R.id.textEndDate)
-        val applyBtn = view.findViewById<Button>(R.id.applyBtn)
-
-        textStartDate.setOnClickListener {
-            showDatePickerDialog()
-        }
-        textEndDate.setOnClickListener {
-            showDatePickerDialog()
-        }
-
-        applyBtn.setOnClickListener {
-
-            val startDateStr = textStartDate.editText!!.text.toString()
-            val endDateStr = textEndDate.editText!!.text.toString()
-
-            Log.d("LeaveApplicationDialog", "startDateStr: $startDateStr")
-            Log.d("LeaveApplicationDialog", "endDateStr: $endDateStr")
-
-            if (startDateStr.isEmpty() || endDateStr.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val startDate = convertToUnixTimestamp(startDateStr)
-            val endDate = convertToUnixTimestamp(endDateStr)
-
-            Log.d("LeaveApplicationDialog", "startDate: $startDate")
-            Log.d("LeaveApplicationDialog", "endDate: $endDate")
-
-            if (startDate != null && endDate != null) {
-
-                val startDate = convertToISO8601(startDate)
-                val endDate = convertToISO8601(endDate)
-
-                val leaveRequest = LeaveRequest(startDate, endDate)
-                Log.d("LeaveApplicationDialog", "LeaveRequest: $leaveRequest")
-                val call = apiService.postLeaveRequest(userId, leaveRequest)
-
-                call.enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        if (response.isSuccessful) {
-                            Toast.makeText(requireContext(), "Leave request submitted successfully", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(requireContext(), "Failed to submit leave request", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            } else {
-                Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        builder.setView(view)
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-    private fun convertToUnixTimestamp(dateStr: String): Long? {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        return try {
-            val date = dateFormat.parse(dateStr)
-            date?.time
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            null
-        }
-    }
-    private fun convertToISO8601(timestamp: Long): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-        return dateFormat.format(Date(timestamp))
-    }
     private fun hasDateChanged(lastAttendanceDate: String?): Boolean {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         return currentDate != lastAttendanceDate
@@ -338,41 +244,6 @@ class AttendanceFragment : Fragment() {
         userStatusTime.text = message
     }
 
-    private fun fetchLeaveApplications(userId: String) {
-        val call = apiService.getLeaveApplications(userId)
-        call.enqueue(object : Callback<LeaveResponse> {
-            override fun onResponse(call: Call<LeaveResponse>, response: Response<LeaveResponse>) {
-                if (response.isSuccessful) {
-                    val leaveResponse = response.body()
-                    if (leaveResponse != null) {
-                        val totalNumberOfDays = leaveResponse.totalNumberOfDays
-                        val leaveApplications = leaveResponse.leaveApplications
-
-                        val totalNumberOfDaysTextView = view!!.findViewById<TextView>(R.id.leaveBalanceTv)
-                        totalNumberOfDaysTextView.text = "Total Number of Days: $totalNumberOfDays"
-
-                        val leaveListView = view!!.findViewById<ListView>(R.id.leaveStatusList)
-                        val leaveAdapter = LeaveAdapter(requireContext(), leaveApplications)
-                        leaveListView.adapter = leaveAdapter
-                    } else {
-                        Toast.makeText(requireContext(), "No data available", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    val errorMessage = when (response.code()) {
-                        404 -> "No Data Available for Leave"
-                        else -> "API request failed"
-                    }
-                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<LeaveResponse>, t: Throwable) {
-                Log.d("*****************", "Network error: ${t.message}")
-                Toast.makeText(requireContext(), "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
 }
 
 data class AttendanceData(
@@ -380,19 +251,3 @@ data class AttendanceData(
     val isPunchIn: Boolean
 )
 
-data class LeaveRequest(
-    val startDate: String,
-    val endDate: String
-)
-
-data class LeaveResponse(
-    val totalNumberOfDays: Int,
-    val leaveApplications: List<LeaveInfo>
-)
-
-data class LeaveInfo(
-    val startDate: String,
-    val endDate: String,
-    val status: String,
-    val numberOfDays: Int
-)

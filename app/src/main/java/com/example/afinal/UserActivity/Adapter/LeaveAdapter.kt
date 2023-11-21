@@ -9,8 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.afinal.R
-import com.example.afinal.UserActivity.Fragment.LeaveInfo
-
+import com.example.afinal.UserActivity.LeaveInfo
 
 
 class LeaveAdapter(private val context: Context, private val leaveList: List<LeaveInfo>) : BaseAdapter() {

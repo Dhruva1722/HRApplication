@@ -2,6 +2,7 @@ package com.example.afinal.UserActivity.Fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -29,24 +30,26 @@ class ProfileFragment : Fragment() {
 
         profilePage = view.findViewById(R.id.edit_Profile)
         profilePage.setOnClickListener{
-            val intent = Intent(context, Profile_Page::class.java)
+            Log.d("--------------", "onCreateView: ----------- button clicked!!! profilePage")
+            val intent = Intent(requireContext(), Profile_Page::class.java)
             startActivity(intent)
         }
 
         tripPage = view.findViewById(R.id.trip_Details)
-        profilePage.setOnClickListener{
-            val intent = Intent(context, TripDetails::class.java)
+        tripPage.setOnClickListener{
+            Log.d("--------------", "onCreateView: ----------- button clicked!!!   tripPage")
+
+            val intent = Intent(requireContext(), TripDetails::class.java)
             startActivity(intent)
         }
 
         leavePage = view.findViewById(R.id.leave_Status)
-        profilePage.setOnClickListener{
-            val intent = Intent(context, LeaveStatus::class.java)
+        leavePage.setOnClickListener{
+            Log.d("--------------", "onCreateView: ----------- button clicked!!!   leavePage")
+
+            val intent = Intent(requireContext(), LeaveStatus::class.java)
             startActivity(intent)
         }
-
-
-
         return view
     }
 
