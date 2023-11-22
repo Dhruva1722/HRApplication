@@ -67,51 +67,51 @@ class HomeFragment : Fragment() {
 
 
         continuebtn.setOnClickListener {
-            val intent = Intent(activity, MapsActivity::class.java)
-            startActivity(intent)
+//            val intent = Intent(activity, MapsActivity::class.java)
+//            startActivity(intent)
 
-//            val startPoint = yourLocation.text.toString()
-//            val endPoint = destinationLocation.text.toString()
-//
-//            val startPointLatLng = getLatLngFromAddress(startPoint)
-//            val endPointLatLng = getLatLngFromAddress(endPoint)
-//
-//            if (startPointLatLng != null && endPointLatLng != null) {
-//                val locationData = LocationInfo(
-//                    StartPoint(
-//                        startPoint,
-//                        startPointLatLng.first.toString(),
-//                        startPointLatLng.second.toString()
-//                    ),
-//                    EndPoint(
-//                        endPoint,
-//                        endPointLatLng.first.toString(),
-//                        endPointLatLng.second.toString()
-//                    )
-//                )
-//                Log.d("---------------", "onCreateView: points ${locationData}")
-//                apiService.postLocationData(  userId,locationData).enqueue(object : Callback<Any> {
-//                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
-//                        if (response.isSuccessful) {
-//                            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
-//                            Log.d("API Success", "Response successful --------")
-//                            val handler = Handler()
-//                            handler.postDelayed({
-//                                val intent = Intent(requireContext(), MainActivity::class.java)
-//                                startActivity(intent)
-//                            }, 7000)
-//                        } else {
-//                            Toast.makeText(requireContext(), "Faill to save ", Toast.LENGTH_SHORT)
-//                                .show()
-//                            Log.e("API Error", response.message())
-//                        }
-//                    }
-//
-//                    override fun onFailure(call: Call<Any>, t: Throwable) {
-//                        Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_SHORT).show()
-//                    }
-//                })
-//            }
+            val startPoint = yourLocation.text.toString()
+            val endPoint = destinationLocation.text.toString()
+
+            val startPointLatLng = getLatLngFromAddress(startPoint)
+            val endPointLatLng = getLatLngFromAddress(endPoint)
+
+            if (startPointLatLng != null && endPointLatLng != null) {
+                val locationData = LocationInfo(
+                    StartPoint(
+                        startPoint,
+                        startPointLatLng.first.toString(),
+                        startPointLatLng.second.toString()
+                    ),
+                    EndPoint(
+                        endPoint,
+                        endPointLatLng.first.toString(),
+                        endPointLatLng.second.toString()
+                    )
+                )
+                Log.d("---------------", "onCreateView: points ${locationData}")
+                apiService.postLocationData(  userId,locationData).enqueue(object : Callback<Any> {
+                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                            Log.d("API Success", "Response successful --------")
+                            val handler = Handler()
+                            handler.postDelayed({
+                                val intent = Intent(activity, MapsActivity::class.java)
+                                startActivity(intent)
+                            }, 7000)
+                        } else {
+                            Toast.makeText(requireContext(), "Faill to save ", Toast.LENGTH_SHORT)
+                                .show()
+                            Log.e("API Error", response.message())
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Any>, t: Throwable) {
+                        Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
         }
             return view
         }

@@ -98,6 +98,9 @@ interface ApiService {
     @GET("user/{Id}") // Replace with your actual endpoint
     fun getUserData(@Path("Id") userId: String): Call<User>
 
+    @GET("/location/{Id}")
+    fun getTripData(@Path("Id") userId: String):  Call<List<TripInfo>>
+
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>
 

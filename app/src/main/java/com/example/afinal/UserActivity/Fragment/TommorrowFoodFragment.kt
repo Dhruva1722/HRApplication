@@ -49,12 +49,12 @@ class TommorrowFoodFragment : Fragment() {
 
 
         val currentDateTime = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        buyBtn = view.findViewById(R.id.bookBtnId)
+        buyBtn = view.findViewById(R.id.bookTomorrowBtnId)
 
         if (storedPurchaseDate != currentDateTime) {
             buyBtn.isEnabled = true
         } else {
-            buyBtn.isEnabled = false
+           buyBtn.isEnabled = false
         }
         buyBtn.setOnClickListener {
             if (!hasPurchased) {
@@ -62,7 +62,7 @@ class TommorrowFoodFragment : Fragment() {
                 val purchaseDate = currentDateTime
                 val  menuRef = menuId
                 userId?.let { it1 -> makePurchase(it1, numberOfCoupons, purchaseDate , menuRef!!) }
-//                buyBtn.isEnabled = false
+                buyBtn.isEnabled = false
 
                 hasPurchased = true
                 Toast.makeText(context, "This Coupen is valid till today", Toast.LENGTH_SHORT).show()

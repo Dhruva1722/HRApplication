@@ -24,7 +24,7 @@
 
 
         <Button
-            android:id="@+id/bookBtnId"
+            android:id="@+id/bookTomorrowBtnId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Book"
