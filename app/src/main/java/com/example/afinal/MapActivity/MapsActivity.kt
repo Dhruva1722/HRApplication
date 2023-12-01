@@ -67,12 +67,6 @@
 
         private val locationProvider by lazy { LocationProvider(this) }
 
-        private lateinit var sensorManager: SensorManager
-        private var accelerometer: Sensor? = null
-        private val stableThreshold = 0.10 // Adjust this threshold as needed
-        private val stableDurationThresholdMillis = 60000L // Adjust this duration as needed (1 minute in milliseconds)
-        private var lastUpdateTimeMillis = 0L
-        private var isDeviceStable = false
 
         private lateinit var geocoder: Geocoder
         private var startPoint: String? = null
@@ -145,9 +139,6 @@
             helpBtn.setOnClickListener { v ->
                 showPopupMenu(v)
             }
-            registerAccelerometerSensor()
-
-            unregisterAccelerometerSensor()
 
         }
         private fun showPopupMenu(view: View) {
@@ -228,8 +219,8 @@
                 val routeLocations = mutableListOf(startLatLng, endLatLng)
 
                 // Add markers for starting and ending locations
-                map.addMarker(MarkerOptions().position(startLatLng).title("Start"))
-                map.addMarker(MarkerOptions().position(endLatLng).title("End"))
+                map.addMarker(MarkerOptions().position(startLatLng).title("origin"))
+                map.addMarker(MarkerOptions().position(endLatLng).title("Destination"))
 
                 // Draw the route between starting and ending locations
                 drawRoute(routeLocations,Color.BLUE)
@@ -253,7 +244,7 @@
             binding.container.txtDistance.text = ""
             binding.container.txtTime.base = SystemClock.elapsedRealtime()
             binding.container.txtTime.start()
-            map.clear()
+//            map.clear()
 
             presenter.startTracking()
 
@@ -261,20 +252,20 @@
             locationProvider.getUserLocation()
 
             // Now, you can observe liveLocation to get user's location
-            locationProvider.liveLocation.observe(this, { userLocation ->
-                val accuracy = 0.0f
-                val zoomLevel = calculateZoomLevel(accuracy) // Calculate your zoom level
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, zoomLevel))
-            })
+//            locationProvider.liveLocation.observe(this, { userLocation ->
+//                val accuracy = 0.0f
+//                val zoomLevel = calculateZoomLevel(accuracy) // Calculate your zoom level
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, zoomLevel))
+           // })
 
         }
 
-        private fun calculateZoomLevel(accuracy: Float): Float {
-            // Example calculation - you can adjust this based on your requirements
-            val zoomLevel = 15.0f - log2(accuracy) // You may need to import kotlin.math.log2
-
-            return if (zoomLevel < 1) 1.0f else zoomLevel
-        }
+//        private fun calculateZoomLevel(accuracy: Float): Float {
+//            // Example calculation - you can adjust this based on your requirements
+//            val zoomLevel = 15.0f - log2(accuracy) // You may need to import kotlin.math.log2
+//
+//            return if (zoomLevel < 1) 1.0f else zoomLevel
+//        }
 
         private fun stopTracking() {
             presenter.stopTracking()
@@ -328,68 +319,6 @@
 
         }
 
-        private fun registerAccelerometerSensor() {
-            val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-            sensorManager.registerListener(accelerometerListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
-        }
-        private fun unregisterAccelerometerSensor() {
-            val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            sensorManager.unregisterListener(accelerometerListener)
-        }
-        override fun onResume() {
-            super.onResume()
-            // Register the accelerometer sensor when the activity is in the foreground
-            accelerometer?.let { sensor ->
-                sensorManager.registerListener(
-                    accelerometerListener,
-                    sensor,
-                    SensorManager.SENSOR_DELAY_NORMAL
-                )
-            }
-        }
-
-        override fun onPause() {
-            super.onPause()
-            // Unregister the accelerometer sensor when the activity is in the background
-            accelerometer?.let { sensorManager.unregisterListener(accelerometerListener, it) }
-        }
-
-        private val accelerometerListener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                val currentTimeMillis = System.currentTimeMillis()
-
-                if (currentTimeMillis - lastUpdateTimeMillis > stableDurationThresholdMillis) {
-                    val x = event.values[0]
-                    val y = event.values[1]
-                    val z = event.values[2]
-
-                    // Calculate the acceleration magnitude
-                    val acceleration = sqrt(x * x + y * y + z * z)
-
-                    if (acceleration < stableThreshold) {
-                        if (!isDeviceStable) {
-                            // Device has become stable
-                            isDeviceStable = true
-                            showStabilityMessage()
-                        }
-                    } else {
-                        // Device is not stable
-                        isDeviceStable = false
-                    }
-
-                    lastUpdateTimeMillis = currentTimeMillis
-                }
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                // Handle accuracy change if needed
-            }
-        }
-        private fun showStabilityMessage() {
-            // Display a message when the device is stable for the defined duration
-            Toast.makeText(this, "Device is stable", Toast.LENGTH_SHORT).show()
-        }
 
 
         private fun requestDirections(origin: String?, destination: String?) {

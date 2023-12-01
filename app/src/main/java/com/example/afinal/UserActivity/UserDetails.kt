@@ -109,20 +109,6 @@ class UserDetails : AppCompatActivity() {
             val hotelRequestBody = RequestBody.create(null, Hotel)
             val otherTransportRequestBody = RequestBody.create(null, Other_Transport)
 
-//            val imageFile = File(selectedImagePath)
-//            val imageRequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
-//            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name ,imageRequestBody)
-
-//            val imageUrlRequestBody = RequestBody.create(MediaType.parse("image/png"), imageUrl)
-//            val imageNameRequestBody = RequestBody.create(MediaType.parse("text/plain"), imageName)
-
-//            val imageFile = File(imageUrl)
-//            val imageRequestBody = RequestBody.create("image/png".toMediaTypeOrNull(), imageFile)
-//            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
-//            val imageNameRequestBody = RequestBody.create(
-//                "image/png".toMediaTypeOrNull(),
-//                imageName!!
-//            )
 
             val imageRequestBody = "test.png"
             val requestData = "User ID: $userId\n" +
@@ -132,9 +118,9 @@ class UserDetails : AppCompatActivity() {
                     "Water: $Water\n" +
                     "Hotel: $Hotel\n" +
                     "Other Transport: $Other_Transport\n" +
-                    "image data: $imageRequestBody\n"+
+                    "image data: $imageRequestBody\n"
 
-//            Log.d("UserDetails", "Data being sent to API:\n$requestData")
+           Log.d("UserDetails", "Data being sent to API: ${requestData}")
 
             // Make the API request
             apiService.saveFormData(

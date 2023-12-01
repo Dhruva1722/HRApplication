@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
-        loadFragment(HomeFragment())
+        loadFragment(AttendanceFragment())
     }
 
     private fun showPopupMenu(view: View) {
