@@ -1,11 +1,9 @@
 package com.example.afinal.UserActivity
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -21,9 +19,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -121,14 +116,15 @@ class UserDetails : AppCompatActivity() {
 //            val imageUrlRequestBody = RequestBody.create(MediaType.parse("image/png"), imageUrl)
 //            val imageNameRequestBody = RequestBody.create(MediaType.parse("text/plain"), imageName)
 
-            val imageFile = File(imageUrl)
-            val imageRequestBody = RequestBody.create("image/png".toMediaTypeOrNull(), imageFile)
-            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
-            val imageNameRequestBody = RequestBody.create(
-                "image/png".toMediaTypeOrNull(),
-                imageName!!
-            )
+//            val imageFile = File(imageUrl)
+//            val imageRequestBody = RequestBody.create("image/png".toMediaTypeOrNull(), imageFile)
+//            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
+//            val imageNameRequestBody = RequestBody.create(
+//                "image/png".toMediaTypeOrNull(),
+//                imageName!!
+//            )
 
+            val imageRequestBody = "test.png"
             val requestData = "User ID: $userId\n" +
                     "Transport Type: $Transport_type\n" +
                     "Total Expense: $Total_expense\n" +
@@ -137,9 +133,8 @@ class UserDetails : AppCompatActivity() {
                     "Hotel: $Hotel\n" +
                     "Other Transport: $Other_Transport\n" +
                     "image data: $imageRequestBody\n"+
-                    "Image File Name: $imageName"
 
-            Log.d("UserDetails", "Data being sent to API:\n$requestData")
+//            Log.d("UserDetails", "Data being sent to API:\n$requestData")
 
             // Make the API request
             apiService.saveFormData(
@@ -151,8 +146,7 @@ class UserDetails : AppCompatActivity() {
                 waterRequestBody,
                 hotelRequestBody,
                 otherTransportRequestBody,
-                imagePart,
-                imageNameRequestBody,
+                imageRequestBody,
             ).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
@@ -175,55 +169,55 @@ class UserDetails : AppCompatActivity() {
             showPopupMenu(v)
         }
 
-        val uploadBtn = findViewById<Button>(R.id.uploadButton)
-        uploadBtn.setOnClickListener {
-            openImagePicker()
-        }
+//        val uploadBtn = findViewById<Button>(R.id.uploadButton)
+//        uploadBtn.setOnClickListener {
+//            openImagePicker()
+//        }
     }
 
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_REQUEST)
-    }
+//    private fun openImagePicker() {
+//        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.type = "image/*"
+//        startActivityForResult(intent, IMAGE_PICK_REQUEST)
+//    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
+//            // Get the selected image's URI
+//            val selectedImageUri: Uri? = data?.data
+//
+//            if (selectedImageUri != null) {
+//                // Convert the URI to an image URL
+//                imageUrl = selectedImageUri.toString()
+//
+//                // Compress the image before uploading
+//                val compressedImageFile = compressImage(getRealPathFromURI(selectedImageUri))
+//
+//                Log.d("+++++++++", "onActivityResult: $compressedImageFile ***** $imageName")
+//
+////                val imageNameRequestBody =
+////                    RequestBody.create(MediaType.parse(""), imageName)
+//
+//                // Now, use `imagePart` and `imageNameRequestBody` for further processing.
+//            } else {
+//                Toast.makeText(this, "Failed to get the selected image", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
-            // Get the selected image's URI
-            val selectedImageUri: Uri? = data?.data
-
-            if (selectedImageUri != null) {
-                // Convert the URI to an image URL
-                imageUrl = selectedImageUri.toString()
-
-                // Compress the image before uploading
-                val compressedImageFile = compressImage(getRealPathFromURI(selectedImageUri))
-
-                Log.d("+++++++++", "onActivityResult: $compressedImageFile ***** $imageName")
-
-//                val imageNameRequestBody =
-//                    RequestBody.create(MediaType.parse(""), imageName)
-
-                // Now, use `imagePart` and `imageNameRequestBody` for further processing.
-            } else {
-                Toast.makeText(this, "Failed to get the selected image", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun compressImage(imagePath: String?): String {
-        val options = BitmapFactory.Options()
-        options.inSampleSize = 2 // You can adjust this value as needed to control image quality
-
-        val sourceBitmap = BitmapFactory.decodeFile(imagePath, options)
-        val compressedImagePath = createImageFile(sourceBitmap)
-
-        sourceBitmap.recycle()
-
-        return compressedImagePath
-    }
+//    private fun compressImage(imagePath: String?): String {
+//        val options = BitmapFactory.Options()
+//        options.inSampleSize = 2 // You can adjust this value as needed to control image quality
+//
+//        val sourceBitmap = BitmapFactory.decodeFile(imagePath, options)
+//        val compressedImagePath = createImageFile(sourceBitmap)
+//
+//        sourceBitmap.recycle()
+//
+//        return compressedImagePath
+//    }
 
     private fun createImageFile(bitmap: Bitmap): String {
         val file = File(cacheDir, "compressed_image.jpg")

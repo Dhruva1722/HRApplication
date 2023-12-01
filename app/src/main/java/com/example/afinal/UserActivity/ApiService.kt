@@ -68,8 +68,8 @@ interface ApiService {
         @Part("Water") water: RequestBody,
         @Part("Hotel") hotel: RequestBody,
         @Part("Other_Transport") otherTransport: RequestBody,
-        @Part image: MultipartBody.Part, // Remove the name from @Part
-        @Part("ImageName") imageName: RequestBody // Add RequestBody for the name
+         // Remove the name from @Part
+        @Part("ImageName") imageName: String // Add RequestBody for the name
     ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
