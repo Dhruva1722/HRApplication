@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -121,9 +122,12 @@ class UserDetails : AppCompatActivity() {
 //            val imageNameRequestBody = RequestBody.create(MediaType.parse("text/plain"), imageName)
 
             val imageFile = File(imageUrl)
-            val imageRequestBody = RequestBody.create(MediaType.parse("image/png"), imageFile)
+            val imageRequestBody = RequestBody.create("image/png".toMediaTypeOrNull(), imageFile)
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
-            val imageNameRequestBody = RequestBody.create(MediaType.parse("image/png"), imageName)
+            val imageNameRequestBody = RequestBody.create(
+                "image/png".toMediaTypeOrNull(),
+                imageName!!
+            )
 
             val requestData = "User ID: $userId\n" +
                     "Transport Type: $Transport_type\n" +

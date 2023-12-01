@@ -58,14 +58,13 @@ class LeaveStatus : AppCompatActivity() {
     }
         private fun LeaveApplicationDialog() {
 
-            val builder = AlertDialog.Builder(applicationContext)
+            val builder = AlertDialog.Builder(this)
 
             val view = layoutInflater.inflate(R.layout.leave_item, null)
 
             val textStartDate = view.findViewById<TextInputLayout>(R.id.textStartDate)
             val textEndDate = view.findViewById<TextInputLayout>(R.id.textEndDate)
             val applyBtn = view.findViewById<Button>(R.id.applyBtn)
-
 
             applyBtn.setOnClickListener {
 

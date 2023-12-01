@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.TextUtils
+import android.util.Base64
+import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,15 +19,19 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.afinal.R
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.gson.annotations.SerializedName
+import id.zelory.compressor.determineImageRotation
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 class Profile_Page : AppCompatActivity() {
 
@@ -50,8 +56,7 @@ class Profile_Page : AppCompatActivity() {
 
     private lateinit var uploadBtn : ImageView
     private lateinit var profileImage: ImageView
-    private val IMAGE_PICK_REQUEST = 123
-
+    private lateinit var selectedImageUri: Uri
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
 
     private lateinit var editBtn : ImageView
@@ -92,14 +97,15 @@ class Profile_Page : AppCompatActivity() {
             showEditProfilePopup()
         }
 
-
-
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val selectedImageUri: Uri? = result.data?.data
+                // Handle the selected image URI
+            }
+        }
     }
 
-
     private fun fetchUserData(){
-
-
 
         val call: Call<User> = apiService.getUserData(userId)
 
@@ -121,6 +127,12 @@ class Profile_Page : AppCompatActivity() {
                     empCountryLayout.setText(user?.emp_country)
                     empCityLayout.setText(user?.emp_city)
                     empStateLayout.setText(user?.emp_state)
+                    val profileImageData: String = user?.profileImage?.data ?: ""
+                    if (profileImageData.isNotEmpty()) {
+                        // Assuming profileImageData is in base64 format, you may need to decode it
+                        val decodedImage: Bitmap = decodeBase64(profileImageData)
+                        profileImage.setImageBitmap(decodedImage)
+                    }
                 } else {
                     Toast.makeText(this@Profile_Page, "No Data Available", Toast.LENGTH_SHORT)
                         .show()
@@ -131,6 +143,10 @@ class Profile_Page : AppCompatActivity() {
                 Toast.makeText(this@Profile_Page, "Network error", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+    private fun decodeBase64(input: String): Bitmap {
+        val decodedBytes: ByteArray = Base64.decode(input, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
     }
 
     private fun showEditProfilePopup() {
@@ -156,20 +172,11 @@ class Profile_Page : AppCompatActivity() {
         empCityLayout=  view.findViewById(R.id.empCity)
         empStateLayout =  view.findViewById(R.id.empState)
 
-        profileImage = findViewById(R.id.profileImage)
-        uploadBtn = findViewById(R.id.uploadImageBtn)
+        profileImage = view.findViewById(R.id.profileImage)
+        uploadBtn = view.findViewById(R.id.uploadImageBtn)
         uploadBtn.setOnClickListener {
             val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             imagePickerLauncher.launch(galleryIntent)
-        }
-
-
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val selectedImageUri: Uri? = result.data?.data
-                // Handle the selected image URI
-                handleImageSelection(selectedImageUri)
-            }
         }
 
         val call: Call<User> = apiService.getUserData(userId)
@@ -210,11 +217,13 @@ class Profile_Page : AppCompatActivity() {
                 Emp_contact_No = empNumberLayout.text.toString(),
                 Emp_city = empCityLayout.text.toString(),
                 Emp_state = empStateLayout.text.toString(),
-                Emp_blood_group= empBloodLayout.text.toString(),
+                Emp_blood_group = empBloodLayout.text.toString(),
                 Emp_qualification = empQualificationLayout.text.toString(),
                 Emp_expertise = empExpertiseLayout.text.toString(),
-                Emp_country = empCountryLayout.text.toString()
+                Emp_country = empCountryLayout.text.toString(),
             )
+                Log.d("-----------", "showEditProfilePopup: ${updatedEmployeeData}")
+
 
             // Call the Retrofit API to update the employee details
             val apiService = RetrofitClient.getClient().create(ApiService::class.java)
@@ -236,6 +245,41 @@ class Profile_Page : AppCompatActivity() {
                     Toast.makeText(this@Profile_Page, "Network error", Toast.LENGTH_SHORT).show()
                 }
             })
+
+            if (::selectedImageUri.isInitialized) {
+                // Convert the selected image to a byte array
+                val imageByteArray = application?.contentResolver?.openInputStream(selectedImageUri)?.readBytes()
+
+                // Check if conversion was successful
+                if (imageByteArray != null) {
+                    // Call the Retrofit API to upload the image and pass the content type
+                    val requestBody = RequestBody.create(
+                        "image/*".toMediaTypeOrNull(),
+                        imageByteArray
+                    )
+                    val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestBody)
+
+                    lifecycleScope.launch {
+                        try {
+                            val response = apiService.uploadImage(userId, imagePart)
+                            if (response.isSuccessful) {
+                                val imageUrl = response.body()
+                                // Save imageUrl to the database or use it as needed
+                            } else {
+                                // Handle unsuccessful response
+                                Toast.makeText(applicationContext, "Failed to upload image", Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                            // Handle exceptions
+                            Log.e("Profile_Page", "Error uploading image", e)
+                        }
+                    }
+                } else {
+                    Toast.makeText(applicationContext, "Failed to convert image to byte array", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
         }
 
 
@@ -245,11 +289,11 @@ class Profile_Page : AppCompatActivity() {
 
         // Show the dialog
         dialog.show()
-        dialog.dismiss()
+//        dialog.dismiss()
     }
-    private fun handleImageSelection(imageUri: Uri?) {
-        profileImage.setImageURI(imageUri)
-    }
+
+
+
 }
 data class User(
     @SerializedName("Emp_ID") val emp_ID: String,
@@ -275,13 +319,14 @@ data class ProfileImage(
 )
 
 data class UserData(
-    val Emp_name : String,
+    val Emp_name: String,
     val Emp_contact_No: String,
-    val Emp_expertise : String,
-    val Emp_blood_group : String,
-    val Emp_qualification : String,
-    val Emp_city : String,
-    val Emp_state : String,
-    val Emp_country : String
+    val Emp_expertise: String,
+    val Emp_blood_group: String,
+    val Emp_qualification: String,
+    val Emp_city: String,
+    val Emp_state: String,
+    val Emp_country: String,
+//    val profileImage: MultipartBody.Part
 )
 

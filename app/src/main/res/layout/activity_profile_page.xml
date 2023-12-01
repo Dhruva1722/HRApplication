@@ -104,6 +104,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/baseline_person_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empName"
                     android:layout_below="@id/empID"/>
 
@@ -231,7 +233,9 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empNumber"
-                    android:layout_below="@id/empBloodGroup"/>
+                    android:layout_below="@id/empBloodGroup"
+                    android:drawableStart="@drawable/baseline_call_24"
+                    android:drawablePadding="5dp"/>
 
                 <EditText
                     android:layout_width="150dp"

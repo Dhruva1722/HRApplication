@@ -32,8 +32,8 @@ import java.util.Locale
 class HomeFragment : Fragment() {
 
     private lateinit var continuebtn: Button
-    private lateinit var yourLocation: TextInputEditText
-    private lateinit var destinationLocation: TextInputEditText
+    private lateinit var originEdt: TextInputEditText
+    private lateinit var destinationEdt: TextInputEditText
     private lateinit var totalDistanceTextView:TextView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var apiService: ApiService
@@ -54,8 +54,8 @@ class HomeFragment : Fragment() {
 
 
         continuebtn = view.findViewById(R.id.continueBtn)
-        yourLocation = view.findViewById(R.id.StartPointID)
-        destinationLocation = view.findViewById(R.id.EndPointID)
+        originEdt = view.findViewById(R.id.StartPointID)
+        destinationEdt = view.findViewById(R.id.EndPointID)
 
         totalDistanceTextView = view.findViewById(R.id.totalDistanceTxt)
 
@@ -70,9 +70,15 @@ class HomeFragment : Fragment() {
 //            val intent = Intent(activity, MapsActivity::class.java)
 //            startActivity(intent)
 
-            val startPoint = yourLocation.text.toString()
-            val endPoint = destinationLocation.text.toString()
+            val startPoint = originEdt.text.toString()
+            val endPoint =  destinationEdt.text.toString()
 
+            val intent = Intent(requireContext(), MapsActivity::class.java)
+            // Pass data to MapActivity using extras
+            intent.putExtra("origin", startPoint)
+            intent.putExtra("destination", endPoint)
+            // Start the MapActivity
+            startActivity(intent)
             val startPointLatLng = getLatLngFromAddress(startPoint)
             val endPointLatLng = getLatLngFromAddress(endPoint)
 
@@ -95,11 +101,11 @@ class HomeFragment : Fragment() {
                         if (response.isSuccessful) {
                             Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
                             Log.d("API Success", "Response successful --------")
-                            val handler = Handler()
-                            handler.postDelayed({
-                                val intent = Intent(activity, MapsActivity::class.java)
-                                startActivity(intent)
-                            }, 7000)
+//                            val handler = Handler()
+//                            handler.postDelayed({
+//                                val intent = Intent(activity, MapsActivity::class.java)
+//                                startActivity(intent)
+//                            }, 7000)
                         } else {
                             Toast.makeText(requireContext(), "Faill to save ", Toast.LENGTH_SHORT)
                                 .show()

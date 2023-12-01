@@ -12,6 +12,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -100,6 +101,11 @@ interface ApiService {
 
     @GET("/location/{Id}")
     fun getTripData(@Path("Id") userId: String):  Call<List<TripInfo>>
+
+
+    @Multipart
+    @POST("update-profile/{Id}")
+    suspend fun uploadImage(@Path("Id") userId: String , @Part image: MultipartBody.Part): Response<String>
 
 //    @GET("/form")
 //    fun getImageData(@Body data: ImageData): Call<Any>
