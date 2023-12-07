@@ -46,6 +46,9 @@
                     android:layout_height="wrap_content"
                     android:hint=" Employe ID"
                     android:enabled="false"
+                    android:textColor="#AAA8A8"
+                    android:drawableStart="@drawable/baseline_fingerprint_24"
+                    android:drawablePadding="5dp"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"/>
@@ -60,6 +63,8 @@
                     android:layout_marginEnd="20dp"
                     android:textStyle="bold"
                     android:id="@+id/empName"
+                    android:drawableStart="@drawable/baseline_person_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empID"/>
 
                 <EditText
@@ -68,6 +73,9 @@
                     android:hint="Employe Email ID"
                     android:textStyle="bold"
                     android:enabled="false"
+                    android:textColor="#AAA8A8"
+                    android:drawableStart="@drawable/baseline_mail_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -80,6 +88,9 @@
                     android:hint="Department"
                     android:textStyle="bold"
                     android:enabled="false"
+                    android:drawableStart="@drawable/baseline_diversity_2_24"
+                    android:drawablePadding="5dp"
+                    android:textColor="#AAA8A8"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -94,6 +105,8 @@
                     android:textColor="@color/black"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
+                    android:drawableStart="@drawable/baseline_work_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginEnd="10dp"
                     android:id="@+id/empExpertise"
                     android:layout_below="@id/empDepartment"/>
@@ -104,7 +117,10 @@
                     android:hint="Designation"
                     android:textStyle="bold"
                     android:enabled="false"
+                    android:drawableStart="@drawable/baseline_route_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginTop="10dp"
+                    android:textColor="#AAA8A8"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empDesignation"
@@ -119,6 +135,9 @@
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
+                    android:textColor="#AAA8A8"
+                    android:drawableStart="@drawable/baseline_edit_calendar_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginEnd="10dp"
                     android:id="@+id/empDOB"
                     android:layout_below="@id/empDesignation"/>
@@ -132,6 +151,9 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
+                    android:textColor="#AAA8A8"
+                    android:drawableStart="@drawable/baseline_edit_calendar_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empDOJ"
                     android:layout_below="@id/empDesignation"
                     android:layout_toRightOf="@id/empDOB"/>
@@ -142,6 +164,8 @@
                     android:layout_height="50dp"
                     android:hint="Blood Group"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/baseline_bloodtype_24"
+                    android:drawablePadding="5dp"
                     android:textColor="@color/black"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -160,6 +184,8 @@
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
+                    android:drawableStart="@drawable/baseline_book_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empQualification"
                     android:layout_below="@id/empDOJ"
@@ -175,6 +201,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empNumber"
+                    android:drawableStart="@drawable/baseline_call_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empBloodGroup"/>
 
                 <EditText
@@ -186,6 +214,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:drawableStart="@drawable/baseline_my_location_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empCity"
                     android:layout_below="@id/empBloodGroup"
                     android:layout_toRightOf="@id/empNumber"/>
@@ -200,6 +230,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empState"
+                    android:drawableStart="@drawable/baseline_location_on_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empNumber"/>
 
                 <EditText
@@ -212,6 +244,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empCountry"
+                    android:drawableStart="@drawable/baseline_location_on_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empNumber"
                     android:layout_toRightOf="@id/empState"/>
 

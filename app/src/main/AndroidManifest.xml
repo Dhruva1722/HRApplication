@@ -71,8 +71,8 @@
             </intent-filter>
         </activity> <!-- https://developers.google.com/maps/documentation/android-sdk/get-api-key -->
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCPMzDrHp2bAWHWMNorudJ3BqS08pDcVvg" />
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyCPMzDrHp2bAWHWMNorudJ3BqS08pDcVvg" />
 
         <activity
             android:name=".MapActivity.MapsActivity"

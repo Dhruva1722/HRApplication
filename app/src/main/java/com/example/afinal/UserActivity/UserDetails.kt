@@ -4,9 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -19,15 +18,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.afinal.R
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.IOException
 import java.nio.ByteBuffer
 
 
@@ -66,7 +65,7 @@ class UserDetails : AppCompatActivity() {
 
 
         radioGroup = findViewById(R.id.idRadioGroup)
-        uploadButton = findViewById(R.id.uploadButton)
+//        uploadButton = findViewById(R.id.uploadButton)
         savebtn = findViewById(R.id.saveToDatabase)
 
         busRadio = findViewById(R.id.idBtnBusRadio)
@@ -109,8 +108,14 @@ class UserDetails : AppCompatActivity() {
             val hotelRequestBody = RequestBody.create(null, Hotel)
             val otherTransportRequestBody = RequestBody.create(null, Other_Transport)
 
+            // Assuming this is inside your activity or fragment
+            val imageResourceId = R.drawable.amico // Replace 'amico' with the actual name of your drawable
+            val imageBitmap = BitmapFactory.decodeResource(resources, imageResourceId)
+            val imageFile = convertBitmapToFile(imageBitmap, "amico.png")
+            val imageRequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), imageFile)
+            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
 
-            val imageRequestBody = "test.png"
+
             val requestData = "User ID: $userId\n" +
                     "Transport Type: $Transport_type\n" +
                     "Total Expense: $Total_expense\n" +
@@ -118,7 +123,7 @@ class UserDetails : AppCompatActivity() {
                     "Water: $Water\n" +
                     "Hotel: $Hotel\n" +
                     "Other Transport: $Other_Transport\n" +
-                    "image data: $imageRequestBody\n"
+                    "image data: $imagePart\n"
 
            Log.d("UserDetails", "Data being sent to API: ${requestData}")
 
@@ -132,7 +137,7 @@ class UserDetails : AppCompatActivity() {
                 waterRequestBody,
                 hotelRequestBody,
                 otherTransportRequestBody,
-                imageRequestBody,
+                imagePart
             ).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
@@ -161,96 +166,22 @@ class UserDetails : AppCompatActivity() {
 //        }
     }
 
-//    private fun openImagePicker() {
-//        val intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.type = "image/*"
-//        startActivityForResult(intent, IMAGE_PICK_REQUEST)
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK) {
-//            // Get the selected image's URI
-//            val selectedImageUri: Uri? = data?.data
-//
-//            if (selectedImageUri != null) {
-//                // Convert the URI to an image URL
-//                imageUrl = selectedImageUri.toString()
-//
-//                // Compress the image before uploading
-//                val compressedImageFile = compressImage(getRealPathFromURI(selectedImageUri))
-//
-//                Log.d("+++++++++", "onActivityResult: $compressedImageFile ***** $imageName")
-//
-////                val imageNameRequestBody =
-////                    RequestBody.create(MediaType.parse(""), imageName)
-//
-//                // Now, use `imagePart` and `imageNameRequestBody` for further processing.
-//            } else {
-//                Toast.makeText(this, "Failed to get the selected image", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
+    private fun convertBitmapToFile(bitmap: Bitmap, fileName: String): File {
+        val file = File(cacheDir, fileName)
+        file.createNewFile()
 
-//    private fun compressImage(imagePath: String?): String {
-//        val options = BitmapFactory.Options()
-//        options.inSampleSize = 2 // You can adjust this value as needed to control image quality
-//
-//        val sourceBitmap = BitmapFactory.decodeFile(imagePath, options)
-//        val compressedImagePath = createImageFile(sourceBitmap)
-//
-//        sourceBitmap.recycle()
-//
-//        return compressedImagePath
-//    }
+        // Convert bitmap to byte array
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
 
-    private fun createImageFile(bitmap: Bitmap): String {
-        val file = File(cacheDir, "compressed_image.jpg")
-        try {
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-            outputStream.flush()
-            outputStream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return file.absolutePath
-    }
+        // Write the bytes in file
+        val fileOutputStream = FileOutputStream(file)
+        fileOutputStream.write(byteArray)
+        fileOutputStream.flush()
+        fileOutputStream.close()
 
-    private fun loadAndConvertImageToByteBuffer(imagePath: String?): ByteBuffer {
-        if (imagePath == null) {
-            return ByteBuffer.allocate(0)
-        }
-
-        try {
-            val inputStream = FileInputStream(imagePath)
-            val channel = inputStream.channel
-            val size = channel.size()
-            val buffer = ByteBuffer.allocate(size.toInt())
-
-            channel.read(buffer)
-            channel.close()
-            inputStream.close()
-
-            buffer.flip()
-            return buffer
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return ByteBuffer.allocate(0)
-    }
-
-    private fun getRealPathFromURI(uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = contentResolver.query(uri, projection, null, null, null)
-        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor?.moveToFirst()
-        val imagePath = cursor?.getString(columnIndex!!)
-        cursor?.close()
-        return imagePath
+        return file
     }
 
     private fun showPopupMenu(view: View) {

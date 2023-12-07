@@ -34,7 +34,6 @@ class HomeFragment : Fragment() {
     private lateinit var continuebtn: Button
     private lateinit var originEdt: TextInputEditText
     private lateinit var destinationEdt: TextInputEditText
-    private lateinit var totalDistanceTextView:TextView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var apiService: ApiService
 
@@ -57,13 +56,12 @@ class HomeFragment : Fragment() {
         originEdt = view.findViewById(R.id.StartPointID)
         destinationEdt = view.findViewById(R.id.EndPointID)
 
-        totalDistanceTextView = view.findViewById(R.id.totalDistanceTxt)
+//        totalDistanceTextView = view.findViewById(R.id.totalDistanceTxt)
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
         geocoder = Geocoder(requireContext(), Locale.getDefault())
-
 
 
         continuebtn.setOnClickListener {

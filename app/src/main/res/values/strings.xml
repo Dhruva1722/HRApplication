@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Testing-Final</string>
+    <string name="app_name">HRMSMultispan</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="average_pace_label">Steps</string>
     <string name="elapsed_time_label">Elapsed time</string>

@@ -44,7 +44,7 @@
                 android:layout_below="@id/textViewName"/>
 
     <TextView
-        android:id="@+id/textViewEmail"
+        android:id="@+id/textViewDesignation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email"
@@ -54,15 +54,15 @@
         android:layout_below="@id/textViewContactno"/>
 
 
-    <TextView
-        android:id="@+id/textViewDepartment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Department"
-        android:textColor="@color/black"
-        android:layout_marginTop="5dp"
-        android:textSize="12sp"
-        android:layout_below="@id/textViewEmail" />
+<!--    <TextView-->
+<!--        android:id="@+id/textViewDepartment"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Department"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:textSize="12sp"-->
+<!--        android:layout_below="@id/textViewDesignation" />-->
 
         </RelativeLayout>
 

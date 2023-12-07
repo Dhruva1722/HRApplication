@@ -2,59 +2,57 @@ package com.example.afinal.UserActivity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.afinal.R
-import com.example.afinal.UserActivity.Adapter.ManagerAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.afinal.UserActivity.Adapter.EmployeeAdapter
+import kotlinx.coroutines.launch
 
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var listView: ListView
     private lateinit var adapter: ArrayAdapter<String>
-
+    private val employeeAdapter = EmployeeAdapter()
+    val apiService = RetrofitClient.getClient().create(ApiService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help)
 
+        val recyclerView: RecyclerView = findViewById(R.id.listView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = employeeAdapter
 
-        listView = findViewById(R.id.listView)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1)
-        listView.adapter = adapter
+        fetchManagers()
+    }
 
-        val apiService = RetrofitClient.getClient().create(ApiService::class.java)
-        val call = apiService.getManagers()
-        call.enqueue(object : Callback<List<Manager>> {
-            override fun onResponse(call: Call<List<Manager>>, response: Response<List<Manager>>) {
-                if (response.isSuccessful) {
-                    val managers = response.body()
-                    if (managers != null) {
-                        val adapter = ManagerAdapter(this@HelpActivity, R.layout.manager_list, managers)
-                        listView.adapter = adapter
-                    } else {
-                        Toast.makeText(this@HelpActivity, "No data available", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this@HelpActivity, "API request failed", Toast.LENGTH_SHORT).show()
-                }
+    private fun fetchManagers() {
+        lifecycleScope.launch {
+            try {
+                val users = apiService.getManagers()
+//                Log.d("ApiResponse", users.toString())
+
+                // Filter users with designation containing "Manager" (case-insensitive)
+                val managerList: List<Employee> = users.filter { it.Emp_designation.contains("Manager", ignoreCase = true) }
+                Log.d("ApiResponse", "${managerList}")
+                // Update the RecyclerView with the list of managers
+                employeeAdapter.submitList(managerList)
+            } catch (e: Exception) {
+                // Handle error
+                e.printStackTrace()
             }
-
-            override fun onFailure(call: Call<List<Manager>>, t: Throwable) {
-                Toast.makeText(this@HelpActivity, "Network error", Toast.LENGTH_SHORT).show()
-            }
-        })
+        }
     }
 }
 
-data class Manager(
-    val name: String,
-    val email: String,
-    val contact_no: String,
-    val department:String
+data class Employee(
+    val Emp_contact_No: String,
+    val Emp_name: String,
+    val Emp_designation: String,
 )
 
 

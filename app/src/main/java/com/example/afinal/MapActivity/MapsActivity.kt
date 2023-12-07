@@ -89,7 +89,7 @@
 
 
             // Now you have the values of origin and destination, use them as needed
-            Log.d("MapsActivity", "Origin: $origin, Destination: $destination")
+//            Log.d("MapsActivity", "Origin: $origin, Destination: $destination")
 
             requestDirections(origin, destination)
 

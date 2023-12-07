@@ -33,15 +33,16 @@
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/idBtnSendData"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:src="@drawable/baseline_save_alt_24"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center"/>
+<!--                <ImageView-->
+<!--                    android:id="@+id/idBtnSendData"-->
+<!--                    android:layout_width="26dp"-->
+<!--                    android:layout_height="26dp"-->
+<!--                    android:src="@drawable/baseline_save_alt_24"-->
+<!--                    android:layout_marginRight="15dp"-->
+<!--                    android:gravity="center"/>-->
 
                 <ImageView
                     android:id="@+id/idBtnEditData"
@@ -53,9 +54,8 @@
             </LinearLayout>
 
 
-
-
         </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 
     <RelativeLayout
@@ -90,6 +90,8 @@
                     android:hint=" Employe ID"
                     android:enabled="false"
                     android:textColor="#979797"
+                    android:drawableStart="@drawable/baseline_fingerprint_24"
+                    android:drawablePadding="5dp"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"/>
@@ -117,6 +119,8 @@
                     android:textColor="#979797"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
+                    android:drawableStart="@drawable/baseline_mail_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empEmailId"
@@ -129,6 +133,8 @@
                     android:hint="Department"
                     android:enabled="false"
                     android:textColor="#979797"
+                    android:drawableStart="@drawable/baseline_diversity_2_24"
+                    android:drawablePadding="5dp"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -147,6 +153,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
+                    android:drawableStart="@drawable/baseline_work_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empExpertise"
                     android:layout_below="@id/empDepartment"/>
 
@@ -160,6 +168,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:drawableStart="@drawable/baseline_route_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empDesignation"
                     android:layout_below="@id/empExpertise" />
 
@@ -175,6 +185,8 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
                     android:id="@+id/empDOB"
+                    android:drawableStart="@drawable/baseline_edit_calendar_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empDesignation"/>
 
                 <EditText
@@ -188,6 +200,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:id="@+id/empDOJ"
+                    android:drawableStart="@drawable/baseline_edit_calendar_24"
+                    android:drawablePadding="5dp"
                     android:layout_below="@id/empDesignation"
                     android:layout_toRightOf="@id/empDOB"/>
 
@@ -201,6 +215,8 @@
                     android:textColor="#979797"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
+                    android:drawableStart="@drawable/baseline_bloodtype_24"
+                    android:drawablePadding="5dp"
                     android:layout_marginEnd="10dp"
                     android:id="@+id/empBloodGroup"
                     android:layout_below="@id/empDOB"/>
@@ -218,6 +234,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
+                    android:drawableStart="@drawable/baseline_book_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empQualification"
                     android:layout_below="@id/empDOJ"
                     android:layout_toRightOf="@id/empBloodGroup"/>
@@ -247,6 +265,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:drawableStart="@drawable/baseline_my_location_24"
+                    android:drawablePadding="5dp"
                     android:id="@+id/empCity"
                     android:layout_below="@id/empBloodGroup"
                     android:layout_toRightOf="@id/empNumber"/>

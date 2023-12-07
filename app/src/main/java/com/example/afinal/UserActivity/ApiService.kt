@@ -68,8 +68,7 @@ interface ApiService {
         @Part("Water") water: RequestBody,
         @Part("Hotel") hotel: RequestBody,
         @Part("Other_Transport") otherTransport: RequestBody,
-         // Remove the name from @Part
-        @Part("ImageName") imageName: String // Add RequestBody for the name
+        @Part image: MultipartBody.Part // Add RequestBody for the name
     ): Call<Void>
     @POST("/complaint")
     fun submitComplaint(@Body data: ComplaintRequest): Call<Any>
@@ -80,11 +79,14 @@ interface ApiService {
         @Body employeeUpdateData: UserData
     ): Call<Void>
 
-    @GET("/manager")
-    fun getManagers(): Call<List<Manager>>
+//    @GET("/manager")
+//    fun getManagers(): Call<List<Manager>>
 
     @GET("/menu")
     fun getMenu(): Call<MenuData>
+
+    @GET("/empdata")
+    fun getManagers(): List<Employee>
 
     @POST("/menu/buy")
     fun buyMenuItems(@Body purchaseData: PurchaseData): Call<Void>
